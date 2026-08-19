@@ -32,6 +32,8 @@ worked. Do not print from it yet.
 
 - `cad/hopper/` — parametric bulk hopper: body, roof mount, and cap
 - `docs/` — extruder hardware reference and design review
+- `scripts/` — geometry regression harness
+- `tests/` — committed geometry baseline
 
 ## Getting started
 
@@ -40,14 +42,26 @@ Requires [OpenSCAD](https://openscad.org/) (tested on 2021.01) and
 
 ```sh
 just            # list recipes
-just check      # compile every part at every size, warnings are errors
+just check      # compile every part at every size, any diagnostic fails
+just geom       # check rendered geometry against the committed baseline
 just render     # write STLs for every part and size to build/
 just edit       # open the assembly in the OpenSCAD GUI Customizer
 ```
 
-The design is driven from `cad/hopper/pellet_hopper.scad`. Pick a part with
+The design is driven from `cad/hopper/pellet_hopper.scad`, which holds every
+tunable parameter and hands them to the part modules. Pick a part with
 `render_part` and a capacity preset with `hopper_size`; presets are defined in
 `cad/hopper/hopper_sizes.scad`.
+
+Each of the other files under `cad/hopper/` defines one part or one concern and
+renders on its own, so you can open `hopper_mount.scad` directly and iterate on
+the mount without the rest of the model in the way.
+
+`just geom` exists because OpenSCAD does not emit STL facets in a stable order,
+so a mesh cannot be compared by hash. It compares signed volume, bounding box
+and triangle count instead, which is enough to prove a refactor changed
+nothing. Re-baseline with `just geom-baseline` only after an intended geometry
+change.
 
 ## Documentation
 
