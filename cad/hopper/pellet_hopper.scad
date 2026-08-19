@@ -11,6 +11,7 @@
 // appear. Hence the dummy module below, which fences the tunable parameters off
 // from the derived values beneath it. See docs/design-notes.md.
 
+include <hopper_colours.scad>
 include <hopper_feedstock.scad>
 include <hopper_sizes.scad>
 use <hopper_body.scad>
@@ -351,9 +352,9 @@ module _body(which = undef) {
   );
 }
 
-// Every segment, each already at its true height.
+// Every segment, each already at its true height and its own colour.
 module _body_all() {
-  for (i = [0:segments - 1]) _body(which = i);
+  for (i = [0:segments - 1]) color(colour_body_segment(i)) _body(which = i);
 }
 
 module _mount() {
@@ -388,24 +389,29 @@ module _cap() {
   );
 }
 
+// Single parts carry the same colour they have in the assembly, so a part
+// rendered on its own is still recognisable as the one you were looking at.
 if (render_part == "body") {
-  _body();
+  color(colour_body_segment(segment)) _body();
 } else if (render_part == "mount") {
-  _mount();
+  color(colour_mount()) _mount();
 } else if (render_part == "cap") {
-  _cap();
+  color(colour_cap(segments)) _cap();
 } else if (render_part == "assembly") {
   // Shown seated: joint_neck() is authored pre-rotated, so the body's nominal
   // orientation is the locked one. To fit it, turn the body back by
   // lock_sweep_angle, drop it in, then turn it forward to here.
-  _mount();
+  color(colour_mount()) _mount();
   translate([0, 0, mount_thickness]) _body_all();
-  translate([0, 0, mount_thickness + _body_height - cap_skirt_height]) _cap();
+  translate([0, 0, mount_thickness + _body_height - cap_skirt_height])
+    color(colour_cap(segments)) _cap();
 } else if (render_part == "all") {
   _body_all();
   // Raised so the downward spigot clears z = 0 in the laid-out view.
-  translate([_top_x / 2 + mount_size[0] / 2 + 40, 0, _drop_below_flange]) _mount();
-  translate([0, _top_y / 2 + _cap_outer_y / 2 + 40, 0]) _cap();
+  translate([_top_x / 2 + mount_size[0] / 2 + 40, 0, _drop_below_flange])
+    color(colour_mount()) _mount();
+  translate([0, _top_y / 2 + _cap_outer_y / 2 + 40, 0])
+    color(colour_cap(segments)) _cap();
 } else {
   assert(false, str("pellet_hopper: unknown render_part: ", render_part));
 }

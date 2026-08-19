@@ -27,7 +27,7 @@ module hopper_body(
   top_y,
   bin_height,
   funnel_height,
-  throat = 44,
+  throat = 58,
   min_wall = 3,
   throat_radius = 6,
   funnel_radius = 8,

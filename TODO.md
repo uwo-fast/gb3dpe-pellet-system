@@ -102,16 +102,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 - [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
       globals through `include <>`, one concern per file, each previewing
       standalone, with asserts throughout.
-- [ ] **Assign colours, one per printed part.** Nothing in `cad/` calls
-      `color()` today. The `assembly` and `all` views should colour by *printed
-      part* — the mount, each body segment, the cap — so it reads at a glance
-      what comes off the bed as one piece. A single part must be exactly one
-      colour: never a different colour per feature within a part, because that
-      reads as a multi-material print. Colours may repeat between parts. Note
-      the body is segmented now, so `_body_all()` renders several parts and each
-      needs its own.
-- [ ] Add an `examples/` directory — the one part of the restructure not done.
-      House convention is one file per configuration, `use <>`-ing the library.
+- [x] **Colours assigned, one per printed part.** `hopper_colours.scad` hands
+      out slots bottom-up through the stack so touching parts differ. No part
+      module contains a `color()` call at all — parts are coloured only at the
+      driver's call sites, so one cannot end up with two colours by
+      construction rather than by discipline.
+- [x] **`examples/` added** — one file per configuration, driving the modules
+      directly rather than through the Customizer, and covered by `just check`
+      so they cannot drift from the API they demonstrate.
 
 ## Firmware — `uwo-fast/Prusa-Firmware-GB3DPE`
 

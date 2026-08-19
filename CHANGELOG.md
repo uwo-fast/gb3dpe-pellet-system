@@ -54,6 +54,9 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Operating procedures (first flash, PINDA jog test) rescued out of untracked
   scratch into `docs/operations/`.
 
+- Preview colours, one per printed part, assigned bottom-up through the stack.
+- `examples/`, covered by the gate.
+
 ### Notes
 
 - The restructure is geometry-neutral. All three parts at all three capacity

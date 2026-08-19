@@ -75,6 +75,17 @@ check:
         echo ok
       fi
     done
+    # Examples set their own $fn as any consumer should, so the gate overrides
+    # it -- at their preview quality a sweep takes minutes and proves nothing
+    # extra, since this checks that they compile and their asserts hold.
+    for f in examples/*.scad; do
+      printf '  %-5s %-8s ' "ex" "$(basename "$f" .scad)"
+      out=$(openscad --hardwarnings -o "$tmp/ex.stl" -D '$fn={{check_facets}}' "$f" 2>&1)
+      rc=$?
+      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
+        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'; fail=1
+      else echo ok; fi
+    done
     exit $fail
 
 # Render every part at every size to build/ as STL.
