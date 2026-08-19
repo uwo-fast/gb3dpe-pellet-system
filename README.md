@@ -1,40 +1,58 @@
-# Project Name
+# GB3DPE Pellet System
 
-> One sentence describing what this project is.
+> Bulk pellet feed system, mounts, and operating docs for the GreenBoy3D pellet
+> extruder running on a Prusa MK3S.
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Contributions welcome](https://img.shields.io/badge/Contributions-welcome-brightgreen.svg)](https://github.com/uwo-fast/.github/blob/main/CONTRIBUTING.md)
-[![OSHWA](https://img.shields.io/badge/OSHWA-not_certified-lightgrey.svg)](https://certification.oshwa.org/)
-[![OSF](https://img.shields.io/badge/OSF-project-blue.svg)](https://osf.io/)
-[![Paper](https://img.shields.io/badge/Paper-unsubmitted-red.svg)](https://doi.org/)
-[![Appropedia](https://img.shields.io/badge/Appropedia-lit_review-lightblue.svg)](https://www.appropedia.org/Category:FAST_literature_reviews)
-
-<!-- Keep only the badges that apply. Point the OSHWA, OSF, Paper, and Appropedia
-     links at this project's own records, or remove the ones it doesn't have. -->
 
 ## Overview
 
-Describe the problem this solves, how it works at a high level, and its current
-status.
+We run a [GreenBoy3D Pellet Extruder V1](docs/greenboy3d-extruder.md) on a Prusa
+MK3S, printing from virgin pellets and from shredded regrind. The machine works
+and prints well, but the extruder's own hopper is a 43 × 40 × 45 mm cup holding
+roughly 20–30 g of pellets — under an hour of printing before it needs
+refilling by hand.
+
+This repository holds the bulk feed system that fixes that: a roof-mounted
+hopper on the printer enclosure, gravity-feeding the toolhead through the
+extruder's supplied conveyor tube, matching the feed architecture the stock
+hopper already uses. It also collects the mounts and operating documentation
+for the extruder that GreenBoy3D does not supply.
+
+Firmware lives separately, in
+[`uwo-fast/Prusa-Firmware-GB3DPE`](https://github.com/uwo-fast/Prusa-Firmware-GB3DPE).
+
+**Status: early.** The hopper CAD in `cad/hopper/` is an imported first draft
+under active review — see [the design review](docs/hopper-design-review.md) for
+what does and does not hold up, and [`TODO.md`](TODO.md) for what is being
+worked. Do not print from it yet.
 
 ## Repository layout
 
-Use only the directories your project needs — this is a convention, not a
-requirement. Common ones across FAST projects:
-
-- `firmware/` — microcontroller / embedded code
-- `hardware/` — electronics: schematics and PCB layouts (e.g. KiCad)
-- `cad/` — mechanical CAD source and exports (OpenSCAD, FreeCAD, STL, STEP)
-- `software/` — host-side software (desktop app, analysis, GUI)
-- `docs/` — documentation, build and assembly instructions, bill of materials
+- `cad/hopper/` — parametric bulk hopper: body, roof mount, and cap
+- `docs/` — extruder hardware reference and design review
 
 ## Getting started
 
-How to build, install, or run the project from a clean checkout.
+Requires [OpenSCAD](https://openscad.org/) (tested on 2021.01) and
+[just](https://github.com/casey/just).
+
+```sh
+just            # list recipes
+just check      # compile every part at every size, warnings are errors
+just render     # write STLs for every part and size to build/
+just edit       # open the assembly in the OpenSCAD GUI Customizer
+```
+
+The design is driven from `cad/hopper/pellet_hopper.scad`. Pick a part with
+`render_part` and a capacity preset with `hopper_size`; presets are defined in
+`cad/hopper/hopper_sizes.scad`.
 
 ## Documentation
 
-Link to the detailed documentation (in `docs/` or elsewhere) when it exists.
+- [GreenBoy3D Pellet Extruder V1 — hardware reference](docs/greenboy3d-extruder.md)
+- [Review of the imported hopper design](docs/hopper-design-review.md)
 
 ## Contributing
 
@@ -49,6 +67,9 @@ repository** button on GitHub, or see [`CITATION.cff`](CITATION.cff).
 ## License
 
 Released under the [GPL-3.0](LICENSE) license.
+
+GreenBoy3D is an independent vendor; this project is not affiliated with
+GreenBoy3D or Prusa Research. Vendor CAD files are not redistributed here.
 
 ## Contact
 

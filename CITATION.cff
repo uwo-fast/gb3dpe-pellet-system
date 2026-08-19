@@ -1,16 +1,13 @@
-# Replace the placeholders below before publishing — GitHub renders this as the
-# repository's "Cite this repository" entry. The title, author names, and url are
-# the values most likely to be wrong if left unedited.
 cff-version: 1.2.0
 message: "If you use this project, please cite it using the metadata below."
-title: "Project Name"
+title: "GB3DPE Pellet System"
+abstract: >-
+  Bulk pellet feed system, mounts, and operating documentation for the
+  GreenBoy3D pellet extruder running on a Prusa MK3S.
 type: software
 authors:
-  - family-names: "Last"
-    given-names: "First"
-    # orcid: "https://orcid.org/0000-0000-0000-0000"
+  - family-names: "Brooks"
+    given-names: "Cameron"
 version: "0.1.0"
-# date-released: "YYYY-MM-DD"
-url: "https://github.com/uwo-fast/repo-name"
+url: "https://github.com/uwo-fast/gb3dpe-pellet-system"
 license: GPL-3.0-or-later
-# doi: "10.xxxx/xxxxx"
