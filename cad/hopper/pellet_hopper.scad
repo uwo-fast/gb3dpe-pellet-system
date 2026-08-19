@@ -12,12 +12,12 @@ hopper_size = 0; // [0:2.5 kg,1:5 kg,2:10 kg]
 // SIZE
 // ============================================================
 
-P = HOPPERS[hopper_size];
+P = hopper_preset(hopper_size);
 
-top_x = P[1];
-top_y = P[2];
-bin_h = P[3];
-funnel_h = P[4];
+top_x = hopper_top_x(P);
+top_y = hopper_top_y(P);
+bin_h = hopper_bin_height(P);
+funnel_h = hopper_funnel_height(P);
 
 // ============================================================
 // HOPPER
