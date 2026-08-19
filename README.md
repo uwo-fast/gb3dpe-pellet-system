@@ -31,7 +31,7 @@ worked. Do not print from it yet.
 ## Repository layout
 
 - `cad/hopper/` — parametric bulk hopper: body, roof mount, and cap
-- `docs/` — extruder hardware reference and design review
+- `docs/` — extruder hardware reference, design notes, and operating procedures
 - `scripts/` — geometry regression harness
 - `tests/` — committed geometry baseline
 
@@ -92,6 +92,8 @@ change.
 - [GreenBoy3D Pellet Extruder V1 — hardware reference](docs/greenboy3d-extruder.md)
 - [Design notes](docs/design-notes.md) — why the geometry is the way it is, and where the numbers came from
 - [Review of the imported hopper design](docs/hopper-design-review.md)
+- [First flash and bring-up](docs/operations/first-flash-checklist.md)
+- [PINDA probe-offset jog test](docs/operations/probe-offset-jog-test.md)
 
 ## Contributing
 

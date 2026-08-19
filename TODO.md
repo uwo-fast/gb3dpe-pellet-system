@@ -127,11 +127,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       quotes a 12 mm³/s flow ceiling from the abandoned 8000 steps/mm config;
       the landed 1187 steps/mm gives roughly 81 mm³/s. Proposed on the same
       branch.
-- [ ] **Rescue `working.tmp/`.** It is caught by `*.tmp` in `.gitignore`, so the
-      research corpus, the jog-test protocol and the first-flash checklist exist
-      only on one machine. The hardware notes are now in
-      [`docs/greenboy3d-extruder.md`](docs/greenboy3d-extruder.md); the
-      operational checklists still need a home.
+- [x] **Rescued `working.tmp/`.** The hardware notes are in
+      [`docs/greenboy3d-extruder.md`](docs/greenboy3d-extruder.md) and the two
+      operational procedures are in [`docs/operations/`](docs/operations/),
+      with their stale numbers corrected to the landed config. Deliberately not
+      brought over: GreenBoy3D's own STL/STEP files, whose licence is unstated
+      and which ship with the kit, and a shallow clone of an unrelated fork.
 
 ## Admin
 
