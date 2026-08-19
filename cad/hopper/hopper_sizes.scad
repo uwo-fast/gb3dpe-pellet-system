@@ -11,27 +11,29 @@
 //   0  name           label used in the customizer and in exported file names
 //   1  top_x          outside width of the straight storage section
 //   2  top_y          outside depth of the straight storage section
-//   3  bin_height     height of the straight storage section
 //
-// Funnel height is NOT stored: it is solved from the funnel angle and the
+// Neither bin height nor funnel height is stored: it is solved from the funnel angle and the
 // footprint by hopper_funnel.scad. Capacity therefore falls out of the geometry
 // rather than dictating it, which is the whole point -- the imported presets
 // got their names by fixing capacity first and letting the wall angle be
 // whatever was left over, which was 27 to 36 degrees at the corner.
 //
-// The names are the imported footprints, kept so the presets stay recognisable.
-// They no longer describe capacity; the driver echoes the real figure.
+// the funnel from the wall angle, the bin from whatever height is left in the
+// segments. Only the footprint is a free choice, so only the footprint is here.
+//
+// 202 x 202 is the largest that fits an MK3S once the cap's clearance and wall
+// are added: 202 + 7.2 = 209.2 against a 210 mm bed.
 
-HOPPER_2K5 = ["220x180", 220, 180, 75];
-HOPPER_5K = ["300x240", 300, 240, 85];
-HOPPER_10K = ["390x300", 390, 300, 100];
+HOPPER_SMALL = ["150x150", 150, 150];
+HOPPER_MEDIUM = ["175x175", 175, 175];
+HOPPER_LARGE = ["202x202", 202, 202];
 
-hopper_size_registry = [HOPPER_2K5, HOPPER_5K, HOPPER_10K];
+hopper_size_registry = [HOPPER_SMALL, HOPPER_MEDIUM, HOPPER_LARGE];
 
 function hopper_name(type) = type[0]; //! Label for the customizer and exported file names
 function hopper_top_x(type) = type[1]; //! Outside width of the straight storage section
 function hopper_top_y(type) = type[2]; //! Outside depth of the straight storage section
-function hopper_bin_height(type) = type[3]; //! Height of the straight storage section
+
 
 /**
   * The preset at `index` in the registry. Asserts rather than returning undef,

@@ -20,30 +20,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       mass-flow angle depends on the wall finish as much as the material. Also
       measure the regrind bulk density; 0.35 kg/L is an estimate and it drives
       every capacity figure.
-- [ ] **Solve printability on the MK3S** (250 × 210 × 210) — now the binding
-      constraint, and it is much tighter than it looked. Holding the corner at
-      the target angle makes the imported footprints far too tall to print:
-
-      | Footprint | Body height @60° | @70° |
-      | --------- | ---------------- | ---- |
-      | 220 × 180 | 296 mm           | 409 mm |
-      | 300 × 240 | 392 mm           | 556 mm |
-      | 390 × 300 | 501 mm           | 719 mm |
-
-      Against a 210 mm envelope, nothing fits. The largest single-piece hopper
-      that does fit holds **1.50 kg of virgin pellets** (184 × 184 mm footprint)
-      or **0.47 kg of regrind** (132 × 132 mm) — against a 2.5 kg nameplate that
-      was never achievable at a workable wall angle.
-
-      Splitting the body into two stacked segments changes the picture
-      completely: **6.31 kg virgin / 2.69 kg regrind** at a 202 × 202 mm
-      footprint. Splitting looks close to mandatory rather than optional.
-      Set `require_printable = true` once the presets are re-derived, so the
-      gate enforces it.
-- [ ] **Re-derive the capacity presets** once the split decision is made. The
-      preset names are currently footprints (`220x180`), not capacities,
-      because capacity now depends on the funnel angle and the feedstock and is
-      reported on render rather than promised in the name.
+- [x] **Printability solved.** The body splits into bolted segments, so no part
+      exceeds the MK3S envelope. `require_printable` is now on by default, so the
+      gate enforces it rather than reporting it.
+- [x] **Capacity presets re-derived.** Presets are footprints only; the funnel
+      comes from the wall angle and the bin from whatever height the segments
+      leave. At 202 x 202 in two segments that is **3.03 kg regrind / 5.38 kg
+      virgin** — against a 20-30 g stock cup, roughly 100-200x, or 15-24 hours of
+      printing per fill.
 - [ ] **Design the downstream adapter.** Nothing connects the far end of the
       hose to the toolhead. Needs a part that replaces or seats into the vendor
       hopper cap (43.22 × 54.30 × 6.99 mm, two Ø7.2 mm features). Its geometry
@@ -100,9 +84,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       sensing.
 - [ ] Seal and latch the cap — the current slip fit does nothing to keep
       pellets dry.
-- [ ] Hand-calculate the flange and wall loading for the largest preset we keep,
-      and record the safety factor. 3 mm walls and four M4 bolts currently carry
-      up to 10 kg with no analysis behind them.
+- [ ] Hand-calculate the loading and record a safety factor. Now covers three
+      things with no analysis behind them: the roof flange and its four M4s, the
+      wall under a 3 kg column, and the split joint's six M4s carrying the whole
+      upper segment plus its contents.
+- [ ] Choose and specify a gasket for the split joint. The flanges are flat and
+      bolted at six points; nothing is specified to seal flake dust between them.
 - [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
       globals through `include <>`, one concern per file, each previewing
       standalone, with asserts throughout.

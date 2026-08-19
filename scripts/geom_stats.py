@@ -18,7 +18,7 @@ from pathlib import Path
 
 SCAD = Path("cad/hopper/pellet_hopper.scad")
 PARTS = ["body", "mount", "cap"]
-SIZES = {0: "220x180", 1: "300x240", 2: "390x300"}
+SIZES = {0: "150x150", 1: "175x175", 2: "202x202"}
 BASELINE = Path("tests/geometry-baseline.json")
 
 

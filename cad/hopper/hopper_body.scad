@@ -4,6 +4,7 @@
 
 use <hopper_funnel.scad>
 use <hopper_joint.scad>
+use <hopper_split.scad>
 use <hopper_util.scad>
 
 /**
@@ -30,9 +31,21 @@ module hopper_body(
   min_wall = 3,
   throat_radius = 6,
   funnel_radius = 8,
-  neck_transition_height = 10
+  neck_transition_height = 10,
+  segments = 1,
+  segment = 0,
+  flange_width = 12,
+  flange_thickness = 6,
+  flange_inset = 6,
+  flange_bolt_diameter = 4.5,
+  flange_dowel_diameter = 4
 ) {
   assert(min_wall > 0, str("hopper_body: min_wall must be > 0, got: ", min_wall));
+  assert(segments >= 1, str("hopper_body: segments must be >= 1, got: ", segments));
+  assert(
+    segment >= 0 && segment < segments,
+    str("hopper_body: segment must be 0..", segments - 1, ", got: ", segment)
+  );
   assert(
     top_x > throat && top_y > throat,
     str("hopper_body: top_x and top_y must exceed throat, got: ", [top_x, top_y, throat])
@@ -90,6 +103,52 @@ module hopper_body(
     )
   );
 
+  _height = _bin_z + bin_height;
+  _lo = split_z(_height, segments, segment);
+  _hi = split_z(_height, segments, segment + 1);
+
+  // Every cut has to land where the body is rectangular, so the two flanges
+  // share a section. Below the taper it is round and there is nothing to bolt.
+  assert(
+    segments == 1 || _lo == 0 || _lo > _throat_z,
+    str(
+      "hopper_body: a cut at ", _lo, " falls in the neck or its transition, ",
+      "below ", _throat_z, ", where the section is round. Use fewer segments ",
+      "or a taller body."
+    )
+  );
+
+  module _flange_at(z, up) {
+    _sec = funnel_body_section(
+      throat, top_x, top_y, throat_radius, funnel_radius,
+      _throat_z - 0.5, funnel_height, z
+    );
+    translate([0, 0, z]) split_flange(
+      span=[_sec[0], _sec[1]],
+      radius=_sec[2],
+      cavity=[_sec[0] - 2 * _inset, _sec[1] - 2 * _inset],
+      cavity_radius=_sec[2] - _inset,
+      width=flange_width,
+      thickness=flange_thickness,
+      bolt_diameter=flange_bolt_diameter,
+      bolt_inset=flange_inset,
+      dowel_diameter=flange_dowel_diameter,
+      up=up
+    );
+  }
+
+  intersection() {
+    union() {
+      if (segment > 0) _flange_at(_lo, true);
+      if (segment < segments - 1) _flange_at(_hi, false);
+      _whole();
+    }
+    // Slab for this segment. Generous in plan; the body bounds it.
+    translate([0, 0, (_lo + _hi) / 2])
+      cube([4 * top_x, 4 * top_y, _hi - _lo], center = true);
+  }
+
+  module _whole()
   difference() {
     union() {
       // Neck comes from the library pre-rotated into its seated orientation.

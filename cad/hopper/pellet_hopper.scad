@@ -29,7 +29,7 @@ render_part = "assembly"; // [body,mount,cap,assembly,all]
 
 // Footprint preset. Capacity is not fixed by this: it falls out of the
 // footprint, the funnel angle and the feedstock, and is echoed on render.
-hopper_size = 0; // [0:220x180,1:300x240,2:390x300]
+hopper_size = 2; // [0:150x150,1:175x175,2:202x202]
 
 /* [Feedstock] */
 
@@ -143,13 +143,33 @@ cap_wall = 3;
 cap_skirt_height = 16;
 cap_top_thickness = 3;
 
+/* [Segments] */
+
+// The body is taller than the printer, so it is cut into segments that bolt
+// together. Bin height is whatever is left over once the funnel has taken its
+// share, so this is what actually sets capacity.
+segments = 2; // [1:1:4]
+// Which one to emit. "assembly" and "all" show every segment regardless.
+segment = 0; // [0:1:3]
+// Usable Z per segment, a little under the build envelope.
+segment_height = 205;
+
+/* [Split Joint] */
+
+flange_width = 12;
+flange_thickness = 6;
+// How far the fixings sit in from the flange edge.
+flange_inset = 6;
+flange_bolt_diameter = 4.5;
+flange_dowel_diameter = 4;
+
 /* [Build Volume] */
 
 // Printer envelope used for the fit report. Original Prusa i3 MK3S is
 // 250 x 210 x 210 mm and is the largest printer available here.
 build_volume = [250, 210, 210];
 // Turn on to make a part that does not fit the envelope a hard error.
-require_printable = false;
+require_printable = true;
 
 /* [Quality] */
 
@@ -163,7 +183,7 @@ $fn = $preview ? preview_facets : render_facets;
 _preset = hopper_preset(hopper_size);
 _top_x = hopper_top_x(_preset);
 _top_y = hopper_top_y(_preset);
-_bin_height = hopper_bin_height(_preset);
+
 
 _feedstock = feedstock(feedstock_type);
 _min_angle = feedstock_min_funnel_angle(_feedstock);
@@ -180,6 +200,20 @@ assert(
 // The angle is the input; the drop is solved from it.
 _funnel_height = funnel_height_for_angle(_top_x, _top_y, throat, funnel_angle);
 _inset = funnel_wall_inset(min_wall, funnel_angle);
+
+// Bin height is the remainder: the segments give a total height, the funnel
+// takes what its angle demands, and storage gets the rest. Capacity is
+// therefore an output of the flow requirement, never an input competing with it.
+_bin_height = segments * segment_height - lock_height - neck_transition_height - _funnel_height;
+
+assert(
+  _bin_height > 0,
+  str(
+    "pellet_hopper: a ", funnel_angle, " degree funnel on a ", _top_x, "x", _top_y,
+    " footprint needs ", _funnel_height, " mm of drop, leaving no room for storage in ",
+    segments, " x ", segment_height, " mm. Use more segments or a smaller footprint."
+  )
+);
 
 // One joint spec, shared by both halves so they cannot drift apart.
 _neck_od = 2 * (lock_interface_radius - lock_allowance / 2);
@@ -239,6 +273,11 @@ _body_height = lock_height + neck_transition_height + _funnel_height + _bin_heig
 _drop_below_flange = roof_thickness + roof_locator_extra + transition_height + spigot_length;
 _cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
 
+assert(
+  segment < segments,
+  str("pellet_hopper: segment must be 0..", segments - 1, ", got: ", segment)
+);
+
 _volume_l = hopper_volume_l(
   _top_x - 2 * _inset, _top_y - 2 * _inset, throat - 2 * _inset,
   _bin_height, _funnel_height
@@ -249,7 +288,11 @@ _capacity_kg = hopper_capacity_kg(_volume_l, feedstock_bulk_density(_feedstock))
 _cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
 _part_x = max(_cap_outer_x, mount_size[0]);
 _part_y = max(_cap_outer_y, mount_size[1]);
-_part_z = max(_body_height, _drop_below_flange + mount_thickness + lock_height);
+// The largest PART, not the largest assembly: a segment, not the whole body.
+_part_z = max(
+  segments > 1 ? segment_height : _body_height,
+  _drop_below_flange + mount_thickness + lock_height
+);
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
 echo(str(
@@ -286,7 +329,7 @@ assert(
   )
 );
 
-module _body() {
+module _body(which = undef) {
   hopper_body(
     joint=_joint,
     top_x=_top_x,
@@ -297,8 +340,20 @@ module _body() {
     min_wall=min_wall,
     throat_radius=throat_radius,
     funnel_radius=funnel_radius,
-    neck_transition_height=neck_transition_height
+    neck_transition_height=neck_transition_height,
+    segments=segments,
+    segment=is_undef(which) ? segment : which,
+    flange_width=flange_width,
+    flange_thickness=flange_thickness,
+    flange_inset=flange_inset,
+    flange_bolt_diameter=flange_bolt_diameter,
+    flange_dowel_diameter=flange_dowel_diameter
   );
+}
+
+// Every segment, each already at its true height.
+module _body_all() {
+  for (i = [0:segments - 1]) _body(which = i);
 }
 
 module _mount() {
@@ -344,10 +399,10 @@ if (render_part == "body") {
   // orientation is the locked one. To fit it, turn the body back by
   // lock_sweep_angle, drop it in, then turn it forward to here.
   _mount();
-  translate([0, 0, mount_thickness]) _body();
+  translate([0, 0, mount_thickness]) _body_all();
   translate([0, 0, mount_thickness + _body_height - cap_skirt_height]) _cap();
 } else if (render_part == "all") {
-  _body();
+  _body_all();
   // Raised so the downward spigot clears z = 0 in the laid-out view.
   translate([_top_x / 2 + mount_size[0] / 2 + 40, 0, _drop_below_flange]) _mount();
   translate([0, _top_y / 2 + _cap_outer_y / 2 + 40, 0]) _cap();

@@ -13,7 +13,7 @@ geom_facets := "64"
 build  := "build"
 
 # Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
-sizes := "0:220x180 1:300x240 2:390x300"
+sizes := "0:150x150 1:175x175 2:202x202"
 parts := "body mount cap"
 
 default:
@@ -34,7 +34,7 @@ check:
     for s in {{sizes}}; do
       i=${s%%:*}; label=${s##*:}
       for p in {{parts}}; do
-        printf '  %-5s %-6s ' "$p" "$label"
+        printf '  %-5s %-8s ' "$p" "$label"
         out=$(openscad --hardwarnings -o "$tmp/$p.stl" \
                 -D "render_part=\"$p\"" -D "hopper_size=$i" \
                 -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
@@ -49,10 +49,21 @@ check:
         fi
       done
     done
+    # Every segment of the body at the default size: a cut that lands badly only
+    # shows up on the segment it lands on.
+    for g in 0 1; do
+      printf '  %-5s %-8s ' "seg$g" "default"
+      out=$(openscad --hardwarnings -o "$tmp/seg.stl" -D 'render_part="body"' \
+              -D "segment=$g" -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
+      rc=$?
+      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
+        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'; fail=1
+      else echo ok; fi
+    done
     # Composite views at one size only: they render the same solids again, so
     # sweeping every size buys nothing but minutes.
     for p in assembly all; do
-      printf '  %-5s %-6s ' "$p" "default"
+      printf '  %-5s %-8s ' "$p" "default"
       out=$(openscad --hardwarnings -o "$tmp/$p.stl" -D "render_part=\"$p\"" \
               -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
       rc=$?
