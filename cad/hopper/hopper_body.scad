@@ -1,295 +1,106 @@
-// ============================================================
-// HOPPER BODY
-// Four-tab bayonet locking neck
-// ============================================================
+// Hopper body: storage bin, funnel, and the bayonet neck beneath it.
+// GPL-3.0-or-later
+// Units: mm
 
-// ============================================================
-// BAYONET TAB
-// ============================================================
+use <hopper_joint.scad>
+use <hopper_util.scad>
 
-module bayonet_tab(a) {
+/**
+ * The hopper body, sitting on z = 0 at the bottom of its bayonet neck.
+ *
+ * Built as one outer solid differenced by one inner cavity. Both are lofted
+ * through the same z stations, so the two surfaces stay parallel and the wall
+ * keeps a constant thickness along each face.
+ *
+ * Note that `wall` is a HORIZONTAL inset. On a face sloped at theta from
+ * horizontal the material measured perpendicular to the surface is
+ * wall * sin(theta), so the funnel is thinner than the number suggests. See
+ * docs/hopper-design-review.md; this is preserved here deliberately and is
+ * fixed alongside the funnel-angle work.
+ */
+module hopper_body(
+  joint,
+  top_x,
+  top_y,
+  bin_height,
+  funnel_height,
+  throat = 44,
+  wall = 3,
+  throat_radius = 4,
+  funnel_radius = 8,
+  neck_transition_height = 10
+) {
+  assert(wall > 0, str("hopper_body: wall must be > 0, got: ", wall));
+  assert(
+    throat > 2 * wall,
+    str("hopper_body: throat (", throat, ") must exceed 2 * wall (", 2 * wall, ")")
+  );
+  assert(
+    top_x > throat && top_y > throat,
+    str("hopper_body: top_x and top_y must exceed throat, got: ", [top_x, top_y, throat])
+  );
+  assert(funnel_height > 0, str("hopper_body: funnel_height must be > 0, got: ", funnel_height));
+  assert(bin_height > 0, str("hopper_body: bin_height must be > 0, got: ", bin_height));
 
-  rotate(
-    [
-      0,
-      0,
-      a,
-    ]
-  )
+  _neck_height = joint_neck_height(joint);
+  _bore = joint_bore_diameter(joint);
 
-    translate(
-      [
-        lock_neck_od / 2 - 0.2,
-        -lock_tab_w / 2,
-        lock_tab_z,
-      ]
-    )
+  // z stations, bottom up.
+  _throat_z = _neck_height + neck_transition_height;
+  _bin_z = _throat_z + funnel_height;
 
-      cube(
-        [
-          lock_tab_d + 0.2,
-          lock_tab_w,
-          lock_tab_h,
-        ]
-      );
-}
+  // Inner surfaces, inset horizontally by one wall.
+  _inner_x = top_x - 2 * wall;
+  _inner_y = top_y - 2 * wall;
+  _inner_throat = throat - 2 * wall;
 
-// ============================================================
-// HOPPER BODY
-// ============================================================
-
-module hopper_body() {
+  // A corner radius cannot follow the wall inward past zero, so it floors.
+  // The consequence is a sharper inside corner than outside, which is where a
+  // pellet bridge anchors.
+  _inner_throat_radius = max(throat_radius - wall, 0.8);
+  _inner_funnel_radius = max(funnel_radius - wall, 0.8);
 
   difference() {
-
     union() {
+      cylinder(h = _neck_height, d = joint_neck_od(joint));
+      joint_tabs_solid(joint);
 
-      // =================================================
-      // CIRCULAR LOCKING NECK
-      // =================================================
-
-      cylinder(
-        h=lock_neck_h,
-        d=lock_neck_od
-      );
-
-      // Four bayonet tabs
-      for (a = [0:90:270])
-
-        bayonet_tab(a);
-
-      // =================================================
-      // ROUND → SQUARE TRANSITION
-      // =================================================
-
-      hull() {
-
-        translate(
-          [
-            0,
-            0,
-            lock_neck_h - 0.5,
-          ]
-        )
-
-          cylinder(
-            h=1,
-            d=lock_neck_od
-          );
-
-        translate(
-          [
-            0,
-            0,
-            lock_neck_h + neck_transition_h - 0.5,
-          ]
-        )
-
-          rounded_box(
-            throat,
-            throat,
-            1,
-            throat_radius
-          );
+      // Round neck out to the square throat.
+      loft(_neck_height, _throat_z) {
+        circle(d = joint_neck_od(joint));
+        rounded_square(throat, throat, throat_radius);
       }
 
-      // =================================================
-      // MAIN FUNNEL
-      // =================================================
-
-      hull() {
-
-        translate(
-          [
-            0,
-            0,
-            lock_neck_h + neck_transition_h - 0.5,
-          ]
-        )
-
-          rounded_box(
-            throat,
-            throat,
-            1,
-            throat_radius
-          );
-
-        translate(
-          [
-            0,
-            0,
-            lock_neck_h + neck_transition_h + funnel_h - 0.5,
-          ]
-        )
-
-          rounded_box(
-            top_x,
-            top_y,
-            1,
-            funnel_radius
-          );
+      // Throat out to the full bin section.
+      loft(_throat_z, _bin_z) {
+        rounded_square(throat, throat, throat_radius);
+        rounded_square(top_x, top_y, funnel_radius);
       }
 
-      // =================================================
-      // STRAIGHT STORAGE SECTION
-      // =================================================
-
-      translate(
-        [
-          0,
-          0,
-          lock_neck_h + neck_transition_h + funnel_h,
-        ]
-      )
-
-        rounded_box(
-          top_x,
-          top_y,
-          bin_h,
-          funnel_radius
-        );
+      translate([0, 0, _bin_z]) rounded_box(top_x, top_y, bin_height, funnel_radius);
     }
 
-    // ====================================================
-    // INTERNAL PELLET PATH
-    // ====================================================
+    // Pellet path, matching the outer stations one wall in.
+    translate([0, 0, -1]) cylinder(h = _neck_height + 2, d = _bore);
 
-    // Circular passage through bayonet neck
-
-    translate(
-      [
-        0,
-        0,
-        -1,
-      ]
-    )
-
-      cylinder(
-        h=lock_neck_h + 2,
-        d=lock_bore_d
-      );
-
-    // ====================================================
-    // INTERNAL ROUND → SQUARE TRANSITION
-    // ====================================================
-
-    hull() {
-
-      translate(
-        [
-          0,
-          0,
-          lock_neck_h - 1,
-        ]
-      )
-
-        cylinder(
-          h=2,
-          d=lock_bore_d
-        );
-
-      translate(
-        [
-          0,
-          0,
-          lock_neck_h + neck_transition_h - 0.5,
-        ]
-      )
-
-        rounded_box(
-          inner_throat,
-          inner_throat,
-          1,
-          inner_throat_r
-        );
+    // The lower section is thickened because it is buried inside the bore
+    // above, where extra thickness cannot reach an exposed surface.
+    loft(_neck_height, _throat_z, slab0 = 2) {
+      circle(d = _bore);
+      rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
     }
 
-    // ====================================================
-    // FUNNEL CAVITY
-    // ====================================================
-
-    hull() {
-
-      translate(
-        [
-          0,
-          0,
-          lock_neck_h + neck_transition_h - 0.5,
-        ]
-      )
-
-        rounded_box(
-          inner_throat,
-          inner_throat,
-          1,
-          inner_throat_r
-        );
-
-      translate(
-        [
-          0,
-          0,
-          lock_neck_h + neck_transition_h + funnel_h - 0.5,
-        ]
-      )
-
-        rounded_box(
-          inner_x,
-          inner_y,
-          1,
-          inner_funnel_r
-        );
+    loft(_throat_z, _bin_z) {
+      rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
+      rounded_square(_inner_x, _inner_y, _inner_funnel_radius);
     }
 
-    // ====================================================
-    // STORAGE CAVITY
-    // ====================================================
-
-    translate(
-      [
-        0,
-        0,
-        lock_neck_h + neck_transition_h + funnel_h - 0.5,
-      ]
-    )
-
-      rounded_box(
-        inner_x,
-        inner_y,
-        bin_h + 2,
-        inner_funnel_r
-      );
+    // Open to the top: the cap closes it.
+    translate([0, 0, _bin_z - 0.5])
+      rounded_box(_inner_x, _inner_y, bin_height + 2, _inner_funnel_radius);
   }
 }
 
-// ============================================================
-// CAP
-// ============================================================
-
-module hopper_cap() {
-
-  difference() {
-
-    rounded_box(
-      cap_outer_x,
-      cap_outer_y,
-      cap_total_h,
-      funnel_radius + cap_wall
-    );
-
-    translate(
-      [
-        0,
-        0,
-        -1,
-      ]
-    )
-
-      rounded_box(
-        cap_inner_x,
-        cap_inner_y,
-        cap_h + 1,
-        funnel_radius + cap_clearance
-      );
-  }
-}
+// Standalone preview.
+$fn = $preview ? 48 : 120;
+hopper_body(joint = hopper_joint(), top_x = 220, top_y = 180, bin_height = 75, funnel_height = 80);

@@ -40,6 +40,20 @@ check:
         fi
       done
     done
+    # Composite views at one size only: they render the same solids again, so
+    # sweeping every size buys nothing but minutes.
+    for p in assembly all; do
+      printf '  %-5s %-6s ' "$p" "default"
+      out=$(openscad --hardwarnings -o "$tmp/$p.stl" -D "render_part=\"$p\"" {{hopper}} 2>&1)
+      rc=$?
+      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
+        echo FAIL
+        grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'
+        fail=1
+      else
+        echo ok
+      fi
+    done
     exit $fail
 
 # Render every part at every size to build/ as STL.
