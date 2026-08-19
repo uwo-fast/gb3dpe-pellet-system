@@ -120,6 +120,14 @@ is geometrically valid but has **no detent or anti-rotation feature** — nothin
 resists the quarter-turn backing off under vibration, with up to 10 kg of
 pellets hanging on it.
 
+### The coupling has four identical locked positions
+
+Four evenly spaced tabs give the joint fourfold rotational symmetry, so it
+seats just as happily at 0, 90, 180 and 270 degrees. The bin hanging off it is
+rectangular — 390 x 300 mm at the largest preset — so half those positions
+mount it crosswise on the roof, and nothing in the geometry resists or even
+signals it. A keyed pattern with one uneven gap fixes it.
+
 ### No operational features
 
 No shutoff gate, so the feed cannot be stopped to service the hose or change
