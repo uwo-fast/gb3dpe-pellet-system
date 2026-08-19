@@ -12,11 +12,19 @@
 //   1  top_x          outside width of the straight storage section
 //   2  top_y          outside depth of the straight storage section
 //   3  bin_height     height of the straight storage section
-//   4  funnel_height  height of the tapered section beneath it
+//
+// Funnel height is NOT stored: it is solved from the funnel angle and the
+// footprint by hopper_funnel.scad. Capacity therefore falls out of the geometry
+// rather than dictating it, which is the whole point -- the imported presets
+// got their names by fixing capacity first and letting the wall angle be
+// whatever was left over, which was 27 to 36 degrees at the corner.
+//
+// The names are the imported footprints, kept so the presets stay recognisable.
+// They no longer describe capacity; the driver echoes the real figure.
 
-HOPPER_2K5 = ["2.5 kg", 220, 180, 75, 80];
-HOPPER_5K = ["5 kg", 300, 240, 85, 100];
-HOPPER_10K = ["10 kg", 390, 300, 100, 110];
+HOPPER_2K5 = ["220x180", 220, 180, 75];
+HOPPER_5K = ["300x240", 300, 240, 85];
+HOPPER_10K = ["390x300", 390, 300, 100];
 
 hopper_size_registry = [HOPPER_2K5, HOPPER_5K, HOPPER_10K];
 
@@ -24,7 +32,6 @@ function hopper_name(type) = type[0]; //! Label for the customizer and exported 
 function hopper_top_x(type) = type[1]; //! Outside width of the straight storage section
 function hopper_top_y(type) = type[2]; //! Outside depth of the straight storage section
 function hopper_bin_height(type) = type[3]; //! Height of the straight storage section
-function hopper_funnel_height(type) = type[4]; //! Height of the tapered section beneath it
 
 /**
   * The preset at `index` in the registry. Asserts rather than returning undef,

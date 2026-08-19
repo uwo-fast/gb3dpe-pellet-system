@@ -1,6 +1,9 @@
 # Review of the imported hopper design
 
 Review of `cad/hopper/` as imported in commit `f59360a`, before any changes.
+Kept as the record of what was imported; it is not updated as items are fixed.
+Progress against it is tracked in [`TODO.md`](../TODO.md). Findings 1 and the
+thin-wall item below are addressed; findings 2, 3 and 4 are open.
 Numbers below are measured from the imported source and from STLs rendered off
 it, not estimated. Actions are tracked in [`TODO.md`](../TODO.md).
 

@@ -33,6 +33,18 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   reversed range reports only that, exits 0, and iterates backwards instead of
   empty.
 
+- Funnel wall angle is an input rather than an accident. It is measured on the
+  diagonal corner, the drop is solved from it, and capacity is reported rather
+  than promised — the imported presets were named for a capacity that fixed the
+  angle at 27-36 degrees at the corner.
+- Feedstock is selectable between virgin pellets and regrind flake, carrying the
+  minimum workable funnel angle and the bulk density used to report capacity.
+- `wall` became `min_wall`: the least material anywhere, measured perpendicular
+  to the surface rather than horizontally. Inner corner radii now follow the
+  wall inward instead of clamping, which had been thinning the corner.
+- A build-volume fit report on every render, and an opt-in `require_printable`
+  assert.
+
 ### Notes
 
 - The restructure is geometry-neutral. All three parts at all three capacity

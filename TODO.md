@@ -5,22 +5,45 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 
 ## Hopper CAD — blocking
 
-- [ ] **Make funnel wall angle an explicit parameter** and solve capacity around
-      it, rather than letting it fall out of `top_x`/`top_y`/`throat`/`funnel_h`.
-      Target ≥60° from horizontal for virgin pellets, ≥70° for regrind, and
-      **measure it on the diagonal corner, not the faces** — the corner is
-      always the shallowest surface on a rectangular funnel and is what
-      actually bridges. Imported presets sit at 27–36° on the corner against
-      32–50° on the faces. Add an `assert()` so the geometry cannot silently
-      violate the target.
-- [ ] **Parameterise for both feedstocks.** We run virgin pellets *and* shredded
-      regrind. Regrind wants the steeper angle and has roughly half the bulk
-      density, so the capacity presets need a feedstock input rather than one
-      hardcoded density assumption.
-- [ ] **Solve printability on the MK3S** (250 × 210 × 210). Only the 2.5 kg body
-      and cap fit today; 5 kg and 10 kg do not. Either split the body into
-      bolted/bonded segments or drop the presets we cannot build. The MK3S is
-      the largest printer we have for the foreseeable future.
+- [x] **Funnel wall angle is now an explicit parameter**, measured on the
+      diagonal corner, with the drop solved from it and capacity falling out.
+      Asserted against the selected feedstock's minimum.
+- [x] **Both feedstocks are parameterised** — `hopper_feedstock.scad` carries the
+      minimum workable funnel angle and the bulk density for virgin pellets and
+      for regrind flake.
+- [x] **Wall thickness is now honest.** `min_wall` is the least material
+      anywhere, measured perpendicular to the surface, compensated on the
+      corner. Verified by probing the rendered mesh at the shallowest surface.
+- [ ] **Measure the wall friction angle of a printed surface** against both
+      feedstocks. The 60°/70° minimums in `hopper_feedstock.scad` are design
+      targets taken from general practice, not measurements, and the critical
+      mass-flow angle depends on the wall finish as much as the material. Also
+      measure the regrind bulk density; 0.35 kg/L is an estimate and it drives
+      every capacity figure.
+- [ ] **Solve printability on the MK3S** (250 × 210 × 210) — now the binding
+      constraint, and it is much tighter than it looked. Holding the corner at
+      the target angle makes the imported footprints far too tall to print:
+
+      | Footprint | Body height @60° | @70° |
+      | --------- | ---------------- | ---- |
+      | 220 × 180 | 296 mm           | 409 mm |
+      | 300 × 240 | 392 mm           | 556 mm |
+      | 390 × 300 | 501 mm           | 719 mm |
+
+      Against a 210 mm envelope, nothing fits. The largest single-piece hopper
+      that does fit holds **1.50 kg of virgin pellets** (184 × 184 mm footprint)
+      or **0.47 kg of regrind** (132 × 132 mm) — against a 2.5 kg nameplate that
+      was never achievable at a workable wall angle.
+
+      Splitting the body into two stacked segments changes the picture
+      completely: **6.31 kg virgin / 2.69 kg regrind** at a 202 × 202 mm
+      footprint. Splitting looks close to mandatory rather than optional.
+      Set `require_printable = true` once the presets are re-derived, so the
+      gate enforces it.
+- [ ] **Re-derive the capacity presets** once the split decision is made. The
+      preset names are currently footprints (`220x180`), not capacities,
+      because capacity now depends on the funnel angle and the feedstock and is
+      reported on render rather than promised in the name.
 - [ ] **Design the downstream adapter.** Nothing connects the far end of the
       hose to the toolhead. Needs a part that replaces or seats into the vendor
       hopper cap (43.22 × 54.30 × 6.99 mm, two Ø7.2 mm features). Its geometry

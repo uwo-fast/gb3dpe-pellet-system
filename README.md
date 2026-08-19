@@ -50,8 +50,21 @@ just edit       # open the assembly in the OpenSCAD GUI Customizer
 
 The design is driven from `cad/hopper/pellet_hopper.scad`, which holds every
 tunable parameter and hands them to the part modules. Pick a part with
-`render_part` and a capacity preset with `hopper_size`; presets are defined in
-`cad/hopper/hopper_sizes.scad`.
+`render_part`, a footprint with `hopper_size`, and what it will hold with
+`feedstock_type`.
+
+The funnel angle is an input, not a consequence. Set `funnel_angle` in degrees
+from horizontal and the drop is solved from it; capacity is then whatever falls
+out, and is echoed on every render along with a build-volume fit report. The
+angle is measured on the **diagonal corner**, which on a rectangular funnel runs
+further out than either flat face over the same drop and is therefore the
+shallowest surface and the one pellets bridge on. Each feedstock carries the
+shallowest angle it will still flow at, and a render below it is an error rather
+than a quiet under-performing hopper.
+
+Note that the presets are named for their footprint rather than a capacity. The
+imported design worked the other way round — capacity first, wall angle whatever
+was left — which is how it ended up at 27 to 36 degrees at the corner.
 
 Each of the other files under `cad/hopper/` defines one part or one concern and
 renders on its own, so you can open `hopper_mount.scad` directly and iterate on

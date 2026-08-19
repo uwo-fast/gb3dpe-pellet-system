@@ -2,6 +2,7 @@
 // GPL-3.0-or-later
 // Units: mm
 
+use <hopper_funnel.scad>
 use <hopper_joint.scad>
 use <hopper_util.scad>
 
@@ -12,11 +13,12 @@ use <hopper_util.scad>
  * through the same z stations, so the two surfaces stay parallel and the wall
  * keeps a constant thickness along each face.
  *
- * Note that `wall` is a HORIZONTAL inset. On a face sloped at theta from
- * horizontal the material measured perpendicular to the surface is
- * wall * sin(theta), so the funnel is thinner than the number suggests. See
- * docs/hopper-design-review.md; this is preserved here deliberately and is
- * fixed alongside the funnel-angle work.
+ * `min_wall` is the LEAST material anywhere, measured perpendicular to the
+ * surface. It is applied as a single horizontal inset sized on the funnel's
+ * corner -- the shallowest surface -- so nothing finishes thinner than asked.
+ * Flat faces and the vertical bin come out somewhat thicker. One inset also
+ * keeps every inner surface parallel to its outer, so the funnel meets the bin
+ * with no internal ledge for pellets to catch on.
  */
 module hopper_body(
   joint,
@@ -25,16 +27,12 @@ module hopper_body(
   bin_height,
   funnel_height,
   throat = 44,
-  wall = 3,
-  throat_radius = 4,
+  min_wall = 3,
+  throat_radius = 6,
   funnel_radius = 8,
   neck_transition_height = 10
 ) {
-  assert(wall > 0, str("hopper_body: wall must be > 0, got: ", wall));
-  assert(
-    throat > 2 * wall,
-    str("hopper_body: throat (", throat, ") must exceed 2 * wall (", 2 * wall, ")")
-  );
+  assert(min_wall > 0, str("hopper_body: min_wall must be > 0, got: ", min_wall));
   assert(
     top_x > throat && top_y > throat,
     str("hopper_body: top_x and top_y must exceed throat, got: ", [top_x, top_y, throat])
@@ -45,20 +43,51 @@ module hopper_body(
   _neck_height = joint_neck_height(joint);
   _bore = joint_bore_diameter(joint);
 
+  // The funnel's shallowest surface, and the inset that gives min_wall on it.
+  _corner_angle = funnel_corner_angle(top_x, top_y, throat, funnel_height);
+  _inset = funnel_wall_inset(min_wall, _corner_angle);
+
+  assert(
+    throat > 2 * _inset,
+    str(
+      "hopper_body: throat (", throat, ") must exceed twice the wall inset (",
+      2 * _inset, ") needed for min_wall ", min_wall, " at a ", _corner_angle,
+      " degree corner"
+    )
+  );
+
   // z stations, bottom up.
   _throat_z = _neck_height + neck_transition_height;
   _bin_z = _throat_z + funnel_height;
 
-  // Inner surfaces, inset horizontally by one wall.
-  _inner_x = top_x - 2 * wall;
-  _inner_y = top_y - 2 * wall;
-  _inner_throat = throat - 2 * wall;
+  // Inner surfaces, parallel to their outer at one inset.
+  _inner_x = top_x - 2 * _inset;
+  _inner_y = top_y - 2 * _inset;
+  _inner_throat = throat - 2 * _inset;
 
-  // A corner radius cannot follow the wall inward past zero, so it floors.
-  // The consequence is a sharper inside corner than outside, which is where a
-  // pellet bridge anchors.
-  _inner_throat_radius = max(throat_radius - wall, 0.8);
-  _inner_funnel_radius = max(funnel_radius - wall, 0.8);
+  // Corner radii follow the wall inward so the inner profile stays a true
+  // parallel offset of the outer. Clamping one instead would quietly thin the
+  // wall at that corner -- which is both the shallowest surface and where a
+  // pellet bridge anchors -- so it is asserted rather than floored.
+  _inner_throat_radius = throat_radius - _inset;
+  _inner_funnel_radius = funnel_radius - _inset;
+
+  assert(
+    _inner_throat_radius >= 0.8,
+    str(
+      "hopper_body: throat_radius (", throat_radius, ") must be at least 0.8 more ",
+      "than the wall inset (", _inset, "). Raise throat_radius to ",
+      _inset + 0.8, " or more."
+    )
+  );
+  assert(
+    _inner_funnel_radius >= 0.8,
+    str(
+      "hopper_body: funnel_radius (", funnel_radius, ") must be at least 0.8 more ",
+      "than the wall inset (", _inset, "). Raise funnel_radius to ",
+      _inset + 0.8, " or more."
+    )
+  );
 
   difference() {
     union() {

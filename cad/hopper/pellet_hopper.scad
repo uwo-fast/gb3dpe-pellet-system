@@ -11,9 +11,11 @@
 // appear. Hence the dummy module below, which fences the tunable parameters off
 // from the derived values beneath it.
 
+include <hopper_feedstock.scad>
 include <hopper_sizes.scad>
 use <hopper_body.scad>
 use <hopper_cap.scad>
+use <hopper_funnel.scad>
 use <hopper_joint.scad>
 use <hopper_mount.scad>
 
@@ -24,14 +26,33 @@ render_part = "assembly"; // [body,mount,cap,assembly,all]
 
 /* [Hopper Size] */
 
-hopper_size = 0; // [0:2.5 kg,1:5 kg,2:10 kg]
+// Footprint preset. Capacity is not fixed by this: it falls out of the
+// footprint, the funnel angle and the feedstock, and is echoed on render.
+hopper_size = 0; // [0:220x180,1:300x240,2:390x300]
+
+/* [Feedstock] */
+
+// What this hopper will actually hold. Sets the minimum workable funnel angle
+// and the bulk density used to report capacity.
+feedstock_type = 0; // [0:virgin pellets,1:regrind flake]
 
 /* [Hopper] */
 
-wall = 3;
+// Funnel steepness, degrees from HORIZONTAL, measured on the DIAGONAL CORNER.
+// The corner is the shallowest surface in a rectangular funnel and is where
+// pellets bridge, so it is what gets constrained; the flat faces come out
+// steeper. Must be at least the selected feedstock's minimum.
+funnel_angle = 60; // [40:1:80]
+
+// Least material anywhere, measured perpendicular to the surface. Applied as a
+// horizontal inset sized on the corner, so flat and vertical walls end up
+// thicker than this.
+min_wall = 3;
 // Square opening at the bottom of the funnel
 throat = 44;
-throat_radius = 4;
+// Must exceed the wall inset by at least 0.8, or the inner corner cannot
+// follow the wall inward and the corner finishes thin.
+throat_radius = 6;
 funnel_radius = 8; // [0:1:20]
 // Short round-to-square transition above the bayonet neck
 neck_transition_height = 10;
@@ -98,6 +119,13 @@ cap_wall = 3;
 cap_skirt_height = 16;
 cap_top_thickness = 3;
 
+/* [Build Volume] */
+
+// Printer envelope used for the fit report. MK3S is 250 x 210 x 210.
+build_volume = [250, 210, 210];
+// Turn on to make a part that does not fit the envelope a hard error.
+require_printable = false;
+
 /* [Quality] */
 
 preview_facets = 48; // [12:4:96]
@@ -111,7 +139,22 @@ _preset = hopper_preset(hopper_size);
 _top_x = hopper_top_x(_preset);
 _top_y = hopper_top_y(_preset);
 _bin_height = hopper_bin_height(_preset);
-_funnel_height = hopper_funnel_height(_preset);
+
+_feedstock = feedstock(feedstock_type);
+_min_angle = feedstock_min_funnel_angle(_feedstock);
+
+assert(
+  funnel_angle >= _min_angle,
+  str(
+    "pellet_hopper: funnel_angle ", funnel_angle, " is below the minimum ",
+    _min_angle, " degrees for ", feedstock_name(_feedstock),
+    ". Raise the angle or pick a different feedstock."
+  )
+);
+
+// The angle is the input; the drop is solved from it.
+_funnel_height = funnel_height_for_angle(_top_x, _top_y, throat, funnel_angle);
+_inset = funnel_wall_inset(min_wall, funnel_angle);
 
 // One joint spec, shared by both halves so they cannot drift apart.
 _joint = hopper_joint(
@@ -126,7 +169,8 @@ _joint = hopper_joint(
   clearance=lock_clearance,
   z_clearance=lock_z_clearance,
   socket_wall=socket_wall,
-  bore_diameter=lock_neck_od - 2 * wall
+  // The neck is vertical, so min_wall is already its perpendicular thickness.
+  bore_diameter=lock_neck_od - 2 * min_wall
 );
 
 _spigot_od = pipe_id - pipe_clearance;
@@ -136,12 +180,44 @@ _body_height = lock_neck_height + neck_transition_height + _funnel_height + _bin
 _drop_below_flange = roof_thickness + roof_locator_extra + transition_height + spigot_length;
 _cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
 
+_volume_l = hopper_volume_l(
+  _top_x - 2 * _inset, _top_y - 2 * _inset, throat - 2 * _inset,
+  _bin_height, _funnel_height
+);
+_capacity_kg = hopper_capacity_kg(_volume_l, feedstock_bulk_density(_feedstock));
+
+// Largest footprint and height of any single printed part.
+_cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
+_part_x = max(_cap_outer_x, mount_size[0]);
+_part_y = max(_cap_outer_y, mount_size[1]);
+_part_z = max(_body_height, _drop_below_flange + mount_thickness + lock_neck_height);
+_fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
+
 echo(str(
-  "hopper: ", hopper_name(_preset),
-  "  bin ", _top_x, "x", _top_y, "x", _bin_height,
-  "  funnel rise ", _funnel_height,
-  "  body height ", _body_height
+  "hopper ", hopper_name(_preset), " / ", feedstock_name(_feedstock),
+  ": funnel corner ", funnel_angle,
+  " deg, faces ", funnel_face_angle(_top_x, throat, _funnel_height),
+  " / ", funnel_face_angle(_top_y, throat, _funnel_height),
+  " deg; funnel rise ", _funnel_height,
+  "; body height ", _body_height,
+  "; wall inset ", _inset,
+  "; volume ", _volume_l, " L = ", _capacity_kg, " kg"
 ));
+
+echo(str(
+  "build fit: largest part ", [_part_x, _part_y, _part_z],
+  " vs envelope ", build_volume,
+  _fits ? " -- fits" : " -- DOES NOT FIT"
+));
+
+assert(
+  !require_printable || _fits,
+  str(
+    "pellet_hopper: largest part ", [_part_x, _part_y, _part_z],
+    " exceeds build_volume ", build_volume,
+    ". Reduce the footprint, lower funnel_angle, or split the body."
+  )
+);
 
 module _body() {
   hopper_body(
@@ -151,7 +227,7 @@ module _body() {
     bin_height=_bin_height,
     funnel_height=_funnel_height,
     throat=throat,
-    wall=wall,
+    min_wall=min_wall,
     throat_radius=throat_radius,
     funnel_radius=funnel_radius,
     neck_transition_height=neck_transition_height

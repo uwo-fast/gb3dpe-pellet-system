@@ -5,7 +5,7 @@ hopper := "cad/hopper/pellet_hopper.scad"
 build  := "build"
 
 # Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
-sizes := "0:2.5kg 1:5kg 2:10kg"
+sizes := "0:220x180 1:300x240 2:390x300"
 parts := "body mount cap"
 
 default:
