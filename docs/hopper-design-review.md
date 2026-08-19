@@ -36,23 +36,39 @@ so the same box holds roughly half the labelled mass.
 
 Wall angle measured from horizontal, derived from the imported parameters:
 
-| Preset | X wall     | Y wall | Target                |
-| ------ | ---------- | ------ | --------------------- |
-| 2.5 kg | 42.3°      | 49.6°  | ≥60° virgin, ≥70° regrind |
-| 5 kg   | 38.0°      | 45.6°  | ≥60° virgin, ≥70° regrind |
-| 10 kg  | **32.4°**  | 40.7°  | ≥60° virgin, ≥70° regrind |
+| Preset | X face | Y face | **Diagonal corner** |
+| ------ | ------ | ------ | ------------------- |
+| 2.5 kg | 42.3°  | 49.6°  | **35.7°**           |
+| 5 kg   | 38.0°  | 45.6°  | **31.8°**           |
+| 10 kg  | 32.4°  | 40.7°  | **27.1°**           |
 
-Every preset is below the threshold for reliable mass flow and the largest is
-far below it. All three will bridge and rathole, and regrind — irregular, high
-friction, low bulk density — is much worse than virgin pellets on this axis.
+Target is >=60° from horizontal for virgin pellets and >=70° for shredded
+regrind. Every preset is below that on every measure.
+
+**The corner is the number that matters, and it is much worse than the faces.**
+On a rectangular-to-square funnel the diagonal corner runs out further than
+either face over the same drop, so it is always the shallowest surface in the
+part. At 27.1° the 10 kg corner is closer to a shelf than a chute. Pellets
+bridge and rathole at the shallowest surface, not the average one, so the
+design target has to be set on the corner and the faces allowed to fall out
+steeper — not the other way round.
+
+A second consequence: a rectangular bin **cannot** have equal X and Y wall
+angles for a given drop, because the two runs differ. Fixing the drop from the
+X face at 65° puts the Y face at 70.2° and the corner at 59.5°. Any parameter
+scheme that lets the user set "the" wall angle has to say which surface it
+means, and the honest choice is the corner.
+
+Regrind — irregular, high friction, low bulk density — is worse than virgin
+pellets on all of this.
 
 The square-to-round transition compounds it. Internal corner radius is
 `funnel_radius - wall`, floored at 0.8 mm, so the funnel has near-sharp
 internal corners, which is exactly where a bridge anchors.
 
 Wall angle is currently an emergent consequence of `top_x`, `top_y`, `throat`
-and `funnel_h`. It should become an explicit input with the capacity solved
-around it, so the geometry cannot silently violate the target.
+and `funnel_h`. It should become an explicit input with the drop solved around
+it, so the geometry cannot silently violate the target.
 
 ### 2. Two of the three presets cannot be printed
 

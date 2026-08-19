@@ -7,9 +7,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 
 - [ ] **Make funnel wall angle an explicit parameter** and solve capacity around
       it, rather than letting it fall out of `top_x`/`top_y`/`throat`/`funnel_h`.
-      Target ≥60° from horizontal for virgin pellets, ≥70° for regrind. All
-      three imported presets are between 32° and 50°. Add an `assert()` so the
-      geometry cannot silently violate the target.
+      Target ≥60° from horizontal for virgin pellets, ≥70° for regrind, and
+      **measure it on the diagonal corner, not the faces** — the corner is
+      always the shallowest surface on a rectangular funnel and is what
+      actually bridges. Imported presets sit at 27–36° on the corner against
+      32–50° on the faces. Add an `assert()` so the geometry cannot silently
+      violate the target.
 - [ ] **Parameterise for both feedstocks.** We run virgin pellets *and* shredded
       regrind. Regrind wants the steeper angle and has roughly half the bulk
       density, so the capacity presets need a feedstock input rather than one
