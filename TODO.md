@@ -32,7 +32,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       hose to the toolhead. Needs a part that replaces or seats into the vendor
       hopper cap (43.22 × 54.30 × 6.99 mm, two Ø7.2 mm features). Its geometry
       constrains the spigot bore upstream, so it should come before spigot
-      tuning.
+      tuning. **Needs the vendor STEP files**, which are still only in the local
+      untracked scratch directory — see the note under Firmware below.
+- [ ] **Revisit the step from outlet to spigot.** The outlet is now 50 mm and
+      the spigot bore is still 20.6 mm, so the path more than halves in one
+      step. The spigot is a parallel section and 20.6 mm clears the parallel
+      rule at 5 mm flake, so this is not urgent — but the step is abrupt, it is
+      the narrowest thing in the path, and it is what caps the reported spec at
+      exactly 5 mm. Size it against the real hose once measured.
 
 ## Hopper CAD — measurements needed
 
@@ -40,10 +47,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       guess; the vendor does not publish it.
 - [ ] **Measure the Original Prusa Enclosure top panel** — thickness and
       material. `roof_t = 2` assumes thin plastic, but the panel is metal.
-- [ ] **Resolve the M4 @ 70 × 70 bolt pattern.** Confirmed *not* inherited from
+- [ ] **Resolve the roof bolt pattern.** Confirmed *not* inherited from
       GreenBoy3D: the vendor hopper STEP has no M4-sized holes anywhere. It was
-      invented with no stated source. Re-derive it from the actual enclosure
-      panel, or replace it with a documented pattern.
+      invented with no stated source, and the coupling resize has since moved it
+      — the flange grew 90 → 110 mm and the pattern 70 → 90 mm to stop the
+      socket gussets overhanging the edge. So it is now an invented number that
+      has also been changed twice. Re-derive it from the actual enclosure panel.
 
 ## Hopper CAD — improvements
 
@@ -93,6 +102,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 - [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
       globals through `include <>`, one concern per file, each previewing
       standalone, with asserts throughout.
+- [ ] **Assign colours, one per printed part.** Nothing in `cad/` calls
+      `color()` today. The `assembly` and `all` views should colour by *printed
+      part* — the mount, each body segment, the cap — so it reads at a glance
+      what comes off the bed as one piece. A single part must be exactly one
+      colour: never a different colour per feature within a part, because that
+      reads as a multi-material print. Colours may repeat between parts. Note
+      the body is segmented now, so `_body_all()` renders several parts and each
+      needs its own.
 - [ ] Add an `examples/` directory — the one part of the restructure not done.
       House convention is one file per configuration, `use <>`-ing the library.
 
@@ -123,6 +140,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       with their stale numbers corrected to the landed config. Deliberately not
       brought over: GreenBoy3D's own STL/STEP files, whose licence is unstated
       and which ship with the kit, and a shallow clone of an unrelated fork.
+- [ ] **Move the vendor STEP/STL files somewhere durable.** They are still only
+      in `working.tmp/greenboy3d/3d-files/`, which is gitignored scratch on one
+      machine, and the downstream adapter needs the hopper cap geometry to mate
+      against. They should not go in this public repo (unstated licence), so put
+      them on lab storage or a private location before that directory is
+      cleared.
 
 ## Admin
 
