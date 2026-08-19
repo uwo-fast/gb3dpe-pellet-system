@@ -11,55 +11,57 @@
 // - hose spigot
 // ============================================================
 
-
 // ============================================================
 // SOCKET GUSSET
 // ============================================================
 
 module mount_gusset(a) {
 
-    rotate([
-        0,
-        0,
-        a
-    ])
+  rotate(
+    [
+      0,
+      0,
+      a,
+    ]
+  )
 
-        hull() {
+    hull() {
 
-            // Foot overlaps mounting plate
+      // Foot overlaps mounting plate
 
-            translate([
-                socket_outer_d/2 + 6,
-                0,
-                mount_t + 1.25
-            ])
+      translate(
+        [
+          socket_outer_d / 2 + 6,
+          0,
+          mount_t + 1.25,
+        ]
+      )
 
-                cube(
-                    [12,16,3],
-                    center=true
-                );
+        cube(
+          [12, 16, 3],
+          center=true
+        );
 
+      // Upper end overlaps socket wall
 
-            // Upper end overlaps socket wall
+      translate(
+        [
+          socket_outer_d / 2 - 2.5,
+          0,
+          mount_t + lock_neck_h * 0.55,
+        ]
+      )
 
-            translate([
-                socket_outer_d/2 - 2.5,
-                0,
-                mount_t +
-                lock_neck_h*0.55
-            ])
-
-                cube(
-                    [
-                        4,
-                        16,
-                        lock_neck_h*0.65
-                    ],
-                    center=true
-                );
-        }
+        cube(
+          [
+            4,
+            16,
+            lock_neck_h * 0.65,
+          ],
+          center=true
+        );
+    }
 }
-
 
 // ============================================================
 // BAYONET ENTRY SLOT
@@ -69,31 +71,31 @@ module mount_gusset(a) {
 
 module bayonet_entry(a) {
 
-    rotate([
-        0,
-        0,
-        a
-    ])
+  rotate(
+    [
+      0,
+      0,
+      a,
+    ]
+  )
 
-        translate([
-            socket_inner_d/2 - 0.3,
-            -slot_w/2,
-            mount_t +
-            lock_tab_z -
-            lock_z_clearance
-        ])
+    translate(
+      [
+        socket_inner_d / 2 - 0.3,
+        -slot_w / 2,
+        mount_t + lock_tab_z - lock_z_clearance,
+      ]
+    )
 
-            cube([
-                slot_radial,
-                slot_w,
+      cube(
+        [
+          slot_radial,
+          slot_w,
 
-                lock_neck_h -
-                lock_tab_z +
-                lock_z_clearance +
-                1
-            ]);
+          lock_neck_h - lock_tab_z + lock_z_clearance + 1,
+        ]
+      );
 }
-
 
 // ============================================================
 // BAYONET ROTATION GROOVE
@@ -101,37 +103,35 @@ module bayonet_entry(a) {
 
 module bayonet_groove(a) {
 
-    rotate([
-        0,
-        0,
+  rotate(
+    [
+      0,
+      0,
 
-        a -
-        lock_rotation -
-        tab_half_angle
-    ])
+      a - lock_rotation - tab_half_angle,
+    ]
+  )
 
-        rotate_extrude(
-            angle =
-                lock_rotation +
-                2*tab_half_angle,
+    rotate_extrude(
+      angle=lock_rotation + 2 * tab_half_angle,
+      convexity=10
+    )
 
-            convexity=10
-        )
+      translate(
+        [
+          socket_inner_d / 2 - 0.3,
 
-            translate([
-                socket_inner_d/2 - 0.3,
+          mount_t + lock_tab_z - lock_z_clearance,
+        ]
+      )
 
-                mount_t +
-                lock_tab_z -
-                lock_z_clearance
-            ])
-
-                square([
-                    slot_radial,
-                    groove_h
-                ]);
+        square(
+          [
+            slot_radial,
+            groove_h,
+          ]
+        );
 }
-
 
 // ============================================================
 // LOWER FEEDTHROUGH OUTSIDE
@@ -139,108 +139,99 @@ module bayonet_groove(a) {
 
 module feedthrough_outer() {
 
+  // ========================================================
+  // ENCLOSURE LOCATING NECK
+  // ========================================================
 
-    // ========================================================
-    // ENCLOSURE LOCATING NECK
-    // ========================================================
+  translate(
+    [
+      0,
+      0,
+      -feed_neck_len,
+    ]
+  )
 
-    translate([
+    rounded_box(
+      feed_outer,
+      feed_outer,
+      feed_neck_len + 0.1,
+      6
+    );
+
+  // ========================================================
+  // TRANSITION TO ROUND HOSE SPIGOT
+  // ========================================================
+
+  hull() {
+
+    translate(
+      [
         0,
         0,
-        -feed_neck_len
-    ])
+        -feed_neck_len - 0.5,
+      ]
+    )
 
-        rounded_box(
-            feed_outer,
-            feed_outer,
-            feed_neck_len + 0.1,
-            6
-        );
+      rounded_box(
+        feed_outer,
+        feed_outer,
+        1,
+        6
+      );
 
-
-    // ========================================================
-    // TRANSITION TO ROUND HOSE SPIGOT
-    // ========================================================
-
-    hull() {
-
-        translate([
-            0,
-            0,
-            -feed_neck_len - 0.5
-        ])
-
-            rounded_box(
-                feed_outer,
-                feed_outer,
-                1,
-                6
-            );
-
-
-        translate([
-            0,
-            0,
-            -feed_neck_len -
-            transition_h
-        ])
-
-            cylinder(
-                h=1,
-                d=spigot_od
-            );
-    }
-
-
-    // ========================================================
-    // MAIN SPIGOT
-    // ========================================================
-
-    translate([
+    translate(
+      [
         0,
         0,
+        -feed_neck_len - transition_h,
+      ]
+    )
 
-        -feed_neck_len -
-        transition_h -
-        (
-            spigot_len -
-            lead_in
-        )
-    ])
+      cylinder(
+        h=1,
+        d=spigot_od
+      );
+  }
 
-        cylinder(
-            h =
-                spigot_len -
-                lead_in,
+  // ========================================================
+  // MAIN SPIGOT
+  // ========================================================
 
-            d=spigot_od
-        );
+  translate(
+    [
+      0,
+      0,
 
+      -feed_neck_len - transition_h - (
+        spigot_len - lead_in
+      ),
+    ]
+  )
 
-    // ========================================================
-    // HOSE INSERTION TAPER
-    // ========================================================
+    cylinder(
+      h=spigot_len - lead_in,
+      d=spigot_od
+    );
 
-    translate([
-        0,
-        0,
+  // ========================================================
+  // HOSE INSERTION TAPER
+  // ========================================================
 
-        -feed_neck_len -
-        transition_h -
-        spigot_len
-    ])
+  translate(
+    [
+      0,
+      0,
 
-        cylinder(
-            h=lead_in,
+      -feed_neck_len - transition_h - spigot_len,
+    ]
+  )
 
-            d1 =
-                spigot_od -
-                lead_in_reduction,
-
-            d2=spigot_od
-        );
+    cylinder(
+      h=lead_in,
+      d1=spigot_od - lead_in_reduction,
+      d2=spigot_od
+    );
 }
-
 
 // ============================================================
 // INTERNAL PELLET PATH
@@ -248,82 +239,74 @@ module feedthrough_outer() {
 
 module feedthrough_void() {
 
+  // ========================================================
+  // CONTINUOUS BORE THROUGH MOUNT
+  // ========================================================
 
-    // ========================================================
-    // CONTINUOUS BORE THROUGH MOUNT
-    // ========================================================
+  translate(
+    [
+      0,
+      0,
+      -feed_neck_len - 1,
+    ]
+  )
 
-    translate([
+    cylinder(
+      h=feed_neck_len + mount_t + 2,
+      d=lock_bore_d
+    );
+
+  // ========================================================
+  // LARGE BORE → SPIGOT BORE
+  // ========================================================
+
+  hull() {
+
+    translate(
+      [
         0,
         0,
-        -feed_neck_len - 1
-    ])
+        -feed_neck_len - 1,
+      ]
+    )
 
-        cylinder(
-            h =
-                feed_neck_len +
-                mount_t +
-                2,
+      cylinder(
+        h=1,
+        d=lock_bore_d
+      );
 
-            d=lock_bore_d
-        );
-
-
-    // ========================================================
-    // LARGE BORE → SPIGOT BORE
-    // ========================================================
-
-    hull() {
-
-        translate([
-            0,
-            0,
-            -feed_neck_len - 1
-        ])
-
-            cylinder(
-                h=1,
-                d=lock_bore_d
-            );
-
-
-        translate([
-            0,
-            0,
-            -feed_neck_len -
-            transition_h
-        ])
-
-            cylinder(
-                h=1,
-                d=spigot_id
-            );
-    }
-
-
-    // ========================================================
-    // SPIGOT BORE
-    // ========================================================
-
-    translate([
+    translate(
+      [
         0,
         0,
+        -feed_neck_len - transition_h,
+      ]
+    )
 
-        -feed_neck_len -
-        transition_h -
-        spigot_len -
-        1
-    ])
+      cylinder(
+        h=1,
+        d=spigot_id
+      );
+  }
 
-        cylinder(
-            h =
-                spigot_len +
-                2,
+  // ========================================================
+  // SPIGOT BORE
+  // ========================================================
 
-            d=spigot_id
-        );
+  translate(
+    [
+      0,
+      0,
+
+      -feed_neck_len - transition_h - spigot_len - 1,
+    ]
+  )
+
+    cylinder(
+      h=spigot_len + 2,
+      d=spigot_id
+    );
 }
-
 
 // ============================================================
 // COMPLETE ROOF MOUNT
@@ -331,113 +314,102 @@ module feedthrough_void() {
 
 module roof_mount() {
 
-    difference() {
+  difference() {
 
-        union() {
+    union() {
 
+      // =================================================
+      // 90 x 90 ROOF FLANGE
+      // =================================================
 
-            // =================================================
-            // 90 x 90 ROOF FLANGE
-            // =================================================
+      rounded_box(
+        mount_x,
+        mount_y,
+        mount_t,
+        mount_radius
+      );
 
-            rounded_box(
-                mount_x,
-                mount_y,
-                mount_t,
-                mount_radius
-            );
+      // =================================================
+      // CIRCULAR BAYONET SOCKET
+      // =================================================
 
+      translate(
+        [
+          0,
+          0,
+          mount_t - 0.1,
+        ]
+      )
 
-            // =================================================
-            // CIRCULAR BAYONET SOCKET
-            // =================================================
-
-            translate([
-                0,
-                0,
-                mount_t - 0.1
-            ])
-
-                cylinder(
-                    h =
-                        lock_neck_h +
-                        0.1,
-
-                    d=socket_outer_d
-                );
-
-
-            // =================================================
-            // ONE-PIECE LOWER OUTLET
-            // =================================================
-
-            feedthrough_outer();
-
-
-            // =================================================
-            // FOUR SOCKET SUPPORTS
-            // =================================================
-
-            if (mount_supports)
-
-                for (a=[0:90:270])
-
-                    mount_gusset(a);
-        }
-
-
-        // ====================================================
-        // FOUR M4 CLEARANCE HOLES
-        // ====================================================
-
-        bolt_pattern(
-            mount_t
+        cylinder(
+          h=lock_neck_h + 0.1,
+          d=socket_outer_d
         );
 
+      // =================================================
+      // ONE-PIECE LOWER OUTLET
+      // =================================================
 
-        // ====================================================
-        // MAIN BODY NECK CAVITY
-        // ====================================================
+      feedthrough_outer();
 
-        translate([
-            0,
-            0,
-            mount_t - 0.1
-        ])
+      // =================================================
+      // FOUR SOCKET SUPPORTS
+      // =================================================
 
-            cylinder(
-                h =
-                    lock_neck_h +
-                    1,
+      if (mount_supports)
 
-                d=socket_inner_d
-            );
+        for (a = [0:90:270])
 
-
-        // ====================================================
-        // FOUR BAYONET PATHS
-        // ====================================================
-
-        for (a=[0:90:270]) {
-
-            // Vertical insertion slot is offset
-            // counter-clockwise from final position.
-
-            bayonet_entry(
-                a - lock_rotation
-            );
-
-
-            // Horizontal quarter-turn path.
-
-            bayonet_groove(a);
-        }
-
-
-        // ====================================================
-        // CONTINUOUS PELLET PATH
-        // ====================================================
-
-        feedthrough_void();
+          mount_gusset(a);
     }
+
+    // ====================================================
+    // FOUR M4 CLEARANCE HOLES
+    // ====================================================
+
+    bolt_pattern(
+      mount_t
+    );
+
+    // ====================================================
+    // MAIN BODY NECK CAVITY
+    // ====================================================
+
+    translate(
+      [
+        0,
+        0,
+        mount_t - 0.1,
+      ]
+    )
+
+      cylinder(
+        h=lock_neck_h + 1,
+        d=socket_inner_d
+      );
+
+    // ====================================================
+    // FOUR BAYONET PATHS
+    // ====================================================
+
+    for (a = [0:90:270]) {
+
+      // Vertical insertion slot is offset
+      // counter-clockwise from final position.
+
+      bayonet_entry(
+        a - lock_rotation
+      );
+
+      // Horizontal quarter-turn path.
+
+      bayonet_groove(a);
+    }
+
+    // ====================================================
+    // CONTINUOUS PELLET PATH
+    // ====================================================
+
+    feedthrough_void();
+  }
 }
