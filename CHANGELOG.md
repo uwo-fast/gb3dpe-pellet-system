@@ -49,6 +49,11 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   keyed so the rectangular bin cannot seat crosswise on the roof. This adds a
   required external library, pinned by commit.
 
+- A retaining screw through the socket into a pocket in the neck, since the
+  library's own detent is too small to print at our allowance.
+- Operating procedures (first flash, PINDA jog test) rescued out of untracked
+  scratch into `docs/operations/`.
+
 ### Notes
 
 - The restructure is geometry-neutral. All three parts at all three capacity

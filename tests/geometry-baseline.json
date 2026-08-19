@@ -10,8 +10,8 @@
       -90.0,
       0.0
     ],
-    "triangles": 11236,
-    "volume_mm3": 524542.008
+    "triangles": 11584,
+    "volume_mm3": 524519.531
   },
   "body@300x240": {
     "bbox_mm": [
@@ -24,8 +24,8 @@
       -120.0,
       0.0
     ],
-    "triangles": 11236,
-    "volume_mm3": 909233.539
+    "triangles": 11584,
+    "volume_mm3": 909211.062
   },
   "body@390x300": {
     "bbox_mm": [
@@ -38,8 +38,8 @@
       -150.0,
       0.0
     ],
-    "triangles": 11236,
-    "volume_mm3": 1458202.972
+    "triangles": 11584,
+    "volume_mm3": 1458180.495
   },
   "cap@220x180": {
     "bbox_mm": [
@@ -94,8 +94,8 @@
       -45.0,
       -59.0
     ],
-    "triangles": 9762,
-    "volume_mm3": 99360.625
+    "triangles": 10222,
+    "volume_mm3": 99299.895
   },
   "mount@300x240": {
     "bbox_mm": [
@@ -108,8 +108,8 @@
       -45.0,
       -59.0
     ],
-    "triangles": 9762,
-    "volume_mm3": 99360.625
+    "triangles": 10222,
+    "volume_mm3": 99299.895
   },
   "mount@390x300": {
     "bbox_mm": [
@@ -122,7 +122,7 @@
       -45.0,
       -59.0
     ],
-    "triangles": 9762,
-    "volume_mm3": 99360.625
+    "triangles": 10222,
+    "volume_mm3": 99299.895
   }
 }

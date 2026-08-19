@@ -79,6 +79,14 @@ lock_pins = 4; // [2:1:7]
 // orientation. Zero leaves the bin free to seat crosswise on the roof.
 lock_key_angle = 15; // [0:1:40]
 
+// Retaining screw. Nothing else resists the coupling backing off under a hose
+// pull, so this is a positive lock rather than a nicety: the tip seats in a
+// pocket in the neck. Pilot is sized to self-tap M4 in PETG; 0 omits it.
+lock_retainer_pilot = 3.4; // [0:0.1:6]
+// Clear of the entry slots and the socket gussets; hopper_joint asserts it.
+lock_retainer_angle = 140; // [0:5:355]
+lock_retainer_z = 13.5;
+
 /* [Roof Mount] */
 
 mount_size = [90, 90];
@@ -173,6 +181,9 @@ _joint = hopper_joint(
   sweep_angle=lock_sweep_angle,
   pins=lock_pins,
   key_angle=lock_key_angle,
+  retainer_angle=lock_retainer_angle,
+  retainer_z=lock_retainer_z,
+  retainer_pilot=lock_retainer_pilot,
   // The neck is vertical, so min_wall is already its perpendicular thickness.
   // hopper_joint asserts this against the largest bore that clears the pins.
   bore_diameter=_neck_od - 2 * min_wall

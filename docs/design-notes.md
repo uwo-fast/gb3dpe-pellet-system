@@ -115,10 +115,16 @@ there is 0.25 mm³ of interference across the whole joint, unchanged at higher
 facet counts and therefore real rather than faceting — consistent with the
 library's detent sitting just short of the stop, i.e. a light snap-past.
 
-Still missing, and tracked in TODO: **anti-rotation**. The library has an
-undocumented detent whose size is welded to `allowance`, so at our 0.30 it is a
-0.6 mm post — at or below one extrusion width. Treat it as absent. Nothing
-resists the coupling backing off under a hose pull or a knock.
+**Anti-rotation is ours too.** The library has an undocumented detent whose size
+is welded to `allowance`, so at our 0.30 it is a 0.6 mm post — at or below one
+extrusion width. Treated as absent. In its place a self-tapping M4 runs radially
+through the socket wall into a 1.2 mm pocket in the neck, which is a positive
+lock rather than a friction one: the tip has to be driven out, not merely
+slipped. Placed at 140°, above the channel and 40° clear of the entry slots —
+which run from the channel *up through the top face* and are the easy thing to
+forget when picking an angle. Verified: the pilot passes clean through the
+socket wall, and the pocket leaves 1.8 mm of neck wall before the pellet bore.
+`hopper_joint()` asserts both the height and the angular clearance.
 
 ## Build volume 250 × 210 × 210 mm
 

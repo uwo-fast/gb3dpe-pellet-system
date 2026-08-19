@@ -43,6 +43,9 @@ _JOINT_SWEEP_ANGLE = 6;
 _JOINT_PINS = 7;
 _JOINT_KEY_ANGLE = 8;
 _JOINT_BORE_DIAMETER = 9;
+_JOINT_RETAINER_ANGLE = 10;
+_JOINT_RETAINER_Z = 11;
+_JOINT_RETAINER_PILOT = 12;
 
 /**
  * Build a joint spec.
@@ -64,7 +67,10 @@ function hopper_joint(
   sweep_angle = 25,
   pins = 4,
   key_angle = 15,
-  bore_diameter = 38
+  bore_diameter = 38,
+  retainer_angle = 140,
+  retainer_z = 13.5,
+  retainer_pilot = 3.4
 ) =
   let (
     channel_half = bayonet_channel_half_angle(interface_radius, pin_radius, allowance),
@@ -111,10 +117,41 @@ function hopper_joint(
       ") > channel half-angle (", channel_half, ")"
     )
   )
+  assert(
+    retainer_pilot == 0 || retainer_z > (part_height - entry_depth) + pin_radius + allowance / 2,
+    str(
+      "hopper_joint: retainer_z (", retainer_z, ") must clear the top of the ",
+      "channel (", (part_height - entry_depth) + pin_radius + allowance / 2,
+      ") or the screw breaks into it"
+    )
+  )
+  assert(
+    retainer_pilot == 0 || retainer_z + retainer_pilot / 2 < part_height,
+    str(
+      "hopper_joint: retainer_z (", retainer_z,
+      ") plus half the pilot must stay below part_height (", part_height, ")"
+    )
+  )
+  assert(
+    retainer_pilot == 0 ||
+      _retainer_clearance(angles, retainer_angle) >
+        channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2)),
+    str(
+      "hopper_joint: retainer_angle (", retainer_angle,
+      ") is too close to an entry slot. Nearest is ",
+      _retainer_clearance(angles, retainer_angle), " degrees away, needs more than ",
+      channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2))
+    )
+  )
   [
     interface_radius, shell_thickness, allowance, part_height, entry_depth,
     pin_radius, sweep_angle, pins, key_angle, bore_diameter,
+    retainer_angle, retainer_z, retainer_pilot,
   ];
+
+// Smallest angular distance from `angle` to any entry slot.
+function _retainer_clearance(angles, angle) =
+  min([for (a = angles) abs(((angle - a + 180) % 360) - 180)]);
 
 function joint_interface_radius(joint) = joint[_JOINT_INTERFACE_RADIUS]; //! Virtual radius the two shells straddle
 function joint_shell_thickness(joint) = joint[_JOINT_SHELL_THICKNESS]; //! Radial thickness from the interface radius
@@ -125,6 +162,9 @@ function joint_pin_radius(joint) = joint[_JOINT_PIN_RADIUS]; //! Radius of one p
 function joint_sweep_angle(joint) = joint[_JOINT_SWEEP_ANGLE]; //! Quarter-turn travel to lock
 function joint_pins(joint) = joint[_JOINT_PINS]; //! Number of pins
 function joint_bore_diameter(joint) = joint[_JOINT_BORE_DIAMETER]; //! Pellet bore through the joint
+function joint_retainer_angle(joint) = joint[_JOINT_RETAINER_ANGLE]; //! Where the retaining screw goes, degrees
+function joint_retainer_z(joint) = joint[_JOINT_RETAINER_Z]; //! Height of the retaining screw above the joint bottom
+function joint_retainer_pilot(joint) = joint[_JOINT_RETAINER_PILOT]; //! Screw pilot diameter; 0 omits the retainer
 
 // Pin angles, keyed so the joint has exactly one locked orientation.
 function joint_pin_angles(joint) =
@@ -147,6 +187,48 @@ function joint_max_bore_diameter(joint) =
     joint_interface_radius(joint) - joint_allowance(joint) / 2 -
     joint_pin_radius(joint)
   );
+
+/**
+ * Radial pilot hole through the socket wall for a self-tapping M4, and the
+ * shallow pocket in the neck that its tip drops into.
+ *
+ * The library's own detent is undocumented and its size is welded to
+ * `allowance`, so at our 0.30 it is a 0.6 mm post -- at or below one extrusion
+ * width. Treat it as absent. Nothing else resists the coupling backing off
+ * under a hose pull or a knock, and there is 10 kg of pellets on the joint.
+ *
+ * The screw is a positive lock rather than a friction one: its tip seats in the
+ * pocket, so it has to be driven out rather than merely slipping. Placed above
+ * the channel and clear of the entry slots, which run from the channel up
+ * through the top face and are easy to forget about.
+ */
+module joint_retainer_bore(joint) {
+  if (joint_retainer_pilot(joint) > 0)
+    rotate([0, 0, joint_retainer_angle(joint)])
+      translate([0, 0, joint_retainer_z(joint)])
+        rotate([0, 90, 0])
+          cylinder(
+            h = joint_socket_outer_d(joint) / 2 + 1,
+            d = joint_retainer_pilot(joint)
+          );
+}
+
+// Depth of the pocket. Shallow enough to leave most of the neck wall, deep
+// enough that the screw tip cannot ride out of it.
+_RETAINER_POCKET_DEPTH = 1.2;
+
+module joint_retainer_pocket(joint) {
+  if (joint_retainer_pilot(joint) > 0)
+    rotate([0, 0, joint_retainer_angle(joint)])
+      translate([0, 0, joint_retainer_z(joint)])
+        rotate([0, 90, 0])
+          translate([0, 0, joint_neck_od(joint) / 2 - _RETAINER_POCKET_DEPTH])
+            cylinder(
+              h = _RETAINER_POCKET_DEPTH + 1,
+              // Wider than the screw so a little rotational error still seats.
+              d = joint_retainer_pilot(joint) + 1.6
+            );
+}
 
 module _bayonet_half(joint, which) {
   bayonet(

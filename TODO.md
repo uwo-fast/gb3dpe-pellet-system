@@ -73,13 +73,10 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 - [x] **Coupling is keyed** so the bin cannot mount crosswise. `key_angle = 15`
       pulls one pin off the even four-pin pattern, giving a single locked
       orientation.
-- [ ] **Add anti-rotation to the coupling.** Nothing resists it backing off
-      under a hose pull or a knock. The library's built-in detent is
-      undocumented and its size is welded to `allowance`, so at our 0.30 it is a
-      0.6 mm post — at or below one extrusion width. Treat it as absent. A
-      radial M4 thumbscrew or an R-clip through the socket into the neck at the
-      locked position is the simplest fix and can be differenced in without
-      touching the library geometry.
+- [x] **Anti-rotation added.** A self-tapping M4 runs radially through the
+      socket wall into a 1.2 mm pocket in the neck at 140°, above the channel
+      and clear of the entry slots. Positive lock, not friction. Set
+      `lock_retainer_pilot = 0` to omit it.
 - [ ] **Watch the pellet bore margin.** At `lock_pin_radius = 3.0` the largest
       bore that clears the pins is exactly 38.0 mm, and ours is exactly 38.0.
       `hopper_joint()` asserts it, so it fails loudly rather than quietly

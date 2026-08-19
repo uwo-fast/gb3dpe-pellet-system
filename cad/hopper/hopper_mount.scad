@@ -118,6 +118,9 @@ module hopper_mount(
 
     _bolt_holes(bolt_spacing, bolt_diameter, mount_thickness);
 
+    // Radial pilot for the retaining screw, at the same height as the socket.
+    translate([0, 0, mount_thickness]) joint_retainer_bore(joint);
+
     // Nothing is cut for the socket: it arrives hollow and already channelled.
     // What matters is what is NOT cut here. The flange top between the pellet
     // bore and the socket bore is the annular land the neck sits down on, and
