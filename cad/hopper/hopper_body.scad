@@ -92,8 +92,9 @@ module hopper_body(
 
   difference() {
     union() {
-      cylinder(h = _neck_height, d = joint_neck_od(joint));
-      joint_tabs_solid(joint);
+      // Neck comes from the library pre-rotated into its seated orientation.
+      // Its own bore is narrow; the pellet bore is opened out below.
+      joint_neck(joint);
 
       // Round neck out to the square throat.
       loft(_neck_height, _throat_z) {
@@ -131,6 +132,10 @@ module hopper_body(
   }
 }
 
-// Standalone preview.
-$fn = $preview ? 48 : 120;
-hopper_body(joint = hopper_joint(), top_x = 220, top_y = 180, bin_height = 75, funnel_height = 80);
+// Standalone preview. $fn is passed on the call, never assigned at top level:
+// a use'd file's own top-level $fn is what ITS modules see, so assigning it
+// here would silently override whatever the driver asked for.
+hopper_body(
+  joint = hopper_joint(), top_x = 220, top_y = 180, bin_height = 75,
+  funnel_height = 80, $fn = $preview ? 48 : 120
+);

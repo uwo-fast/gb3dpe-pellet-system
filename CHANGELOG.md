@@ -45,6 +45,10 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A build-volume fit report on every render, and an opt-in `require_printable`
   assert.
 
+- The bayonet joint is now built on `bayonet-lock-scad` rather than hand-rolled,
+  keyed so the rectangular bin cannot seat crosswise on the roof. This adds a
+  required external library, pinned by commit.
+
 ### Notes
 
 - The restructure is geometry-neutral. All three parts at all three capacity

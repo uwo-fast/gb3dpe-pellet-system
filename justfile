@@ -2,6 +2,14 @@
 # Requires: openscad (tested on 2021.01)
 
 hopper := "cad/hopper/pellet_hopper.scad"
+
+# Facet counts are set per purpose. The gate proves the model compiles and its
+# asserts hold, which facet count has no bearing on, and the bayonet library's
+# swept channels are expensive: a body is ~3 s at 32 facets and ~100 s at 120.
+# geom uses a fixed count so the baseline is reproducible. Exported meshes use
+# the file default, which is high enough for the bayonet fit to be real.
+check_facets := "32"
+geom_facets := "64"
 build  := "build"
 
 # Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
@@ -28,7 +36,8 @@ check:
       for p in {{parts}}; do
         printf '  %-5s %-6s ' "$p" "$label"
         out=$(openscad --hardwarnings -o "$tmp/$p.stl" \
-                -D "render_part=\"$p\"" -D "hopper_size=$i" {{hopper}} 2>&1)
+                -D "render_part=\"$p\"" -D "hopper_size=$i" \
+                -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
         rc=$?
         if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
           echo FAIL
@@ -44,7 +53,8 @@ check:
     # sweeping every size buys nothing but minutes.
     for p in assembly all; do
       printf '  %-5s %-6s ' "$p" "default"
-      out=$(openscad --hardwarnings -o "$tmp/$p.stl" -D "render_part=\"$p\"" {{hopper}} 2>&1)
+      out=$(openscad --hardwarnings -o "$tmp/$p.stl" -D "render_part=\"$p\"" \
+              -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
       rc=$?
       if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
         echo FAIL
@@ -79,8 +89,8 @@ clean:
 
 # Check rendered geometry against the committed baseline (see the script docstring).
 geom:
-    @python3 scripts/geom_stats.py
+    @python3 scripts/geom_stats.py --facets {{geom_facets}}
 
 # Overwrite the geometry baseline. Only after an INTENDED geometry change.
 geom-baseline:
-    @python3 scripts/geom_stats.py --write
+    @python3 scripts/geom_stats.py --write --facets {{geom_facets}}

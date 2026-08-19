@@ -16,7 +16,8 @@ module _bolt_holes(spacing, diameter, thickness) {
 }
 
 // Gusset tying the socket wall down to the flange. Dimensions are the imported
-// design's; they have no stated derivation.
+// design's; they have no stated derivation. Spaced evenly and independently of
+// the pin angles, which are keyed and therefore uneven.
 module _socket_gussets(joint, count, socket_outer_d, mount_thickness) {
   _neck_height = joint_neck_height(joint);
 
@@ -84,9 +85,11 @@ module hopper_mount(
     union() {
       rounded_box(mount_size[0], mount_size[1], mount_thickness, mount_radius);
 
-      // Socket, sunk slightly into the flange so the two weld.
-      translate([0, 0, mount_thickness - 0.1])
-        cylinder(h = joint_neck_height(joint) + 0.1, d = _socket_outer_d);
+      // Socket sits at EXACTLY the flange top, on a coincident face rather
+      // than sunk in. Sinking it to force a weld, as the rest of this part
+      // does, would drop its channels relative to the neck's pins, and the
+      // joint only has +/-0.15 mm of axial float to give away.
+      translate([0, 0, mount_thickness]) joint_socket(joint);
 
       translate([0, 0, _locator_bottom])
         rounded_box(_locator, _locator, _locator_length + 0.1, 6);
@@ -110,17 +113,18 @@ module hopper_mount(
         cylinder(h = lead_in, d1 = spigot_od - lead_in_reduction, d2 = spigot_od);
 
       if (gussets)
-        _socket_gussets(joint, joint_tabs(joint), _socket_outer_d, mount_thickness);
+        _socket_gussets(joint, joint_pins(joint), _socket_outer_d, mount_thickness);
     }
 
     _bolt_holes(bolt_spacing, bolt_diameter, mount_thickness);
 
-    // Socket bore. Its floor is the annular land the hopper neck sits down on,
-    // and that land -- not the bayonet tabs -- carries the pellet weight.
-    translate([0, 0, mount_thickness - 0.1])
-      cylinder(h = joint_neck_height(joint) + 1, d = joint_socket_inner_d(joint));
-
-    joint_socket_cuts(joint, z = mount_thickness);
+    // Nothing is cut for the socket: it arrives hollow and already channelled.
+    // What matters is what is NOT cut here. The flange top between the pellet
+    // bore and the socket bore is the annular land the neck sits down on, and
+    // that land -- not the pins -- carries the pellet weight. The library's two
+    // halves span the same z range with nothing to bottom out on, so cutting
+    // this seat away would move roughly 98 N onto four sphere contacts at some
+    // thirty times the bearing stress.
 
     // Pellet path: full bore through the flange, necking to the spigot bore.
     translate([0, 0, _locator_bottom - 1])
@@ -136,6 +140,7 @@ module hopper_mount(
   }
 }
 
-// Standalone preview.
-$fn = $preview ? 48 : 120;
-hopper_mount(joint = hopper_joint());
+// Standalone preview. $fn is passed on the call, never assigned at top level:
+// a use'd file's own top-level $fn is what ITS modules see, so assigning it
+// here would silently override whatever the driver asked for.
+hopper_mount(joint = hopper_joint(), $fn = $preview ? 48 : 120);

@@ -1,178 +1,189 @@
-// Four-tab bayonet joint between the hopper body and the roof mount.
+// Bayonet joint between the hopper body and the roof mount.
 // GPL-3.0-or-later
 // Units: mm, degrees
 
-use <hopper_util.scad>
+use <bayonet-lock-scad/bayonet_lock.scad>
 
-// The body's tabs and the mount's slots are cut from ONE joint spec, passed to
-// both parts by the driver. Handing each part its own copy of a dozen loose
-// dimensions makes a joint that does not mate a silent, buildable mistake.
+// Built on bayonet-lock-scad, installed as a global OpenSCAD library. It has no
+// git tags, so pin it by commit: 85c43ae (v0.11.0). At least 0.9.1 is required,
+// which fixed the z alignment of the two halves when entry_depth is not half of
+// part_height -- exactly the case used here.
 //
-// This whole file is the seam for replacing the hand-rolled joint with
-// bayonet-lock-scad: it is the only place the coupling geometry is defined.
+// Both halves come from ONE joint spec built by the driver, so a mismatch is
+// impossible by construction rather than by discipline.
+//
+// TWO THINGS THE LIBRARY WILL NOT DO FOR YOU, both verified here by rendering:
+//
+// 1. MATING CONVENTION. The library README says instantiating both halves at a
+//    common origin gives the locked position. It does not: a common origin is
+//    the ENTRY position, pins sitting at the channel mouths. For
+//    turn_direction "CCW" the locked position is +sweep_angle. Measured by
+//    intersecting the halves -- at +25 they seat with no interference and, when
+//    lifted by entry_depth, stay captured with 99.6 mm3 of overlap; at 0 they
+//    lift straight out. So joint_neck() is authored pre-rotated, which is what
+//    lets the driver place the body at its nominal orientation and have it be
+//    seated. Get this wrong and the bin sits 25 degrees skew to the roof.
+//
+// 2. THE ASSERTS BELOW. The library checks sweep_angle against the raw pin gap
+//    but not the sweep's own tangency extension, so adjacent channels can merge
+//    into a continuous slot -- leaving no retention at all -- while every
+//    library assert passes. It also never checks that the channel stays inside
+//    the part, nor that the shell is thinner than the interface radius, and
+//    either failure produces a plausible-looking part with no locking.
+//
+// See docs/design-notes.md.
 
-// Field order matches the constructor.
-_JOINT_NECK_OD = 0;
-_JOINT_NECK_HEIGHT = 1;
-_JOINT_TAB_WIDTH = 2;
-_JOINT_TAB_DEPTH = 3;
-_JOINT_TAB_HEIGHT = 4;
-_JOINT_TAB_Z = 5;
-_JOINT_TABS = 6;
-_JOINT_ROTATION = 7;
-_JOINT_CLEARANCE = 8;
-_JOINT_Z_CLEARANCE = 9;
-_JOINT_SOCKET_WALL = 10;
-_JOINT_BORE_DIAMETER = 11;
+_JOINT_INTERFACE_RADIUS = 0;
+_JOINT_SHELL_THICKNESS = 1;
+_JOINT_ALLOWANCE = 2;
+_JOINT_PART_HEIGHT = 3;
+_JOINT_ENTRY_DEPTH = 4;
+_JOINT_PIN_RADIUS = 5;
+_JOINT_SWEEP_ANGLE = 6;
+_JOINT_PINS = 7;
+_JOINT_KEY_ANGLE = 8;
+_JOINT_BORE_DIAMETER = 9;
 
 /**
- * Build a joint spec. Every dimension the two halves must agree on lives here,
- * so a mismatch is impossible by construction rather than by discipline.
+ * Build a joint spec.
  *
- * `rotation` is the quarter-turn travel: the body is inserted that many degrees
- * counter-clockwise of its seated position, then turned clockwise to lock.
+ * Defaults reproduce the coupling this hopper was imported with: a 44 mm neck
+ * turning inside a 58 mm socket, 18 mm deep, on a 25 degree quarter turn.
+ *
+ * `key_angle` pulls one pin off the even pattern so the joint has a single
+ * locked orientation. The bin is rectangular, so an unkeyed four-pin pattern
+ * would seat it crosswise on the roof just as happily as along it.
  */
 function hopper_joint(
-  neck_od = 44,
-  neck_height = 18,
-  tab_width = 10,
-  tab_depth = 3,
-  tab_height = 4,
-  tab_z = 4,
-  tabs = 4,
-  rotation = 25,
-  clearance = 0.30,
-  z_clearance = 0.25,
-  socket_wall = 4,
+  interface_radius = 22.15,
+  shell_thickness = 6.85,
+  allowance = 0.30,
+  part_height = 18,
+  entry_depth = 12,
+  pin_radius = 3.0,
+  sweep_angle = 25,
+  pins = 4,
+  key_angle = 15,
   bore_diameter = 38
 ) =
-  assert(neck_od > 0, str("hopper_joint: neck_od must be > 0, got: ", neck_od))
-  assert(
-    bore_diameter > 0 && bore_diameter < neck_od,
-    str("hopper_joint: bore_diameter must be 0..", neck_od, ", got: ", bore_diameter)
+  let (
+    channel_half = bayonet_channel_half_angle(interface_radius, pin_radius, allowance),
+    angles = bayonet_keyed_pin_angles(pins, key_angle),
+    max_bore = 2 * (interface_radius - allowance / 2 - pin_radius)
   )
-  assert(tabs >= 2, str("hopper_joint: tabs must be >= 2, got: ", tabs))
   assert(
-    tab_z + tab_height < neck_height,
+    shell_thickness < interface_radius,
     str(
-      "hopper_joint: tab_z + tab_height (",
-      tab_z + tab_height,
-      ") must be < neck_height (",
-      neck_height,
-      ") or the tab runs off the top of the neck"
+      "hopper_joint: shell_thickness (", shell_thickness,
+      ") must be < interface_radius (", interface_radius,
+      ") or the half renders as a solid rod instead of a tube"
     )
   )
-  assert(clearance > 0, str("hopper_joint: clearance must be > 0, got: ", clearance))
-  assert(z_clearance > 0, str("hopper_joint: z_clearance must be > 0, got: ", z_clearance))
+  assert(
+    part_height - entry_depth > pin_radius + allowance / 2,
+    str(
+      "hopper_joint: the channel would break out of the bottom face. Needs ",
+      "part_height - entry_depth (", part_height - entry_depth,
+      ") > pin_radius + allowance/2 (", pin_radius + allowance / 2, ")"
+    )
+  )
+  assert(
+    bore_diameter <= max_bore,
+    str(
+      "hopper_joint: bore_diameter (", bore_diameter,
+      ") would cut into the pins. Maximum is ", max_bore,
+      " at pin_radius ", pin_radius
+    )
+  )
+  assert(
+    bayonet_pin_pattern_min_gap(angles) > sweep_angle + 3 * channel_half,
+    str(
+      "hopper_joint: adjacent channels would merge into a continuous slot, ",
+      "leaving no retention. Needs min gap (", bayonet_pin_pattern_min_gap(angles),
+      ") > sweep_angle + 3 * channel half-angle (", sweep_angle + 3 * channel_half, ")"
+    )
+  )
+  assert(
+    bayonet_pin_pattern_margin(angles) > channel_half,
+    str(
+      "hopper_joint: the key is too shallow to block a wrong seating. Needs ",
+      "margin (", bayonet_pin_pattern_margin(angles),
+      ") > channel half-angle (", channel_half, ")"
+    )
+  )
   [
-    neck_od, neck_height, tab_width, tab_depth, tab_height, tab_z,
-    tabs, rotation, clearance, z_clearance, socket_wall, bore_diameter,
+    interface_radius, shell_thickness, allowance, part_height, entry_depth,
+    pin_radius, sweep_angle, pins, key_angle, bore_diameter,
   ];
 
-function joint_neck_od(joint) = joint[_JOINT_NECK_OD]; //! Outside diameter of the body's locking neck
-function joint_neck_height(joint) = joint[_JOINT_NECK_HEIGHT]; //! Height of the locking neck
-function joint_tab_width(joint) = joint[_JOINT_TAB_WIDTH]; //! Circumferential width of one tab
-function joint_tab_depth(joint) = joint[_JOINT_TAB_DEPTH]; //! Radial projection of one tab
-function joint_tab_height(joint) = joint[_JOINT_TAB_HEIGHT]; //! Axial height of one tab
-function joint_tab_z(joint) = joint[_JOINT_TAB_Z]; //! Height of the tab above the neck bottom
-function joint_tabs(joint) = joint[_JOINT_TABS]; //! Number of tabs, evenly spaced
-function joint_rotation(joint) = joint[_JOINT_ROTATION]; //! Quarter-turn travel to lock
-function joint_clearance(joint) = joint[_JOINT_CLEARANCE]; //! Radial fit between neck and socket
-function joint_z_clearance(joint) = joint[_JOINT_Z_CLEARANCE]; //! Vertical slack around a tab
-function joint_socket_wall(joint) = joint[_JOINT_SOCKET_WALL]; //! Material outboard of the tab groove
+function joint_interface_radius(joint) = joint[_JOINT_INTERFACE_RADIUS]; //! Virtual radius the two shells straddle
+function joint_shell_thickness(joint) = joint[_JOINT_SHELL_THICKNESS]; //! Radial thickness from the interface radius
+function joint_allowance(joint) = joint[_JOINT_ALLOWANCE]; //! Total radial gap between the shells
+function joint_neck_height(joint) = joint[_JOINT_PART_HEIGHT]; //! Height of both halves
+function joint_entry_depth(joint) = joint[_JOINT_ENTRY_DEPTH]; //! Insertion travel down from the top face
+function joint_pin_radius(joint) = joint[_JOINT_PIN_RADIUS]; //! Radius of one pin sphere
+function joint_sweep_angle(joint) = joint[_JOINT_SWEEP_ANGLE]; //! Quarter-turn travel to lock
+function joint_pins(joint) = joint[_JOINT_PINS]; //! Number of pins
 function joint_bore_diameter(joint) = joint[_JOINT_BORE_DIAMETER]; //! Pellet bore through the joint
 
-// Angular pitch between tabs.
-function joint_tab_pitch(joint) = 360 / joint_tabs(joint);
+// Pin angles, keyed so the joint has exactly one locked orientation.
+function joint_pin_angles(joint) =
+  bayonet_keyed_pin_angles(joint_pins(joint), joint[_JOINT_KEY_ANGLE]);
+
+// Outside of the body's neck.
+function joint_neck_od(joint) =
+  2 * (joint_interface_radius(joint) - joint_allowance(joint) / 2);
 
 // Bore of the socket the neck turns inside.
 function joint_socket_inner_d(joint) =
-  joint_neck_od(joint) + 2 * joint_clearance(joint);
+  2 * (joint_interface_radius(joint) + joint_allowance(joint) / 2);
 
-// Outside of the socket, clearing the tab groove plus its wall.
 function joint_socket_outer_d(joint) =
-  joint_neck_od(joint) + 2 * (joint_tab_depth(joint) + joint_socket_wall(joint));
+  2 * (joint_interface_radius(joint) + joint_shell_thickness(joint));
 
-function joint_slot_width(joint) =
-  joint_tab_width(joint) + 2 * joint_clearance(joint);
-
-// Radial depth of the slot and groove. The trailing term is slack beyond the
-// tab tip so the tab never bottoms out radially while turning.
-function joint_slot_radial(joint) =
-  joint_tab_depth(joint) + joint_clearance(joint) + 0.8;
-
-function joint_groove_height(joint) =
-  joint_tab_height(joint) + 2 * joint_z_clearance(joint);
-
-/**
- * Half the angle a tab subtends at its own mid-radius. The rotation groove is
- * widened by this at both ends so the tab can travel its full `rotation`
- * without its trailing edge fouling the groove end.
- */
-function joint_tab_half_angle(joint) =
-  atan(
-    (joint_slot_width(joint) / 2) /
-    (joint_neck_od(joint) / 2 + joint_tab_depth(joint) / 2)
+// Largest pellet bore that does not cut into the pins.
+function joint_max_bore_diameter(joint) =
+  2 * (
+    joint_interface_radius(joint) - joint_allowance(joint) / 2 -
+    joint_pin_radius(joint)
   );
 
-// Tabs on the body neck. Each is sunk slightly into the neck so it welds to it
-// rather than meeting on a coincident face.
-module joint_tabs_solid(joint, weld = 0.2) {
-  for (i = [0:joint_tabs(joint) - 1]) {
-    rotate([0, 0, i * joint_tab_pitch(joint)])
-      translate([
-        joint_neck_od(joint) / 2 - weld,
-        -joint_tab_width(joint) / 2,
-        joint_tab_z(joint),
-      ])
-        cube([joint_tab_depth(joint) + weld, joint_tab_width(joint), joint_tab_height(joint)]);
-  }
+module _bayonet_half(joint, which) {
+  bayonet(
+    half=which,
+    interface_radius=joint_interface_radius(joint),
+    shell_thickness=joint_shell_thickness(joint),
+    allowance=joint_allowance(joint),
+    part_height=joint_neck_height(joint),
+    entry_depth=joint_entry_depth(joint),
+    pin_angles=joint_pin_angles(joint),
+    pin_radius=joint_pin_radius(joint),
+    sweep_angle=joint_sweep_angle(joint),
+    pin_direction="outer",
+    turn_direction="CCW"
+  );
 }
 
 /**
- * The cuts that turn a plain socket into a bayonet receiver, positioned for a
- * mount whose flange top sits at `z`.
+ * The body's neck: a tube sitting on z = 0, pins outward.
  *
- * Each tab needs a vertical slot to drop through and a horizontal groove to
- * turn along. The material left below the groove is what actually carries the
- * hanging load, so the groove is cut to the tab height plus slack and no more.
+ * Pre-rotated by the sweep angle so that this orientation IS the seated one.
+ * To fit it, turn the body back by sweep_angle, drop it in, and turn it
+ * forward to here. Its natural bore is narrow; the body opens it out to the
+ * pellet bore afterwards, which joint_max_bore_diameter bounds.
  */
-module joint_socket_cuts(joint, z = 0, weld = 0.3) {
-  _pitch = joint_tab_pitch(joint);
-  _bottom = z + joint_tab_z(joint) - joint_z_clearance(joint);
-  _radius = joint_socket_inner_d(joint) / 2 - weld;
-
-  for (i = [0:joint_tabs(joint) - 1]) {
-    _at = i * _pitch;
-
-    // Entry slot, offset counter-clockwise of the seated position by the full
-    // turn, running from the tab's seated height up through the top of the neck.
-    rotate([0, 0, _at - joint_rotation(joint)])
-      translate([_radius, -joint_slot_width(joint) / 2, _bottom])
-        cube([
-          joint_slot_radial(joint),
-          joint_slot_width(joint),
-          joint_neck_height(joint) - joint_tab_z(joint) + joint_z_clearance(joint) + 1,
-        ]);
-
-    // Rotation groove, swept from the entry slot round to the seated position.
-    rotate([0, 0, _at - joint_rotation(joint) - joint_tab_half_angle(joint)])
-      rotate_extrude(
-        angle = joint_rotation(joint) + 2 * joint_tab_half_angle(joint),
-        convexity = 10
-      )
-        translate([_radius, _bottom])
-          square([joint_slot_radial(joint), joint_groove_height(joint)]);
-  }
+module joint_neck(joint) {
+  rotate([0, 0, joint_sweep_angle(joint)]) _bayonet_half(joint, "pin");
 }
 
-// Standalone preview: a neck with tabs beside the socket that receives it.
-$fn = $preview ? 48 : 120;
+// The mount's socket: a tube sitting on z = 0, channels cut into its bore.
+module joint_socket(joint) {
+  _bayonet_half(joint, "lock");
+}
+
+// Standalone preview ($fn passed on the call, never assigned at top level --
+// it would otherwise override the driver's choice for this file's modules): neck at the origin, socket beside it.
 _demo = hopper_joint();
-cylinder(h = joint_neck_height(_demo), d = joint_neck_od(_demo));
-joint_tabs_solid(_demo);
-translate([joint_socket_outer_d(_demo) + 10, 0, 0]) difference() {
-  cylinder(h = joint_neck_height(_demo), d = joint_socket_outer_d(_demo));
-  translate([0, 0, -1]) cylinder(h = joint_neck_height(_demo) + 2, d = joint_socket_inner_d(_demo));
-  joint_socket_cuts(_demo);
-}
+joint_neck(_demo, $fn = $preview ? 64 : 160);
+translate([joint_socket_outer_d(_demo) + 10, 0, 0])
+  joint_socket(_demo, $fn = $preview ? 64 : 160);

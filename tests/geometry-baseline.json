@@ -10,8 +10,8 @@
       -90.0,
       0.0
     ],
-    "triangles": 2688,
-    "volume_mm3": 524856.341
+    "triangles": 11236,
+    "volume_mm3": 524542.008
   },
   "body@300x240": {
     "bbox_mm": [
@@ -24,8 +24,8 @@
       -120.0,
       0.0
     ],
-    "triangles": 2688,
-    "volume_mm3": 909560.327
+    "triangles": 11236,
+    "volume_mm3": 909233.539
   },
   "body@390x300": {
     "bbox_mm": [
@@ -38,8 +38,8 @@
       -150.0,
       0.0
     ],
-    "triangles": 2688,
-    "volume_mm3": 1458544.193
+    "triangles": 11236,
+    "volume_mm3": 1458202.972
   },
   "cap@220x180": {
     "bbox_mm": [
@@ -52,8 +52,8 @@
       -93.6,
       0.0
     ],
-    "triangles": 988,
-    "volume_mm3": 165842.679
+    "triangles": 540,
+    "volume_mm3": 165838.497
   },
   "cap@300x240": {
     "bbox_mm": [
@@ -66,8 +66,8 @@
       -123.6,
       0.0
     ],
-    "triangles": 988,
-    "volume_mm3": 279506.694
+    "triangles": 540,
+    "volume_mm3": 279502.372
   },
   "cap@390x300": {
     "bbox_mm": [
@@ -80,8 +80,8 @@
       -153.6,
       0.0
     ],
-    "triangles": 988,
-    "volume_mm3": 432146.694
+    "triangles": 540,
+    "volume_mm3": 432142.372
   },
   "mount@220x180": {
     "bbox_mm": [
@@ -94,8 +94,8 @@
       -45.0,
       -59.0
     ],
-    "triangles": 6320,
-    "volume_mm3": 97495.009
+    "triangles": 9762,
+    "volume_mm3": 99360.625
   },
   "mount@300x240": {
     "bbox_mm": [
@@ -108,8 +108,8 @@
       -45.0,
       -59.0
     ],
-    "triangles": 6320,
-    "volume_mm3": 97495.009
+    "triangles": 9762,
+    "volume_mm3": 99360.625
   },
   "mount@390x300": {
     "bbox_mm": [
@@ -122,7 +122,7 @@
       -45.0,
       -59.0
     ],
-    "triangles": 6320,
-    "volume_mm3": 97495.009
+    "triangles": 9762,
+    "volume_mm3": 99360.625
   }
 }

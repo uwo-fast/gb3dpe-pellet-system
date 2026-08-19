@@ -54,7 +54,7 @@ def mesh_stats(stl: Path) -> dict:
     }
 
 
-def capture() -> dict:
+def capture(facets: int) -> dict:
     out = {}
     with tempfile.TemporaryDirectory() as tmp:
         for size, label in SIZES.items():
@@ -63,7 +63,7 @@ def capture() -> dict:
                 subprocess.run(
                     ["openscad", "-o", str(stl),
                      "-D", f'render_part="{part}"', "-D", f"hopper_size={size}",
-                     str(SCAD)],
+                     "-D", f"render_facets={facets}", str(SCAD)],
                     check=True, capture_output=True,
                 )
                 out[f"{part}@{label}"] = mesh_stats(stl)
@@ -97,9 +97,11 @@ def main() -> int:
                     help="permitted volume change, percent (default: 0.5)")
     ap.add_argument("--dimension-tolerance", type=float, default=0.05,
                     help="permitted bounding-box change, mm (default: 0.05)")
+    ap.add_argument("--facets", type=int, default=64,
+                    help="render_facets to compare at; must match the baseline")
     args = ap.parse_args()
 
-    current = capture()
+    current = capture(args.facets)
 
     if args.write:
         BASELINE.parent.mkdir(exist_ok=True)

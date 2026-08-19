@@ -39,6 +39,7 @@ module hopper_cap(
   }
 }
 
-// Standalone preview.
-$fn = $preview ? 48 : 120;
-hopper_cap(top_x = 220, top_y = 180);
+// Standalone preview. $fn is passed on the call, never assigned at top level:
+// a use'd file's own top-level $fn is what ITS modules see, so assigning it
+// here would silently override whatever the driver asked for.
+hopper_cap(top_x = 220, top_y = 180, $fn = $preview ? 48 : 120);

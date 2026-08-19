@@ -59,22 +59,25 @@ neck_transition_height = 10;
 
 /* [Bayonet Lock] */
 
-lock_neck_od = 44;
-lock_neck_height = 18;
-lock_tabs = 4; // [2:1:8]
-lock_tab_width = 10;
-lock_tab_depth = 3;
-lock_tab_height = 4;
-// Height of the tabs above the bottom of the neck
-lock_tab_z = 4;
-// Quarter-turn travel from insertion to seated
-lock_rotation = 25; // [15:1:35]
-// Radial fit between body neck and socket
-lock_clearance = 0.30;
-// Vertical slack around the tabs
-lock_z_clearance = 0.25;
-// Material outboard of the tab groove
-socket_wall = 4;
+// Built on bayonet-lock-scad. The neck outside diameter is
+// 2 * (interface_radius - allowance/2) and the socket outside diameter is
+// 2 * (interface_radius + shell_thickness), so these defaults give the 44 mm
+// neck in a 58 mm socket the design was imported with.
+lock_interface_radius = 22.15;
+lock_shell_thickness = 6.85;
+// Total radial gap between the two shells. Also sets the axial float, at half
+// this either way, and the size of the library's detent.
+lock_allowance = 0.30;
+lock_height = 18;
+// Insertion travel measured down from the top of the neck.
+lock_entry_depth = 12;
+lock_pin_radius = 3.0; // [1:0.1:4]
+// Quarter-turn travel from insertion to seated.
+lock_sweep_angle = 25; // [15:1:35]
+lock_pins = 4; // [2:1:7]
+// Pulls one pin off the even pattern so the joint has a single locked
+// orientation. Zero leaves the bin free to seat crosswise on the roof.
+lock_key_angle = 15; // [0:1:40]
 
 /* [Roof Mount] */
 
@@ -158,26 +161,27 @@ _funnel_height = funnel_height_for_angle(_top_x, _top_y, throat, funnel_angle);
 _inset = funnel_wall_inset(min_wall, funnel_angle);
 
 // One joint spec, shared by both halves so they cannot drift apart.
+_neck_od = 2 * (lock_interface_radius - lock_allowance / 2);
+
 _joint = hopper_joint(
-  neck_od=lock_neck_od,
-  neck_height=lock_neck_height,
-  tab_width=lock_tab_width,
-  tab_depth=lock_tab_depth,
-  tab_height=lock_tab_height,
-  tab_z=lock_tab_z,
-  tabs=lock_tabs,
-  rotation=lock_rotation,
-  clearance=lock_clearance,
-  z_clearance=lock_z_clearance,
-  socket_wall=socket_wall,
+  interface_radius=lock_interface_radius,
+  shell_thickness=lock_shell_thickness,
+  allowance=lock_allowance,
+  part_height=lock_height,
+  entry_depth=lock_entry_depth,
+  pin_radius=lock_pin_radius,
+  sweep_angle=lock_sweep_angle,
+  pins=lock_pins,
+  key_angle=lock_key_angle,
   // The neck is vertical, so min_wall is already its perpendicular thickness.
-  bore_diameter=lock_neck_od - 2 * min_wall
+  // hopper_joint asserts this against the largest bore that clears the pins.
+  bore_diameter=_neck_od - 2 * min_wall
 );
 
 _spigot_od = pipe_id - pipe_clearance;
 
 // Overall body height, and how far the feedthrough hangs below the flange.
-_body_height = lock_neck_height + neck_transition_height + _funnel_height + _bin_height;
+_body_height = lock_height + neck_transition_height + _funnel_height + _bin_height;
 _drop_below_flange = roof_thickness + roof_locator_extra + transition_height + spigot_length;
 _cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
 
@@ -191,7 +195,7 @@ _capacity_kg = hopper_capacity_kg(_volume_l, feedstock_bulk_density(_feedstock))
 _cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
 _part_x = max(_cap_outer_x, mount_size[0]);
 _part_y = max(_cap_outer_y, mount_size[1]);
-_part_z = max(_body_height, _drop_below_flange + mount_thickness + lock_neck_height);
+_part_z = max(_body_height, _drop_below_flange + mount_thickness + lock_height);
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
 echo(str(
@@ -274,8 +278,9 @@ if (render_part == "body") {
 } else if (render_part == "cap") {
   _cap();
 } else if (render_part == "assembly") {
-  // Shown seated. To fit it: turn the body anticlockwise by lock_rotation,
-  // drop it in, then turn it clockwise back to here.
+  // Shown seated: joint_neck() is authored pre-rotated, so the body's nominal
+  // orientation is the locked one. To fit it, turn the body back by
+  // lock_sweep_angle, drop it in, then turn it forward to here.
   _mount();
   translate([0, 0, mount_thickness]) _body();
   translate([0, 0, mount_thickness + _body_height - cap_skirt_height]) _cap();

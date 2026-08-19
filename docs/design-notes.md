@@ -63,6 +63,63 @@ imported geometry. So the radii subtract the inset and the geometry **asserts**
 the result stays at or above 0.8 mm, roughly two 0.4 mm extrusions, rather than
 clamping quietly.
 
+## Bayonet joint uses `bayonet-lock-scad` [B]
+
+The joint was hand-rolled with rectangular tabs. It now comes from our own
+`bayonet-lock-scad`, which brings a hard end stop, a keyed pattern, and a
+thicker socket wall outside the channel. The library has no git tags, so it is
+pinned by commit `85c43ae` (v0.11.0); at least 0.9.1 is required, which fixed
+the z alignment of the two halves when `entry_depth` is not half of
+`part_height`, exactly the case used here.
+
+Four decisions worth recording:
+
+**The locked position is `+sweep_angle`, not a common origin.** The library
+README says instantiating both halves at a common origin gives the locked
+position. Measured by intersecting the two halves, it does not: a common origin
+is the *entry* position, and for `turn_direction = "CCW"` locked is
+`+sweep_angle`. At +25° the halves seat with no interference and stay captured
+with 99.6 mm³ of overlap when lifted by `entry_depth`; at 0° they lift straight
+out. `joint_neck()` is therefore authored pre-rotated, so the body's nominal
+orientation is the seated one. Getting this wrong sits the bin 25° skew to the
+roof — and note the sign depends on `turn_direction`, so a result measured for
+`CW` does not carry over.
+
+**The annular seat stays.** Both library halves span the same z range with
+nothing to bottom out on, so the pins would carry the entire pellet load. The
+mount keeps the flange top between the pellet bore and the socket bore as a
+~430 mm² land. Flat bearing there is well under 1 MPa; sphere-in-trough contact
+would be tens of MPa, which does not break but beds in, and every 0.1 mm of
+bed-in is 0.1 mm of new axial slop.
+
+**The pattern is keyed.** Four evenly spaced pins give four identical locked
+positions, and the bin is rectangular, so half of them mount it crosswise.
+`key_angle = 15°` pulls one pin off the even pattern; the resulting margin (15°)
+clears the channel half-angle (8.1°), and the smallest gap (75°) clears the
+channel-merge floor (49.3°).
+
+**Three asserts are ours, not the library's.** It checks `sweep_angle` against
+the raw pin gap but not the sweep's own tangency extension, so adjacent channels
+can merge into a continuous slot — no retention at all — with every library
+assert passing. It also never checks that the channel stays inside the part, or
+that the shell is thinner than the interface radius; either failure yields a
+plausible-looking part that does not lock. `hopper_joint()` asserts all three,
+plus that the pellet bore does not cut into the pins.
+
+Verified in situ against the assembled mount, not just as two isolated halves:
+the body seats at its nominal orientation, is captured when lifted (67 mm³ of
+interference at 2 mm, 188 mm³ at 5 mm), and is blocked at 90°, 180° and 270°, so
+the keying does prevent a crosswise mount. The annular seat measures 213.5 mm³
+over a 0.5 mm probe against 214.1 mm³ predicted, so it is fully intact. Seated,
+there is 0.25 mm³ of interference across the whole joint, unchanged at higher
+facet counts and therefore real rather than faceting — consistent with the
+library's detent sitting just short of the stop, i.e. a light snap-past.
+
+Still missing, and tracked in TODO: **anti-rotation**. The library has an
+undocumented detent whose size is welded to `allowance`, so at our 0.30 it is a
+0.6 mm post — at or below one extrusion width. Treat it as absent. Nothing
+resists the coupling backing off under a hose pull or a knock.
+
 ## Build volume 250 × 210 × 210 mm
 
 The Original Prusa i3 MK3S envelope [P], and the largest printer available here
@@ -103,6 +160,11 @@ All established by compiling on 2021.01, not from documentation.
   literal tokens `ERROR:`, `WARNING:` or `DEPRECATED:`.
 - STL facets are not emitted in a stable order, so meshes cannot be compared by
   hash. `just geom` compares signed volume, bounding box and triangle count.
+- A `use`d file's own top-level `$fn` is what **its** modules see, overriding
+  whatever the consumer set. So no file here assigns `$fn` at top level except
+  the driver; standalone previews pass `$fn` on the call instead. Getting this
+  wrong is silent: the driver's facet setting simply has no effect, which is how
+  a body render sat at 170 s regardless of what it was asked for.
 
 ## References
 

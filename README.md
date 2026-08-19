@@ -37,8 +37,19 @@ worked. Do not print from it yet.
 
 ## Getting started
 
-Requires [OpenSCAD](https://openscad.org/) (tested on 2021.01) and
-[just](https://github.com/casey/just).
+Requires [OpenSCAD](https://openscad.org/) (tested on 2021.01),
+[just](https://github.com/casey/just), and
+[`bayonet-lock-scad`](https://github.com/CameronBrooks11/bayonet-lock-scad)
+installed as an OpenSCAD library:
+
+```sh
+git clone https://github.com/CameronBrooks11/bayonet-lock-scad \
+  ~/.local/share/OpenSCAD/libraries/bayonet-lock-scad
+git -C ~/.local/share/OpenSCAD/libraries/bayonet-lock-scad checkout 85c43ae
+```
+
+That library carries no git tags, so pin it by commit. Version 0.9.1 or later is
+required.
 
 ```sh
 just            # list recipes
