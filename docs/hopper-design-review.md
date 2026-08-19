@@ -112,6 +112,27 @@ No bridge-breaker or vibrator boss, no sight window, no level sensing. The cap
 is a plain slip box at 0.6 mm clearance with no seal or latch, which does
 nothing to keep pellets dry.
 
+### The funnel wall is thinner than the `wall` parameter says
+
+`wall = 3` is applied as a *horizontal* offset: the inner funnel runs from
+`throat - 2*wall` to `top_x - 2*wall` over the same Z span as the outer. On a
+sloped face the thickness measured perpendicular to the surface is
+`wall * sin(theta)`, so the funnel is nowhere near 3 mm:
+
+| Preset | X wall (true) | Y wall (true) |
+| ------ | ------------- | ------------- |
+| 2.5 kg | 2.02 mm       | 2.29 mm       |
+| 5 kg   | 1.85 mm       | 2.14 mm       |
+| 10 kg  | **1.61 mm**   | 1.96 mm       |
+
+At 1.61 mm the 10 kg funnel is close to three perimeters at 0.45 mm line width,
+on the part carrying the most load. The near-vertical sections keep their 3 mm,
+so the shell is thinnest exactly where the pellet column bears on it.
+
+Steepening the funnel for flow also fixes this: at 60 deg the true wall is
+2.60 mm and at 70 deg it is 2.82 mm. The two problems have the same cure, which
+is a good reason to treat wall angle as the primary input.
+
 ### Structure is unverified
 
 3 mm walls on a 390 mm span holding 10 kg, hanging off a 90 × 90 × 8 mm flange
