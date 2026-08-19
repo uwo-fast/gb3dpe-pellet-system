@@ -3,6 +3,8 @@
 // Units: mm, degrees, litres
 
 // Angles here are measured from HORIZONTAL. A steeper funnel is a larger angle.
+// Hopper literature usually quotes the angle from VERTICAL, which is 90 minus
+// these. Rationale and sources: docs/design-notes.md.
 
 /**
  * Horizontal distance the DIAGONAL CORNER travels from the throat out to the

@@ -68,7 +68,8 @@ module hopper_body(
   // Corner radii follow the wall inward so the inner profile stays a true
   // parallel offset of the outer. Clamping one instead would quietly thin the
   // wall at that corner -- which is both the shallowest surface and where a
-  // pellet bridge anchors -- so it is asserted rather than floored.
+  // pellet bridge anchors -- so it is asserted rather than floored. The 0.8 mm
+  // limit is roughly two 0.4 mm extrusions. See docs/design-notes.md.
   _inner_throat_radius = throat_radius - _inset;
   _inner_funnel_radius = funnel_radius - _inset;
 

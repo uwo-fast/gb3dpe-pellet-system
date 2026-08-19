@@ -9,7 +9,7 @@
 // top-level assignments in THIS file, textually before the first module
 // definition, reach the parameter panel. Parameters in an included file never
 // appear. Hence the dummy module below, which fences the tunable parameters off
-// from the derived values beneath it.
+// from the derived values beneath it. See docs/design-notes.md.
 
 include <hopper_feedstock.scad>
 include <hopper_sizes.scad>
@@ -121,7 +121,8 @@ cap_top_thickness = 3;
 
 /* [Build Volume] */
 
-// Printer envelope used for the fit report. MK3S is 250 x 210 x 210.
+// Printer envelope used for the fit report. Original Prusa i3 MK3S is
+// 250 x 210 x 210 mm and is the largest printer available here.
 build_volume = [250, 210, 210];
 // Turn on to make a part that does not fit the envelope a hard error.
 require_printable = false;

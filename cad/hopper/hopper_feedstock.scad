@@ -12,10 +12,17 @@
 //   1  min_funnel_angle  shallowest funnel that still flows, degrees from HORIZONTAL
 //   2  bulk_density      kg per litre, for capacity reporting
 //
-// The angles are design targets, not measured values. The critical mass-flow
-// angle depends on the material AND on the wall friction of the printed
-// surface, so a hopper that bridges in service wants a measured wall friction
-// angle rather than a nudge to these numbers. Tracked in TODO.md.
+// SOURCES -- see docs/design-notes.md for the reasoning and full citations.
+//   Angles are design targets from general bulk-solids practice, NOT measured.
+//   The critical mass-flow angle depends on the material and on the wall
+//   friction of the surface it slides on (Jenike & Johanson), so a printed wall
+//   is not interchangeable with the steel those figures assume. Regrind is set
+//   steeper because irregular flake nests and bridges (Wijay Systems).
+//   Bulk density spans roughly 450-850 kg/m3 across resin types (Conair);
+//   virgin PLA sits mid-range, and the regrind figure is an estimate because
+//   flake density is variable rather than a property.
+//   A hopper that bridges in service wants a measured wall friction angle
+//   against an actual printed surface, not a nudge to these. Tracked in TODO.md.
 //
 // Note the convention: hopper literature usually quotes the angle from
 // VERTICAL, which is 90 minus these. 60 degrees from horizontal is 30 from

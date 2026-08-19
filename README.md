@@ -79,6 +79,7 @@ change.
 ## Documentation
 
 - [GreenBoy3D Pellet Extruder V1 — hardware reference](docs/greenboy3d-extruder.md)
+- [Design notes](docs/design-notes.md) — why the geometry is the way it is, and where the numbers came from
 - [Review of the imported hopper design](docs/hopper-design-review.md)
 
 ## Contributing
