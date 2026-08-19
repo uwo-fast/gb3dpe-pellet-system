@@ -78,6 +78,11 @@ Contributions are welcome. See the organization
 If you use this project in your work, please cite it. Use the **Cite this
 repository** button on GitHub, or see [`CITATION.cff`](CITATION.cff).
 
+## Acknowledgements
+
+The bulk hopper was initially designed by [Hadden Christ](https://github.com/HaddenChrist),
+whose body, roof mount, cap and bayonet coupling are the basis of `cad/hopper/`.
+
 ## License
 
 Released under the [GPL-3.0](LICENSE) license.

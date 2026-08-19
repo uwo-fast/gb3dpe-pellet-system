@@ -141,5 +141,4 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 
 ## Admin
 
-- [ ] Add the co-op student to `CITATION.cff` and the README credits — needs
-      their full name and, if they have one, an ORCID.
+- [ ] Add ORCIDs to `CITATION.cff` if the authors have them.

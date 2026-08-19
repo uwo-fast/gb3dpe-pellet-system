@@ -8,6 +8,8 @@ type: software
 authors:
   - family-names: "Brooks"
     given-names: "Cameron"
+  - family-names: "Christ"
+    given-names: "Hadden"
 version: "0.1.0"
 url: "https://github.com/uwo-fast/gb3dpe-pellet-system"
 license: GPL-3.0-or-later
