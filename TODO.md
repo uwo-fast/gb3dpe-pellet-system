@@ -100,10 +100,11 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 - [ ] Hand-calculate the flange and wall loading for the largest preset we keep,
       and record the safety factor. 3 mm walls and four M4 bolts currently carry
       up to 10 kg with no analysis behind them.
-- [ ] Restructure the SCAD: parameterised modules with `use <>` instead of
-      globals consumed through `include <>`, so each file previews standalone.
-      Add `assert()`s and an `examples/` directory. Reformat — 443 lines for
-      roughly 150 lines of geometry.
+- [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
+      globals through `include <>`, one concern per file, each previewing
+      standalone, with asserts throughout.
+- [ ] Add an `examples/` directory — the one part of the restructure not done.
+      House convention is one file per configuration, `use <>`-ing the library.
 
 ## Firmware — `uwo-fast/Prusa-Firmware-GB3DPE`
 
