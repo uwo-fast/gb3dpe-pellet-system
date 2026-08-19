@@ -11,9 +11,15 @@ parts := "body mount cap"
 default:
     @just --list
 
-# Compile every part at every size, failing on any OpenSCAD warning. CI gate.
+# Compile every part at every size, failing on any diagnostic. CI gate.
 check:
     #!/usr/bin/env bash
+    # The exit code alone is not a gate. Verified on OpenSCAD 2021.01: STL export
+    # does return non-zero on a failing assert, and --hardwarnings promotes a
+    # WARNING to non-zero. But a reversed range [begin:end] with begin > end only
+    # says DEPRECATED, exits 0, and silently iterates BACKWARDS rather than empty,
+    # so a loop over [1:n] with n <= 0 yields confident wrong geometry through a
+    # clean exit. Both streams are therefore grepped as well.
     set -uo pipefail
     tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
     fail=0
@@ -21,11 +27,16 @@ check:
       i=${s%%:*}; label=${s##*:}
       for p in {{parts}}; do
         printf '  %-5s %-6s ' "$p" "$label"
-        if out=$(openscad --hardwarnings -o "$tmp/$p.stl" \
-                   -D "render_part=\"$p\"" -D "hopper_size=$i" {{hopper}} 2>&1); then
-          echo ok
+        out=$(openscad --hardwarnings -o "$tmp/$p.stl" \
+                -D "render_part=\"$p\"" -D "hopper_size=$i" {{hopper}} 2>&1)
+        rc=$?
+        if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
+          echo FAIL
+          grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'
+          [ "$rc" -ne 0 ] && [ -z "$out" ] && echo "      exit $rc"
+          fail=1
         else
-          echo FAIL; printf '%s\n' "$out" | sed 's/^/      /'; fail=1
+          echo ok
         fi
       done
     done
@@ -51,3 +62,11 @@ edit:
 
 clean:
     rm -rf {{build}}
+
+# Check rendered geometry against the committed baseline (see the script docstring).
+geom:
+    @python3 scripts/geom_stats.py
+
+# Overwrite the geometry baseline. Only after an INTENDED geometry change.
+geom-baseline:
+    @python3 scripts/geom_stats.py --write
