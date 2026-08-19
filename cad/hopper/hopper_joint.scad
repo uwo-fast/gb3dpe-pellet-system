@@ -50,15 +50,20 @@ _JOINT_RETAINER_PILOT = 12;
 /**
  * Build a joint spec.
  *
- * Defaults reproduce the coupling this hopper was imported with: a 44 mm neck
- * turning inside a 58 mm socket, 18 mm deep, on a 25 degree quarter turn.
+ * Defaults are a 58 mm neck turning inside a 72 mm socket, 18 mm deep, on a
+ * 25 degree quarter turn, with a 50 mm pellet bore.
+ *
+ * The bore is why the coupling is this size. It is the hopper's converging
+ * outlet, so it is where arches form, and 50 mm is ten times the 5 mm flake the
+ * build is specified for. The imported 44 mm neck capped the outlet at 38 mm,
+ * which is under that. Sizing runs outlet -> interface_radius, not the reverse.
  *
  * `key_angle` pulls one pin off the even pattern so the joint has a single
  * locked orientation. The bin is rectangular, so an unkeyed four-pin pattern
  * would seat it crosswise on the roof just as happily as along it.
  */
 function hopper_joint(
-  interface_radius = 22.15,
+  interface_radius = 29.15,
   shell_thickness = 6.85,
   allowance = 0.30,
   part_height = 18,
@@ -67,7 +72,7 @@ function hopper_joint(
   sweep_angle = 25,
   pins = 4,
   key_angle = 15,
-  bore_diameter = 38,
+  bore_diameter = 50,
   retainer_angle = 140,
   retainer_z = 13.5,
   retainer_pilot = 3.4

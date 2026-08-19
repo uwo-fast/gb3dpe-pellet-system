@@ -2,6 +2,8 @@
 // GPL-3.0-or-later
 // Units: mm, degrees, kg/L
 
+include <hopper_flow.scad>
+
 // We run this printer on both virgin pellets and shredded regrind, and they are
 // not interchangeable inputs. Regrind is irregular, higher friction and roughly
 // half the bulk density, so it needs a steeper funnel to flow and stores much
@@ -11,6 +13,8 @@
 //   0  name              label for the customizer
 //   1  min_funnel_angle  shallowest funnel that still flows, degrees from HORIZONTAL
 //   2  bulk_density      kg per litre, for capacity reporting
+//   3  converging_ratio  outlet size as a multiple of the largest particle
+//   4  parallel_ratio    same, for a hose or spigot where nothing converges
 //
 // SOURCES -- see docs/design-notes.md for the reasoning and full citations.
 //   Angles are design targets from general bulk-solids practice, NOT measured.
@@ -28,14 +32,16 @@
 // VERTICAL, which is 90 minus these. 60 degrees from horizontal is 30 from
 // vertical.
 
-FEEDSTOCK_VIRGIN = ["virgin pellets", 60, 0.62];
-FEEDSTOCK_REGRIND = ["regrind flake", 70, 0.35];
+FEEDSTOCK_VIRGIN = ["virgin pellets", 60, 0.62, FLOW_RATIO_CONVERGING_PELLET, FLOW_RATIO_PARALLEL_PELLET];
+FEEDSTOCK_REGRIND = ["regrind flake", 70, 0.35, FLOW_RATIO_CONVERGING_FLAKE, FLOW_RATIO_PARALLEL_FLAKE];
 
 feedstock_registry = [FEEDSTOCK_VIRGIN, FEEDSTOCK_REGRIND];
 
 function feedstock_name(type) = type[0]; //! Label for the customizer
 function feedstock_min_funnel_angle(type) = type[1]; //! Shallowest funnel that flows, deg from horizontal
 function feedstock_bulk_density(type) = type[2]; //! kg per litre
+function feedstock_converging_ratio(type) = type[3]; //! Outlet opening as a multiple of particle size
+function feedstock_parallel_ratio(type) = type[4]; //! Hose or spigot opening as a multiple of particle size
 
 /**
  * The feedstock at `index`. Asserts rather than returning undef, which would

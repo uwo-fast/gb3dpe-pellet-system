@@ -77,6 +77,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       socket wall into a 1.2 mm pocket in the neck at 140°, above the channel
       and clear of the entry slots. Positive lock, not friction. Set
       `lock_retainer_pilot = 0` to omit it.
+- [ ] **We are past the bayonet library's exercised range.** Its examples all use
+      `interface_radius` <= 15 and its angular corrections are documented as
+      empirically tuned for `pin_radius` <= 3.0; we now run 29.15. Verified
+      correct by rendering, but the detent's snap-past grew four-fold with the
+      radius because it is placed by angle. Re-verify if the coupling grows
+      again, and consider feeding a fix back upstream.
 - [ ] **Watch the pellet bore margin.** At `lock_pin_radius = 3.0` the largest
       bore that clears the pins is exactly 38.0 mm, and ours is exactly 38.0.
       `hopper_joint()` asserts it, so it fails loudly rather than quietly

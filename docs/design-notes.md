@@ -63,6 +63,23 @@ imported geometry. So the radii subtract the inset and the geometry **asserts**
 the result stays at or above 0.8 mm, roughly two 0.4 mm extrusions, rather than
 clamping quietly.
 
+## Physical rules live in functions, not in comments
+
+Anything the geometry depends on physically — how much room a particle needs,
+how steep a wall has to be, how much a litre of feedstock weighs — is a function
+in `hopper_flow.scad` or a registry row in `hopper_feedstock.scad`, never a bare
+number with a note beside it.
+
+That lets the same rule be read both ways. Give it a requirement and it sizes
+the geometry: `design_particle_size = 5` with regrind selected demands a 50 mm
+outlet, and the build refuses to render if the coupling cannot provide one. Give
+it the geometry and it reports the capability: every render echoes the largest
+particle the whole path will actually pass, which is the narrowest section, not
+the one you were thinking about.
+
+That is how the coupling came to be 58 mm rather than 44. The requirement drove
+it; the assert refused the old size; the resize followed.
+
 ## Bayonet joint uses `bayonet-lock-scad` [B]
 
 The joint was hand-rolled with rectangular tabs. It now comes from our own
@@ -114,6 +131,15 @@ over a 0.5 mm probe against 214.1 mm³ predicted, so it is fully intact. Seated,
 there is 0.25 mm³ of interference across the whole joint, unchanged at higher
 facet counts and therefore real rather than faceting — consistent with the
 library's detent sitting just short of the stop, i.e. a light snap-past.
+
+**We are outside the library's exercised range.** Every example it ships uses
+`interface_radius` of 15 or less, and its angular corrections carry a source
+comment saying they were empirically tuned and validated for `pin_radius` up to
+3.0. We run `interface_radius` 29.15 at `pin_radius` 3.0. The geometry is
+verified correct here — it seats, captures and keys — but the detent grows with
+radius (0.25 mm³ of snap-past at 22.15, 1.05 mm³ at 29.15) because it is placed
+by angle, so its arc length scales. Worth re-checking if the coupling grows
+again.
 
 **Anti-rotation is ours too.** The library has an undocumented detent whose size
 is welded to `allowance`, so at our 0.30 it is a 0.6 mm post — at or below one

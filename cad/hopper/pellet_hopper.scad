@@ -15,6 +15,7 @@ include <hopper_feedstock.scad>
 include <hopper_sizes.scad>
 use <hopper_body.scad>
 use <hopper_cap.scad>
+use <hopper_flow.scad>
 use <hopper_funnel.scad>
 use <hopper_joint.scad>
 use <hopper_mount.scad>
@@ -32,9 +33,15 @@ hopper_size = 0; // [0:220x180,1:300x240,2:390x300]
 
 /* [Feedstock] */
 
-// What this hopper will actually hold. Sets the minimum workable funnel angle
-// and the bulk density used to report capacity.
+// What this hopper will actually hold. Sets the minimum workable funnel angle,
+// the bulk density used to report capacity, and how much room a particle needs.
 feedstock_type = 0; // [0:virgin pellets,1:regrind flake]
+
+// Largest particle the build must pass. This is a REQUIREMENT: the outlet is
+// checked against it, and the spec echo reports what the build actually
+// manages. Size it for the coarsest the shredder produces, not for what is
+// being sieved today.
+design_particle_size = 5; // [1:0.5:12]
 
 /* [Hopper] */
 
@@ -48,8 +55,9 @@ funnel_angle = 60; // [40:1:80]
 // horizontal inset sized on the corner, so flat and vertical walls end up
 // thicker than this.
 min_wall = 3;
-// Square opening at the bottom of the funnel
-throat = 44;
+// Square opening at the bottom of the funnel. Sized so the inner throat still
+// clears the outlet after the wall inset comes off it.
+throat = 58;
 // Must exceed the wall inset by at least 0.8, or the inner corner cannot
 // follow the wall inward and the corner finishes thin.
 throat_radius = 6;
@@ -62,8 +70,9 @@ neck_transition_height = 10;
 // Built on bayonet-lock-scad. The neck outside diameter is
 // 2 * (interface_radius - allowance/2) and the socket outside diameter is
 // 2 * (interface_radius + shell_thickness), so these defaults give the 44 mm
-// neck in a 58 mm socket the design was imported with.
-lock_interface_radius = 22.15;
+// neck in a 72 mm socket. The imported design used 22.15/44/58, which capped
+// the outlet at 38 mm -- too small for 5 mm flake at a converging outlet.
+lock_interface_radius = 29.15;
 lock_shell_thickness = 6.85;
 // Total radial gap between the two shells. Also sets the axial float, at half
 // this either way, and the size of the library's detent.
@@ -87,16 +96,20 @@ lock_retainer_pilot = 3.4; // [0:0.1:6]
 lock_retainer_angle = 140; // [0:5:355]
 lock_retainer_z = 13.5;
 
+// Pellet bore through the coupling. This is the hopper's outlet, so it is the
+// opening that has to clear design_particle_size; both are asserted below.
+lock_bore_diameter = 50;
+
 /* [Roof Mount] */
 
-mount_size = [90, 90];
+mount_size = [110, 110];
 mount_thickness = 8;
 mount_radius = 6;
 mount_gussets = true;
 
 /* [M4 Mounting] */
 
-bolt_spacing = [70, 70];
+bolt_spacing = [90, 90];
 // M4 clearance
 bolt_diameter = 4.5;
 
@@ -170,6 +183,7 @@ _inset = funnel_wall_inset(min_wall, funnel_angle);
 
 // One joint spec, shared by both halves so they cannot drift apart.
 _neck_od = 2 * (lock_interface_radius - lock_allowance / 2);
+_bore = lock_bore_diameter;
 
 _joint = hopper_joint(
   interface_radius=lock_interface_radius,
@@ -184,12 +198,41 @@ _joint = hopper_joint(
   retainer_angle=lock_retainer_angle,
   retainer_z=lock_retainer_z,
   retainer_pilot=lock_retainer_pilot,
-  // The neck is vertical, so min_wall is already its perpendicular thickness.
-  // hopper_joint asserts this against the largest bore that clears the pins.
-  bore_diameter=_neck_od - 2 * min_wall
+  bore_diameter=lock_bore_diameter
+);
+
+assert(
+  (_neck_od - lock_bore_diameter) / 2 >= min_wall,
+  str(
+    "pellet_hopper: a ", lock_bore_diameter, " mm bore leaves only ",
+    (_neck_od - lock_bore_diameter) / 2, " mm of neck wall, under min_wall ", min_wall,
+    ". Raise lock_interface_radius or lower the bore."
+  )
 );
 
 _spigot_od = pipe_id - pipe_clearance;
+
+// Requirement -> geometry. The converging outlet is where arches form, so it
+// governs; the spigot and hose are parallel sections and need less.
+_required_outlet = flow_min_opening(design_particle_size, feedstock_converging_ratio(_feedstock));
+_required_parallel = flow_min_opening(design_particle_size, feedstock_parallel_ratio(_feedstock));
+
+assert(
+  _bore >= _required_outlet,
+  str(
+    "pellet_hopper: outlet ", _bore, " mm is too small for ", design_particle_size,
+    " mm ", feedstock_name(_feedstock), ". Needs at least ", _required_outlet,
+    " mm (", feedstock_converging_ratio(_feedstock), "x particle at a converging outlet)."
+  )
+);
+
+// Geometry -> capability. The narrowest section governs the whole path.
+_path_max_particle = flow_path_max_particle([
+  [throat - 2 * _inset, feedstock_converging_ratio(_feedstock)],
+  [_bore, feedstock_converging_ratio(_feedstock)],
+  [spigot_id, feedstock_parallel_ratio(_feedstock)],
+  [pipe_id, feedstock_parallel_ratio(_feedstock)],
+]);
 
 // Overall body height, and how far the feedthrough hangs below the flange.
 _body_height = lock_height + neck_transition_height + _funnel_height + _bin_height;
@@ -218,6 +261,14 @@ echo(str(
   "; body height ", _body_height,
   "; wall inset ", _inset,
   "; volume ", _volume_l, " L = ", _capacity_kg, " kg"
+));
+
+echo(str(
+  "spec: outlet ", _bore, " mm (needs ", _required_outlet, " for ",
+  design_particle_size, " mm ", feedstock_name(_feedstock),
+  "); narrowest parallel section ", min(spigot_id, pipe_id),
+  " mm (needs ", _required_parallel,
+  "); whole path passes up to ", _path_max_particle, " mm"
 ));
 
 echo(str(
