@@ -73,7 +73,7 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 | Part | Size | Prints |
 | ---- | ---- | ------ |
 | hub | 95 skirt, 72 tube, 36 tall, straight 50 bore | standing on its bottom face |
-| plate | 120 × 120 × 6, Ø65.3 hole, 4 × M4 at Ø79 | flat |
+| plate | 120 × 120 × 6, Ø65.0 hole, 4 × M4 at Ø79 | flat |
 | outlet | Ø64 over the pins, 83 tall | standing on the hose socket |
 
 Verified by intersection rather than by eye: every coupling in the stack seats
@@ -90,7 +90,7 @@ plate satisfies it with three things:
 
 | Feature | Size | Why |
 | ------- | ---- | --- |
-| central clearance hole | **Ø65.3** | must clear the outlet neck's **pins** at Ø64.3, not the Ø58 neck |
+| central clearance hole | **Ø65.0** | must clear the outlet neck's **pins** at Ø64.0, not the Ø58 neck |
 | hub fixings | 4 × M4 on a **Ø78** circle | outboard of the hub's 72 mm tube, inboard of its 85 mm skirt |
 | machine pattern | machine-specific | the only part that touches reality |
 
@@ -102,8 +102,12 @@ Plates:
 
 - **MK3S frame** (`hopper_plate_mk3s.scad`) — clamps the printer's own
   370 × 370 × 6.2 mm aluminium frame. Built; see below.
-- **Enclosure panel** — flat, bolts through the drilled top sheet. Needed within
-  about a month. The universal plate already *is* this, bar the hole pattern.
+- **Panel** (`hopper_plate_panel.scad`) — bolts through a drilled flat sheet,
+  for the Original Prusa Enclosure or anything similar. Built. The pattern is
+  parametric because where the holes can go depends on what is behind the
+  panel, which has not been measured. Drill the panel Ø65 for the outlet neck
+  and use washers or a backing plate: four M4 heads on thin sheet under a
+  sustained few kilograms will dimple it long before anything breaks.
 - **Stand** — decouples the load from the printer entirely. Worth having, since
   410 mm of body on a 370 mm frame puts roughly 3 kg at around 800 mm on a
   machine that slings its bed in Y.

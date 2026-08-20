@@ -24,6 +24,7 @@ use <hopper_hub.scad>
 use <hopper_outlet.scad>
 use <hopper_plate.scad>
 use <hopper_plate_mk3s.scad>
+use <hopper_plate_panel.scad>
 use <hopper_split.scad>
 
 /* [Render] */
@@ -115,7 +116,7 @@ lock_bore_diameter = 50;
 // Which machine this mounts to. "universal" is the bare interface with no
 // machine features -- the starting point for a new adapter. "mk3s" clamps to
 // the printer's own 6.2 mm aluminium frame.
-plate_variant = "mk3s"; // [universal,mk3s]
+plate_variant = "mk3s"; // [universal,mk3s,panel]
 
 // How far the hopper's axis sits from the frame plane. The outlet hangs below
 // the plate, so it has to pass BESIDE the frame rather than through it; the
@@ -127,6 +128,10 @@ frame_clearance = 0.4;
 // How far the saddle reaches down the frame, and how long it runs along it.
 frame_grip_depth = 40;
 frame_saddle_length = 80;
+
+// For the "panel" variant: where it bolts through the sheet. Parametric because
+// where the holes can go depends on what is behind the panel, unmeasured so far.
+panel_bolt_spacing = [100, 100];
 
 // The plate is the only machine-specific part, and deliberately the simplest:
 // flat, holes only. Machine-specific variants difference their own pattern out
@@ -416,7 +421,23 @@ module _hub() {
 }
 
 module _plate() {
-  if (plate_variant == "mk3s") _plate_mk3s(); else _plate_universal();
+  if (plate_variant == "mk3s") _plate_mk3s();
+  else if (plate_variant == "panel") _plate_panel();
+  else _plate_universal();
+}
+
+module _plate_panel() {
+  hopper_plate_panel(
+    joint=_joint,
+    size=plate_size,
+    thickness=plate_thickness,
+    corner_radius=plate_corner_radius,
+    skirt_diameter=hub_skirt_diameter,
+    bolt_depth=hub_bolt_depth,
+    bolts=hub_bolts,
+    bolt_diameter=plate_bolt_diameter,
+    panel_bolt_spacing=panel_bolt_spacing
+  );
 }
 
 module _plate_mk3s() {
