@@ -30,7 +30,7 @@ worked. Do not print from it yet.
 
 ## Repository layout
 
-- `cad/hopper/` — parametric bulk hopper: body, roof mount, and cap
+- `cad/hopper/` — parametric bulk hopper: body, cap, hub, plate and outlet
 - `docs/` — extruder hardware reference, design notes, and operating procedures
 - `examples/` — one file per configuration, each rendering standalone
 - `scripts/` — geometry regression harness
@@ -79,8 +79,8 @@ imported design worked the other way round — capacity first, wall angle whatev
 was left — which is how it ended up at 27 to 36 degrees at the corner.
 
 Each of the other files under `cad/hopper/` defines one part or one concern and
-renders on its own, so you can open `hopper_mount.scad` directly and iterate on
-the mount without the rest of the model in the way.
+renders on its own, so you can open `hopper_hub.scad` directly and iterate on
+the hub without the rest of the model in the way.
 
 `examples/` holds worked configurations that drive the modules directly rather
 than through the Customizer — the shipping two-segment build, the two feedstocks

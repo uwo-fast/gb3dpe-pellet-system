@@ -13,18 +13,22 @@
 
 include <hopper_colours.scad>
 include <hopper_feedstock.scad>
+include <hopper_hose.scad>
 include <hopper_sizes.scad>
 use <hopper_body.scad>
 use <hopper_cap.scad>
 use <hopper_flow.scad>
 use <hopper_funnel.scad>
 use <hopper_joint.scad>
-use <hopper_mount.scad>
+use <hopper_hub.scad>
+use <hopper_outlet.scad>
+use <hopper_plate.scad>
+use <hopper_split.scad>
 
 /* [Render] */
 
 // Which part to emit. "assembly" shows it built; "all" lays the parts out flat.
-render_part = "assembly"; // [body,mount,cap,assembly,all]
+render_part = "assembly"; // [body,cap,hub,plate,outlet,assembly,all]
 
 /* [Hopper Size] */
 
@@ -36,7 +40,7 @@ hopper_size = 2; // [0:150x150,1:175x175,2:202x202]
 
 // What this hopper will actually hold. Sets the minimum workable funnel angle,
 // the bulk density used to report capacity, and how much room a particle needs.
-feedstock_type = 0; // [0:virgin pellets,1:regrind flake]
+feedstock_type = 1; // [0:virgin pellets,1:regrind flake]
 
 // Largest particle the build must pass. This is a REQUIREMENT: the outlet is
 // checked against it, and the spec echo reports what the build actually
@@ -50,7 +54,11 @@ design_particle_size = 5; // [1:0.5:12]
 // The corner is the shallowest surface in a rectangular funnel and is where
 // pellets bridge, so it is what gets constrained; the flat faces come out
 // steeper. Must be at least the selected feedstock's minimum.
-funnel_angle = 60; // [40:1:80]
+// Defaults to the regrind minimum, which is also fine for virgin pellets --
+// steeper is never worse for flow. It is not a neutral choice: a shallower
+// funnel is shorter, which pushes the split up into the full-width bin, and the
+// flange there stands proud of the envelope. The fit assert will say so.
+funnel_angle = 70; // [40:1:80]
 
 // Least material anywhere, measured perpendicular to the surface. Applied as a
 // horizontal inset sized on the corner, so flat and vertical walls end up
@@ -101,41 +109,40 @@ lock_retainer_z = 13.5;
 // opening that has to clear design_particle_size; both are asserted below.
 lock_bore_diameter = 50;
 
-/* [Roof Mount] */
+/* [Mount] */
 
-mount_size = [110, 110];
-mount_thickness = 8;
-mount_radius = 6;
-mount_gussets = true;
+// The plate is the only machine-specific part, and deliberately the simplest:
+// flat, holes only. Machine-specific variants difference their own pattern out
+// of it. See docs/interfaces.md.
+plate_size = [120, 120];
+plate_thickness = 6;
+plate_corner_radius = 6;
 
-/* [M4 Mounting] */
+// The hub carries both couplings so the plate can stay flat. Its skirt is what
+// the fixings bite into, and its width is squeezed between the plate's
+// clearance hole and the depth a screw needs.
+hub_skirt_diameter = 95;
+hub_bolt_depth = 8;
+hub_bolts = 4;
+// Into the hub: blind, sized for a self-tapping screw or an insert.
+hub_bolt_diameter = 4.2;
+// Through the plate: clearance.
+plate_bolt_diameter = 4.5;
 
-bolt_spacing = [90, 90];
-// M4 clearance
-bolt_diameter = 4.5;
+/* [Hose] */
 
-/* [Enclosure] */
+hose_type = 0; // [0:GB3D 1 m conveyor]
 
-// Enclosure roof panel thickness. NOT MEASURED -- the Original Prusa Enclosure
-// top panel is metal, not thin plastic. Tracked in TODO.md.
-roof_thickness = 2;
-// How far the locating neck protrudes past the panel
-roof_locator_extra = 2;
+// NOT CONFIRMED. The socket is threaded to match the hose's reinforcing rib, so
+// this has to match the real hose or it simply will not screw in. Flip it and
+// reprint the outlet -- it is a small part.
+hose_handedness = "right"; // [right,left]
 
-/* [Hose Connection] */
-
-// Inside diameter of the extruder's conveyor tube. NOT MEASURED -- the vendor
-// does not publish it. Tracked in TODO.md.
-pipe_id = 25;
-pipe_clearance = 0.4;
-// Pellet passage through the spigot
-spigot_id = 20.6;
-// Hose engagement length
-spigot_length = 35;
-// Square locator to round spigot
-transition_height = 20;
-lead_in = 4;
-lead_in_reduction = 1.2;
+// The outlet is where the path converges from the coupling's bore down to the
+// hose, so it is held to the same wall angle as the funnel.
+outlet_cone_angle = 70; // [40:1:80]
+outlet_socket_depth = 24;
+outlet_wall = 3;
 
 /* [Cap] */
 
@@ -245,7 +252,13 @@ assert(
   )
 );
 
-_spigot_od = pipe_id - pipe_clearance;
+// Handedness is overridden here rather than in the registry, so the registry
+// keeps describing the part as bought and this stays a one-switch change.
+_hose_row = hose(hose_type);
+_hose = [
+  hose_name(_hose_row), hose_bore(_hose_row), hose_tube_od(_hose_row),
+  hose_helix(_hose_row), hose_pitch(_hose_row), hose_handedness,
+];
 
 // Requirement -> geometry. The converging outlet is where arches form, so it
 // governs; the spigot and hose are parallel sections and need less.
@@ -265,8 +278,7 @@ assert(
 _path_max_particle = flow_path_max_particle([
   [throat - 2 * _inset, feedstock_converging_ratio(_feedstock)],
   [_bore, feedstock_converging_ratio(_feedstock)],
-  [spigot_id, feedstock_parallel_ratio(_feedstock)],
-  [pipe_id, feedstock_parallel_ratio(_feedstock)],
+  [hose_bore(_hose), feedstock_parallel_ratio(_feedstock)],
   // The toolhead's own bore. Not ours to size, and it is the binding section,
   // so leaving it out would report a system limit we do not actually have.
   [GB3DPE_FEED_BORE, feedstock_parallel_ratio(_feedstock)],
@@ -274,7 +286,9 @@ _path_max_particle = flow_path_max_particle([
 
 // Overall body height, and how far the feedthrough hangs below the flange.
 _body_height = lock_height + neck_transition_height + _funnel_height + _bin_height;
-_drop_below_flange = roof_thickness + roof_locator_extra + transition_height + spigot_length;
+_hub_height = hub_height(_joint);
+_body_base = lock_height;
+_outlet_h = outlet_height(_joint, _hose, outlet_cone_angle, outlet_socket_depth);
 _cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
 
 assert(
@@ -288,14 +302,28 @@ _volume_l = hopper_volume_l(
 );
 _capacity_kg = hopper_capacity_kg(_volume_l, feedstock_bulk_density(_feedstock));
 
+// The body's widest point is not the bin: it is the flange at a split, which
+// stands proud of whatever section the cut lands on. Missing this let a
+// configuration 16 mm over the envelope report as fitting.
+_cut_sections = segments < 2 ? [] : [
+  for (i = [1:1:segments - 1])
+    funnel_body_section(
+      throat, _top_x, _top_y, throat_radius, funnel_radius,
+      lock_height + neck_transition_height - 0.5, _funnel_height,
+      split_z(_body_height, segments, i)
+    )
+];
+_flange_x = segments < 2 ? 0 : max([for (c = _cut_sections) c[0] + 2 * flange_width]);
+_flange_y = segments < 2 ? 0 : max([for (c = _cut_sections) c[1] + 2 * flange_width]);
+
 // Largest footprint and height of any single printed part.
 _cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
-_part_x = max(_cap_outer_x, mount_size[0]);
-_part_y = max(_cap_outer_y, mount_size[1]);
+_part_x = max([_cap_outer_x, plate_size[0], hub_skirt_diameter, _top_x, _flange_x]);
+_part_y = max([_cap_outer_y, plate_size[1], hub_skirt_diameter, _top_y, _flange_y]);
 // The largest PART, not the largest assembly: a segment, not the whole body.
 _part_z = max(
-  segments > 1 ? segment_height : _body_height,
-  _drop_below_flange + mount_thickness + lock_height
+  max(segments > 1 ? segment_height : _body_height, _outlet_h),
+  max(_hub_height, plate_thickness)
 );
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
@@ -313,7 +341,7 @@ echo(str(
 echo(str(
   "spec: outlet ", _bore, " mm (needs ", _required_outlet, " for ",
   design_particle_size, " mm ", feedstock_name(_feedstock),
-  "); narrowest parallel section ", min(spigot_id, pipe_id),
+  "); hose bore ", hose_bore(_hose),
   " mm (needs ", _required_parallel,
   "); whole path passes up to ", _path_max_particle, " mm"
 ));
@@ -360,23 +388,36 @@ module _body_all() {
   for (i = [0:segments - 1]) color(colour_body_segment(i)) _body(which = i);
 }
 
-module _mount() {
-  hopper_mount(
+module _hub() {
+  hopper_hub(
     joint=_joint,
-    mount_size=mount_size,
-    mount_thickness=mount_thickness,
-    mount_radius=mount_radius,
-    bolt_spacing=bolt_spacing,
-    bolt_diameter=bolt_diameter,
-    gussets=mount_gussets,
-    roof_thickness=roof_thickness,
-    roof_locator_extra=roof_locator_extra,
-    spigot_od=_spigot_od,
-    spigot_id=spigot_id,
-    spigot_length=spigot_length,
-    transition_height=transition_height,
-    lead_in=lead_in,
-    lead_in_reduction=lead_in_reduction
+    skirt_diameter=hub_skirt_diameter,
+    bolts=hub_bolts,
+    bolt_diameter=hub_bolt_diameter,
+    bolt_depth=hub_bolt_depth
+  );
+}
+
+module _plate() {
+  hopper_plate(
+    joint=_joint,
+    size=plate_size,
+    thickness=plate_thickness,
+    corner_radius=plate_corner_radius,
+    skirt_diameter=hub_skirt_diameter,
+    bolt_depth=hub_bolt_depth,
+    bolts=hub_bolts,
+    bolt_diameter=plate_bolt_diameter
+  );
+}
+
+module _outlet() {
+  hopper_outlet(
+    joint=_joint,
+    hose=_hose,
+    cone_angle=outlet_cone_angle,
+    socket_depth=outlet_socket_depth,
+    wall=outlet_wall
   );
 }
 
@@ -396,23 +437,31 @@ module _cap() {
 // rendered on its own is still recognisable as the one you were looking at.
 if (render_part == "body") {
   color(colour_body_segment(segment)) _body();
-} else if (render_part == "mount") {
-  color(colour_mount()) _mount();
 } else if (render_part == "cap") {
   color(colour_cap(segments)) _cap();
+} else if (render_part == "hub") {
+  color(colour_hub()) _hub();
+} else if (render_part == "plate") {
+  color(colour_plate()) _plate();
+} else if (render_part == "outlet") {
+  color(colour_outlet()) _outlet();
 } else if (render_part == "assembly") {
-  // Shown seated: joint_neck() is authored pre-rotated, so the body's nominal
-  // orientation is the locked one. To fit it, turn the body back by
-  // lock_sweep_angle, drop it in, then turn it forward to here.
-  color(colour_mount()) _mount();
-  translate([0, 0, mount_thickness]) _body_all();
-  translate([0, 0, mount_thickness + _body_height - cap_skirt_height])
+  // Datum is the plate's TOP face. The hub sits on it, the body's neck goes
+  // into the hub's upper socket, and the outlet comes up through the plate's
+  // clearance hole into the lower one.
+  translate([0, 0, -plate_thickness]) color(colour_plate()) _plate();
+  color(colour_hub()) _hub();
+  translate([0, 0, _body_base]) _body_all();
+  translate([0, 0, _body_base + _body_height - cap_skirt_height])
     color(colour_cap(segments)) _cap();
+  translate([0, 0, lock_height - _outlet_h]) color(colour_outlet()) _outlet();
 } else if (render_part == "all") {
   _body_all();
-  // Raised so the downward spigot clears z = 0 in the laid-out view.
-  translate([_top_x / 2 + mount_size[0] / 2 + 40, 0, _drop_below_flange])
-    color(colour_mount()) _mount();
+  translate([_top_x / 2 + plate_size[0] / 2 + 40, 0, 0]) {
+    color(colour_plate()) _plate();
+    translate([0, 0, plate_thickness + 10]) color(colour_hub()) _hub();
+    translate([0, 0, plate_thickness + _hub_height + 20]) color(colour_outlet()) _outlet();
+  }
   translate([0, _top_y / 2 + _cap_outer_y / 2 + 40, 0])
     color(colour_cap(segments)) _cap();
 } else {

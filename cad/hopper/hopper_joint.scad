@@ -207,15 +207,18 @@ function joint_max_bore_diameter(joint) =
  * the channel and clear of the entry slots, which run from the channel up
  * through the top face and are easy to forget about.
  */
-module joint_retainer_bore(joint) {
+module joint_retainer_bore(joint, length = undef) {
+  // Long enough to break out of whatever surrounds the socket. The default
+  // clears the socket wall alone; a caller that wraps the socket in more
+  // material has to say how much, or the screw is walled in and the feature
+  // silently does nothing.
+  _length = is_undef(length) ? joint_socket_outer_d(joint) / 2 + 1 : length;
+
   if (joint_retainer_pilot(joint) > 0)
     rotate([0, 0, joint_retainer_angle(joint)])
       translate([0, 0, joint_retainer_z(joint)])
         rotate([0, 90, 0])
-          cylinder(
-            h = joint_socket_outer_d(joint) / 2 + 1,
-            d = joint_retainer_pilot(joint)
-          );
+          cylinder(h = _length, d = joint_retainer_pilot(joint));
 }
 
 // Depth of the pocket. Shallow enough to leave most of the neck wall, deep
@@ -283,6 +286,16 @@ module joint_socket_inverted(joint) {
 
 module joint_neck_inverted(joint) {
   translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_neck(joint);
+}
+
+// The retainer, turned to match an inverted coupling.
+module joint_retainer_bore_inverted(joint, length = undef) {
+  translate([0, 0, joint_neck_height(joint)])
+    rotate([180, 0, 0]) joint_retainer_bore(joint, length);
+}
+
+module joint_retainer_pocket_inverted(joint) {
+  translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_retainer_pocket(joint);
 }
 
 // Standalone preview ($fn passed on the call, never assigned at top level --

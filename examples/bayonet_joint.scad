@@ -21,6 +21,6 @@ echo(str(
 // SEATED one, not the insertion one -- turn it back by the sweep angle to fit.
 color(colour_body_segment(0)) joint_neck(joint);
 
-// Socket beside it, for comparison.
+// Socket beside it, for comparison. This is what the hub carries at both ends.
 translate([joint_socket_outer_d(joint) + 15, 0, 0])
-  color(colour_mount()) joint_socket(joint);
+  color(colour_hub()) joint_socket(joint);

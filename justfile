@@ -14,7 +14,7 @@ build  := "build"
 
 # Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
 sizes := "0:150x150 1:175x175 2:202x202"
-parts := "body mount cap"
+parts := "body cap hub plate outlet"
 
 default:
     @just --list

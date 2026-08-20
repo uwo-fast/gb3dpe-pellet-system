@@ -23,6 +23,9 @@ PART_COLOURS = [
 // Wraps round rather than running off the end, so any segment count is valid.
 function part_colour(index) = PART_COLOURS[index % len(PART_COLOURS)];
 
-function colour_mount() = part_colour(0); //! Roof mount
-function colour_body_segment(index) = part_colour(1 + index); //! One body segment
-function colour_cap(segments) = part_colour(1 + segments); //! Cap, above the topmost segment
+// Slots are handed out bottom-up through the assembled stack.
+function colour_outlet() = part_colour(0); //! Outlet, below the plate
+function colour_plate() = part_colour(1); //! Mounting plate
+function colour_hub() = part_colour(2); //! Hub
+function colour_body_segment(index) = part_colour(3 + index); //! One body segment
+function colour_cap(segments) = part_colour(3 + segments); //! Cap, above the topmost segment

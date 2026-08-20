@@ -67,7 +67,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       in the whole path — tighter than the vendor's own 18.30 mm feed bore. A
       **thread-in socket** keeps the full 20 mm bore (5.0 mm max flake) and
       matches how the vendor already connects it: the helix is the thread.
-- [ ] **Split the mount into a feed head plus a swappable adapter.** It has to
+- [x] **Mount split into a hub, a plate and an outlet.** `hopper_mount.scad` is
+      retired. See [`docs/interfaces.md`](docs/interfaces.md).
+- [ ] **Build the first machine plate: the MK3S frame gripper.** The universal
+      half of the plate exists; what is missing is how it grips the printer's
+      370 × 370 × 6.2 mm frame. The spool holder already solves that problem on
+      the same bar, so its cross-section is the thing worth copying — and it is
+      the one dimension here that cannot be derived from public sources.
+- [ ] ~~Split the mount into a feed head plus a swappable adapter~~ — superseded: It has to
       work on a bare MK3S *and* on the Original Prusa Enclosure (which means
       drilling its top sheet). One part cannot do both, and `hopper_mount()`
       currently does five jobs at once.
@@ -138,12 +145,6 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       so the spec reports the true system ceiling — 6.1 mm virgin, 4.6 mm
       regrind — rather than only what our own parts manage. Worth a 30-second
       caliper check on the hole under the vendor hopper to confirm.
-- [ ] Normalise the feedthrough transition stations in `hopper_mount.scad`.
-      The imported geometry aligns the two hull sections inconsistently — the
-      lower sits on its station, the upper straddles it — so those two hulls
-      are written out longhand rather than through `loft()` to keep the
-      refactor geometry-exact. Worth half a millimetre of change to tidy, but
-      only when something else is already moving that cone.
 - [ ] Add a shutoff gate so the feed can be stopped for hose service and
       material changeover.
 - [ ] Consider a bridge-breaker or vibrator boss, a sight window, and level
