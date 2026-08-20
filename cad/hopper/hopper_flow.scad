@@ -22,6 +22,13 @@ FLOW_RATIO_CONVERGING_FLAKE = 10; //! Irregular flake, which interlocks
 FLOW_RATIO_PARALLEL_PELLET = 3; //! Round, free-flowing pellets
 FLOW_RATIO_PARALLEL_FLAKE = 4; //! Irregular flake
 
+// The GreenBoy3D toolhead's own feed bore, where material drops onto the screw.
+// Measured off the vendor STEP files: 18.30 mm, centred on the extruder axis,
+// appearing identically in both sliding-pit parts. It is metal and it is the one
+// opening in the whole path we cannot size, so it caps the system regardless of
+// how generous everything upstream is.
+GB3DPE_FEED_BORE = 18.30;
+
 /**
  * Smallest opening that will pass `particle_size` without arching, at `ratio`.
  * Use this to drive geometry from a requirement.

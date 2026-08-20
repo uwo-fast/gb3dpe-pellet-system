@@ -152,6 +152,23 @@ forget when picking an angle. Verified: the pilot passes clean through the
 socket wall, and the pocket leaves 1.8 mm of neck wall before the pellet bore.
 `hopper_joint()` asserts both the height and the angular clearance.
 
+## The toolhead's own feed bore caps the system at ~4.6 mm
+
+Measured off the vendor STEP files rather than assumed: **Ø18.30 mm, centred on
+the extruder axis**, appearing identically in both sliding-pit parts at z 9.5
+and 10.1. That is where material drops onto the screw. It is machined metal and
+it is the one opening in the path we cannot size.
+
+Against the parallel rule that gives a system ceiling of **6.1 mm for virgin
+pellets and 4.6 mm for regrind flake** — below the 5 mm the build is otherwise
+specified for. Our own sections are all sized for 5 mm, which is harmless
+headroom, but the assembled machine tops out lower and the spec echo now says
+so. Leaving the vendor bore out of the path would have reported a system limit
+we do not have.
+
+It also explains the 3 mm sieve the feedstock is currently prepared to: that is
+6.1x the bore, comfortably inside, rather than an arbitrary choice.
+
 ## Build volume 250 × 210 × 210 mm
 
 The Original Prusa i3 MK3S envelope [P], and the largest printer available here

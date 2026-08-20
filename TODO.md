@@ -81,12 +81,11 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       hand — no longer zero, since the coupling resize bought some. Still worth
       remembering that raising pin radius for strength spends it one for one.
       `hopper_joint()` asserts it either way.
-- [ ] **Measure the auger inlet port on the toolhead.** Unpublished and
-      unmeasured, and it is the true hard minimum of the whole feed path — every
-      other opening upstream can be sized freely, this one cannot. If it is well
-      under the parallel-flow rule for 5 mm flake then no amount of hopper
-      sizing fixes bridging at the head, and that changes the architecture
-      rather than a parameter.
+- [x] **Auger feed bore resolved from the vendor CAD: Ø18.30 mm**, on the
+      extruder axis, identical in both sliding-pit parts. Now in the flow path,
+      so the spec reports the true system ceiling — 6.1 mm virgin, 4.6 mm
+      regrind — rather than only what our own parts manage. Worth a 30-second
+      caliper check on the hole under the vendor hopper to confirm.
 - [ ] Normalise the feedthrough transition stations in `hopper_mount.scad`.
       The imported geometry aligns the two hull sections inconsistently — the
       lower sits on its station, the upper straddles it — so those two hulls

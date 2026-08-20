@@ -267,6 +267,9 @@ _path_max_particle = flow_path_max_particle([
   [_bore, feedstock_converging_ratio(_feedstock)],
   [spigot_id, feedstock_parallel_ratio(_feedstock)],
   [pipe_id, feedstock_parallel_ratio(_feedstock)],
+  // The toolhead's own bore. Not ours to size, and it is the binding section,
+  // so leaving it out would report a system limit we do not actually have.
+  [GB3DPE_FEED_BORE, feedstock_parallel_ratio(_feedstock)],
 ]);
 
 // Overall body height, and how far the feedthrough hangs below the flange.
