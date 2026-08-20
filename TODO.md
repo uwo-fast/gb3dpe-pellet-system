@@ -67,15 +67,38 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       in the whole path — tighter than the vendor's own 18.30 mm feed bore. A
       **thread-in socket** keeps the full 20 mm bore (5.0 mm max flake) and
       matches how the vendor already connects it: the helix is the thread.
-- [ ] **Settle where the hopper actually mounts** — the Original Prusa
-      Enclosure roof, or the MK3S's own upside-down-U frame where the spool
-      holder clips on. These need completely different mounts and the question
-      is currently ambiguous. Enclosure roof: sheet metal on a 3030 extrusion
-      frame, mount spans frame members on T-nuts, longer hose drop. MK3S frame:
-      rigid and static and a short hose run, but a narrow top bar, and ~4 kg
-      there shifts the machine's centre of gravity and may excite frame
-      resonance while printing. `roof_thickness = 2` is a placeholder either
-      way.
+- [ ] **Split the mount into a feed head plus a swappable adapter.** It has to
+      work on a bare MK3S *and* on the Original Prusa Enclosure (which means
+      drilling its top sheet). One part cannot do both, and `hopper_mount()`
+      currently does five jobs at once.
+
+      - **Feed head, invariant**: bayonet socket, gussets, feedthrough, hose
+        socket. Identical in every installation.
+      - **Mounting adapter, swappable**: bolts to the feed head on a pattern we
+        define, and presents the target interface — `panel` (flat, bolts
+        through the drilled enclosure sheet), `frame` (grips the MK3S's
+        370 x 370 x 6.2 mm aluminium plate, the way the spool holder does), or
+        `stand` (separate bench stand).
+
+      This also settles the roof bolt-pattern item below: the feed-head-to-
+      adapter pattern becomes ours to define and document, and only the
+      adapter's outer face has to match anything real — which is the cheap part
+      to reprint once a measurement lands.
+
+- [ ] **Check what 3 kg on top does to the bare-MK3S case.** The body is 410 mm
+      on a 370 mm frame, so roughly 800 mm overall with the mass at the top, on
+      a machine that slings its bed in Y. The frame is stiff enough (6.2 mm
+      aluminium, already carries a spool holder) but this is several times a
+      full spool and much higher up. Worth watching frame resonance on fast
+      moves before trusting it. The enclosure case puts the load on the
+      enclosure instead, and the `stand` adapter decouples it entirely.
+
+- [ ] **Establish the enclosure's actual construction.** Prusa says the frame
+      and the top and bottom panels are metal with PETG sides, but whether that
+      frame is folded sheet or profile is not something public sources settle,
+      and an earlier claim here that it was 3030 extrusion was wrong — that came
+      from a result about the MK3S's own Y-axis frame. Needs looking at rather
+      than searching.
 - [ ] **Resolve the roof bolt pattern.** Confirmed *not* inherited from
       GreenBoy3D: the vendor hopper STEP has no M4-sized holes anywhere. It was
       invented with no stated source, and the coupling resize has since moved it
