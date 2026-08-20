@@ -166,10 +166,15 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       sensing.
 - [ ] Seal and latch the cap — the current slip fit does nothing to keep
       pellets dry.
-- [ ] Hand-calculate the loading and record a safety factor. Now covers three
-      things with no analysis behind them: the roof flange and its four M4s, the
-      wall under a 3 kg column, and the split joint's six M4s carrying the whole
-      upper segment plus its contents.
+- [x] **Load cases calculated** — [`docs/loads.md`](docs/loads.md), re-runnable
+      via `scripts/loads.py`. The bin wall governs at SF 6.7 against 30 MPa;
+      everything else is an order of magnitude clear. Note the split joint is in
+      compression, not tension — the segments stack.
+- [ ] **Watch the bin wall for creep.** Safety factors are against short-term
+      yield and say little about a sustained load on a thermoplastic in a warm
+      enclosure over months. Failure mode would be slow bowing, not a break.
+      Cheapest fixes in order: raise `min_wall`, more perimeters, or a
+      stiffening rib at mid-height.
 - [ ] Choose and specify a gasket for the split joint. The flanges are flat and
       bolted at six points; nothing is specified to seal flake dust between them.
 - [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
