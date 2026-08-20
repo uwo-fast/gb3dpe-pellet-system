@@ -23,6 +23,7 @@ use <hopper_joint.scad>
 use <hopper_hub.scad>
 use <hopper_outlet.scad>
 use <hopper_plate.scad>
+use <hopper_plate_mk3s.scad>
 use <hopper_split.scad>
 
 /* [Render] */
@@ -110,6 +111,22 @@ lock_retainer_z = 13.5;
 lock_bore_diameter = 50;
 
 /* [Mount] */
+
+// Which machine this mounts to. "universal" is the bare interface with no
+// machine features -- the starting point for a new adapter. "mk3s" clamps to
+// the printer's own 6.2 mm aluminium frame.
+plate_variant = "mk3s"; // [universal,mk3s]
+
+// How far the hopper's axis sits from the frame plane. The outlet hangs below
+// the plate, so it has to pass BESIDE the frame rather than through it; the
+// plate asserts its own minimum.
+frame_offset = 40;
+// Documented for the MK3/MK3S. Parametric because it is worth a caliper check.
+frame_thickness = 6.2;
+frame_clearance = 0.4;
+// How far the saddle reaches down the frame, and how long it runs along it.
+frame_grip_depth = 40;
+frame_saddle_length = 80;
 
 // The plate is the only machine-specific part, and deliberately the simplest:
 // flat, holes only. Machine-specific variants difference their own pattern out
@@ -399,6 +416,28 @@ module _hub() {
 }
 
 module _plate() {
+  if (plate_variant == "mk3s") _plate_mk3s(); else _plate_universal();
+}
+
+module _plate_mk3s() {
+  hopper_plate_mk3s(
+    joint=_joint,
+    size=plate_size,
+    thickness=plate_thickness,
+    corner_radius=plate_corner_radius,
+    skirt_diameter=hub_skirt_diameter,
+    bolt_depth=hub_bolt_depth,
+    bolts=hub_bolts,
+    bolt_diameter=plate_bolt_diameter,
+    frame_thickness=frame_thickness,
+    frame_clearance=frame_clearance,
+    offset=frame_offset,
+    grip_depth=frame_grip_depth,
+    saddle_length=frame_saddle_length
+  );
+}
+
+module _plate_universal() {
   hopper_plate(
     joint=_joint,
     size=plate_size,

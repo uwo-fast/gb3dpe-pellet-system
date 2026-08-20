@@ -30,7 +30,8 @@ worked. Do not print from it yet.
 
 ## Repository layout
 
-- `cad/hopper/` — parametric bulk hopper: body, cap, hub, plate and outlet
+- `cad/hopper/` — parametric bulk hopper: body, cap, hub, plate, outlet, and
+  machine-specific mounting plates
 - `docs/` — extruder hardware reference, design notes, and operating procedures
 - `examples/` — one file per configuration, each rendering standalone
 - `scripts/` — geometry regression harness

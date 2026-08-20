@@ -69,11 +69,20 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       matches how the vendor already connects it: the helix is the thread.
 - [x] **Mount split into a hub, a plate and an outlet.** `hopper_mount.scad` is
       retired. See [`docs/interfaces.md`](docs/interfaces.md).
-- [ ] **Build the first machine plate: the MK3S frame gripper.** The universal
-      half of the plate exists; what is missing is how it grips the printer's
-      370 × 370 × 6.2 mm frame. The spool holder already solves that problem on
-      the same bar, so its cross-section is the thing worth copying — and it is
-      the one dimension here that cannot be derived from public sources.
+- [x] **MK3S frame plate built.** Clamps rather than hooks — Prusa's spool
+      holder turns out to have no frame slot at all, so it is a cantilever hook
+      and not a pattern to carry 3 kg. Hopper axis offset 40 mm so the outlet
+      passes beside the frame.
+- [ ] **Confirm the frame thickness with calipers.** 6.2 mm is documented and
+      the slot is cut at 6.6, which accepts 6.2–6.5 and rejects 6.8. If the real
+      frame is at the top of that band the fit will be tight; `frame_clearance`
+      is the knob.
+- [ ] **Build the enclosure panel plate.** The universal plate already is one
+      bar the hole pattern, which is blocked on measuring the panel.
+- [ ] **Decide whether the bare-MK3S mount is actually wise.** It works, but it
+      puts ~3 kg at roughly 800 mm on a machine that slings its bed in Y. The
+      `stand` variant would decouple that entirely and is not much work now the
+      interface exists.
 - [ ] ~~Split the mount into a feed head plus a swappable adapter~~ — superseded: It has to
       work on a bare MK3S *and* on the Original Prusa Enclosure (which means
       drilling its top sheet). One part cannot do both, and `hopper_mount()`

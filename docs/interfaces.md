@@ -98,13 +98,36 @@ Bearing is a non-issue — the hub seats on a 722 mm² annulus, which is 0.04 MP
 at 3 kg against roughly 50 MPa for PETG. Plate *bending* around a 65 mm hole is
 the thing to size for, and plate thickness is a parameter for that reason.
 
-Planned plates:
+Plates:
 
-- **MK3S frame** — grips the 370 × 370 × 6.2 mm aluminium plate, the way the
-  spool holder does. First, because that is the machine as it stands and it is
-  what most people have.
+- **MK3S frame** (`hopper_plate_mk3s.scad`) — clamps the printer's own
+  370 × 370 × 6.2 mm aluminium frame. Built; see below.
 - **Enclosure panel** — flat, bolts through the drilled top sheet. Needed within
-  about a month.
+  about a month. The universal plate already *is* this, bar the hole pattern.
 - **Stand** — decouples the load from the printer entirely. Worth having, since
   410 mm of body on a 370 mm frame puts roughly 3 kg at around 800 mm on a
   machine that slings its bed in Y.
+
+### The MK3S plate clamps rather than hooks
+
+Prusa's own spool holder hangs on this frame, so it is the obvious reference.
+Scanning its mesh for opposed parallel faces four to nine millimetres apart
+finds **none anywhere** — it has no frame slot at all. It is a cantilever hook
+that stays seated because the spool's weight holds it down. Fine for a kilogram
+of filament; not a pattern to carry three kilograms of pellets. So this one
+straddles the frame and pinches it.
+
+**The hopper axis is offset 40 mm from the frame plane, not over it.** The
+outlet hangs below the plate and has to pass *beside* the frame rather than
+through it. The plate computes its own minimum — 38.6 mm for this coupling —
+and asserts against it. That offset is also why Prusa's holder is an L-arm: the
+same constraint produced the same shape.
+
+The saddle's roof carries the vertical load, sitting on the frame's top edge, so
+the two clamp screws only resist sliding and tipping rather than holding the
+weight in friction. At 3 kg on a 40 mm offset the couple across a 40 mm grip is
+about 29 N.
+
+Verified: the frame clears the plate, hub and outlet; the slot accepts 6.2 and
+6.5 mm and rejects 6.8. It prints upside down — plate face on the bed, saddle
+legs up, slot opening upward — with nothing overhanging.
