@@ -77,10 +77,16 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       radius because it is placed by angle. Re-verify if the coupling grows
       again, and consider feeding a fix back upstream.
 - [ ] **Watch the pellet bore margin.** At `lock_pin_radius = 3.0` the largest
-      bore that clears the pins is exactly 38.0 mm, and ours is exactly 38.0.
-      `hopper_joint()` asserts it, so it fails loudly rather than quietly
-      slicing the pins, but any increase in pin radius for strength eats the
-      margin one for one.
+      bore that clears the pins is 52.0 mm and ours is 50.0, so there is 2 mm in
+      hand — no longer zero, since the coupling resize bought some. Still worth
+      remembering that raising pin radius for strength spends it one for one.
+      `hopper_joint()` asserts it either way.
+- [ ] **Measure the auger inlet port on the toolhead.** Unpublished and
+      unmeasured, and it is the true hard minimum of the whole feed path — every
+      other opening upstream can be sized freely, this one cannot. If it is well
+      under the parallel-flow rule for 5 mm flake then no amount of hopper
+      sizing fixes bridging at the head, and that changes the architecture
+      rather than a parameter.
 - [ ] Normalise the feedthrough transition stations in `hopper_mount.scad`.
       The imported geometry aligns the two hull sections inconsistently — the
       lower sits on its station, the upper straddles it — so those two hulls
