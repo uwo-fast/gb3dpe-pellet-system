@@ -209,6 +209,14 @@ All established by compiling on 2021.01, not from documentation.
   literal tokens `ERROR:`, `WARNING:` or `DEPRECATED:`.
 - STL facets are not emitted in a stable order, so meshes cannot be compared by
   hash. `just geom` compares signed volume, bounding box and triangle count.
+- **Two solids meeting on a coincident plane are not reliably one volume.** They
+  union without complaint, render clean, pass every assert, and export an STL
+  that slices as several separate objects. This has caught us three times — the
+  coupon's legs against its flange, the MK3S saddle against its plate, and the
+  outlet's cone against its neck. Overlap anything that has to be one part, and
+  never rely on faces just touching. `just check` now reads CGAL's volume count
+  and fails a part that is not exactly one solid, which is the only reliable way
+  to notice.
 - A `use`d file's own top-level `$fn` is what **its** modules see, overriding
   whatever the consumer set. So no file here assigns `$fn` at top level except
   the driver; standalone previews pass `$fn` on the call instead. Getting this

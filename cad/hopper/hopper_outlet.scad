@@ -40,6 +40,9 @@ module _hose_thread(hose, depth, clearance = 0.4, segments_per_turn = 48) {
       circle(d = hose_helix(hose) + clearance);
 }
 
+// Overlap used wherever two solids would otherwise meet on a coincident plane.
+_WELD = 0.5;
+
 function outlet_socket_od(hose, wall = 3, clearance = 0.4) =
   hose_outside(hose) + clearance + 2 * wall;
 
@@ -88,6 +91,14 @@ module hopper_outlet(
       // Flares out to meet the neck. Gentle enough to print unsupported.
       translate([0, 0, socket_depth])
         cylinder(h = _cone_h, d1 = _socket_od, d2 = joint_neck_od(joint));
+
+      // Collar straddling the cone/neck junction. The cone ends exactly where
+      // the neck begins, and two solids meeting on a coincident plane are not
+      // reliably one volume -- without this the outlet is two disconnected
+      // pieces that render clean and slice as two objects.
+      translate([0, 0, _neck_z - _WELD])
+        cylinder(h = 2 * _WELD, d = joint_neck_od(joint));
+
       translate([0, 0, _neck_z]) joint_neck_inverted(joint);
     }
 

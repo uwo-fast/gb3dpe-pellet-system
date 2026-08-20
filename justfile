@@ -39,10 +39,19 @@ check:
                 -D "render_part=\"$p\"" -D "hopper_size=$i" \
                 -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
         rc=$?
+        # CGAL reports one volume for the solid plus one for the space around
+        # it, so a single printable part is exactly 2. More means the part is
+        # in disconnected pieces -- which renders clean, passes every assert,
+        # and slices as several objects. Two solids meeting on a coincident
+        # plane do it, and it has caught us three times.
+        vols=$(grep -oP 'Volumes:\s*\K\d+' <<<"$out" | head -1)
         if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
           echo FAIL
           grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'
           [ "$rc" -ne 0 ] && [ -z "$out" ] && echo "      exit $rc"
+          fail=1
+        elif [ -n "$vols" ] && [ "$vols" -ne 2 ]; then
+          echo "FAIL  $vols volumes -- the part is in disconnected pieces"
           fail=1
         else
           echo ok

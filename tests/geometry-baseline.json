@@ -136,8 +136,8 @@
       -31.5551,
       0.0
     ],
-    "triangles": 23082,
-    "volume_mm3": 46630.919
+    "triangles": 23722,
+    "volume_mm3": 46639.026
   },
   "outlet@175x175": {
     "bbox_mm": [
@@ -150,8 +150,8 @@
       -31.5551,
       0.0
     ],
-    "triangles": 23082,
-    "volume_mm3": 46630.919
+    "triangles": 23722,
+    "volume_mm3": 46639.026
   },
   "outlet@202x202": {
     "bbox_mm": [
@@ -164,8 +164,8 @@
       -31.5551,
       0.0
     ],
-    "triangles": 23082,
-    "volume_mm3": 46630.919
+    "triangles": 23722,
+    "volume_mm3": 46639.026
   },
   "plate@150x150": {
     "bbox_mm": [
