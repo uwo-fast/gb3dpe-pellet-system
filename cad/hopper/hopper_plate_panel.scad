@@ -65,10 +65,11 @@ module hopper_plate_panel(
       for (y = [-panel_bolt_spacing[1] / 2, panel_bolt_spacing[1] / 2]) {
         translate([x, y, -thickness - 1])
           cylinder(h = thickness + 2, d = panel_bolt_diameter);
-        // Counterbored from ABOVE so heads sit flush with the plate's top face
-        // and do not foul the hub's skirt.
-        translate([x, y, thickness - counterbore_depth - thickness])
-          cylinder(h = counterbore_depth + 0.01, d = counterbore);
+        // Counterbored from ABOVE so heads sit flush with the plate's top
+        // face. rounded_box sits on z = 0 and extends upward, so the top face
+        // is at +thickness -- not 0.
+        translate([x, y, thickness - counterbore_depth])
+          cylinder(h = counterbore_depth + 1, d = counterbore);
       }
   }
 }

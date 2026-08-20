@@ -96,13 +96,17 @@ module hopper_plate_mk3s(
         bolt_diameter=bolt_diameter
       );
 
-      // Saddle, hanging below the plate.
-      translate([-offset, 0, -thickness - _saddle_h])
+      // Saddle, hanging from the plate's UNDERSIDE. rounded_box sits on z = 0
+      // and extends upward, so the plate occupies 0..thickness and its
+      // underside is z = 0 -- not -thickness. Hanging the saddle from
+      // -thickness leaves it floating a plate's thickness below, which renders
+      // and slices perfectly well as two separate objects.
+      translate([-offset, 0, -_saddle_h])
         rounded_box(_saddle_w, saddle_length, _saddle_h + 0.1, 3);
     }
 
     // The frame slot, open at the bottom.
-    translate([-offset, 0, -thickness - _saddle_h - 1 + (grip_depth + 1) / 2])
+    translate([-offset, 0, -_saddle_h - 1 + (grip_depth + 1) / 2])
       cube([_slot, saddle_length + 2, grip_depth + 1], center = true);
 
     // Clamp screws through the outboard jaw only, so they pinch the frame
@@ -111,7 +115,7 @@ module hopper_plate_mk3s(
       translate([
         -offset - _slot / 2 - jaw - 1,
         -clamp_screw_spacing / 2 + i * clamp_screw_spacing / max(1, clamp_screws - 1),
-        -thickness - saddle_roof - grip_depth / 2,
+        -saddle_roof - grip_depth / 2,
       ])
         rotate([0, 90, 0])
           cylinder(h = jaw + 2, d = clamp_screw_diameter);
