@@ -79,7 +79,7 @@ check:
     # function-only files have no geometry and STL export fails on an empty
     # top-level object -- echo export exits 0 there, and the grep below is what
     # actually catches problems either way.
-    for f in cad/hopper/*.scad; do
+    for f in cad/*/*.scad; do
       printf '  %-5s %-8s ' "mod" "$(basename "$f" .scad | sed 's/^hopper_//')"
       out=$(openscad -o "$tmp/mod.echo" -D '$fn={{check_facets}}' "$f" 2>&1)
       rc=$?
@@ -128,3 +128,15 @@ geom:
 # Overwrite the geometry baseline. Only after an INTENDED geometry change.
 geom-baseline:
     @python3 scripts/geom_stats.py --write --facets {{geom_facets}}
+
+# Export the flow test coupon. Print it in the hopper's material and layer
+# height -- the layer lines ARE the wall texture being tested.
+coupon angle="70" height="80":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p {{build}}
+    out={{build}}/flow-coupon-{{angle}}deg.stl
+    openscad --hardwarnings -o "$out" \
+      -D 'angle={{angle}}' -D 'height={{height}}' \
+      -D '$fn=96' cad/coupons/flow_coupon.scad
+    echo "$out"

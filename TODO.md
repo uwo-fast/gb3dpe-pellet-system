@@ -14,6 +14,12 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 - [x] **Wall thickness is now honest.** `min_wall` is the least material
       anywhere, measured perpendicular to the surface, compensated on the
       corner. Verified by probing the rendered mesh at the shallowest surface.
+- [ ] **Run the flow coupon.** `just coupon` exports it; `just coupon 60`
+      exports the shallower one for comparison. Print in the hopper's material
+      and layer height — the layer lines are the wall texture being tested —
+      fill it, and watch whether the funnel empties completely and whether
+      material moves across the whole surface rather than draining a channel
+      down the middle. Two hours on the bed against two twenty-hour segments.
 - [ ] **Measure the wall friction angle of a printed surface** against both
       feedstocks. The 60°/70° minimums in `hopper_feedstock.scad` are design
       targets taken from general practice, not measurements, and the critical
