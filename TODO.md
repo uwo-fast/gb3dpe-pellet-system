@@ -18,8 +18,9 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       feedstocks. The 60°/70° minimums in `hopper_feedstock.scad` are design
       targets taken from general practice, not measurements, and the critical
       mass-flow angle depends on the wall finish as much as the material. Also
-      measure the regrind bulk density; 0.35 kg/L is an estimate and it drives
-      every capacity figure.
+      measure the regrind bulk density; **0.35 kg/L is a retained assumption**,
+      not a measurement, and it drives every capacity figure in the repo
+      including the 3.03 kg headline. Weigh a known volume when convenient.
 - [x] **Printability solved.** The body splits into bolted segments, so no part
       exceeds the MK3S envelope. `require_printable` is now on by default, so the
       gate enforces it rather than reporting it.
@@ -28,6 +29,13 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       leave. At 202 x 202 in two segments that is **3.03 kg regrind / 5.38 kg
       virgin** — against a 20-30 g stock cup, roughly 100-200x, or 15-24 hours of
       printing per fill.
+- [ ] **Get the CURRENT vendor hopper CAD.** The installed part has a square
+      pellet opening *and* a circular port the spiral hose threads into. The
+      hopper in our July scrape has neither — zero circular features in its
+      STEP — so the vendor has revised it. If the current one already carries a
+      hose port, most of the downstream adapter below is already solved. The
+      vendor wiki is a JS app that cannot be fetched, so this needs pulling by
+      hand.
 - [ ] **Design the downstream adapter.** Nothing connects the far end of the
       hose to the toolhead. Needs a part that replaces or seats into the vendor
       hopper cap (43.22 × 54.30 × 6.99 mm, two Ø7.2 mm features). Its geometry
@@ -43,10 +51,31 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 
 ## Hopper CAD — measurements needed
 
-- [ ] **Measure the GreenBoy3D 1 m conveyor tube ID.** `pipe_id = 25` is a
-      guess; the vendor does not publish it.
-- [ ] **Measure the Original Prusa Enclosure top panel** — thickness and
-      material. `roof_t = 2` assumes thin plastic, but the panel is metal.
+- [ ] **Register the real conveyor tube dimensions and redesign the spigot.**
+      Reported from the bench, not yet committed to the geometry: **ID 20, OD 21
+      over the tube, 25 over a 2 mm-radius helix at 8 mm pitch** — a standard
+      spiral-reinforced suction hose, DN20. The hose is a bought-in part so it
+      is not in the vendor CAD; only a port that accepts it would be.
+
+      Feeding ID 20 into the current design fails its own assert:
+      `spigot_id (20.6) must be < spigot_od (19.6)`. Both spigot numbers are
+      wrong, not just `pipe_id`, because `spigot_od` was derived from the bad
+      `pipe_id`.
+
+      Do **not** simply shrink them. A push-in spigot at 2 mm wall gives a
+      15.6 mm bore = 3.9 mm max flake, which would become the tightest section
+      in the whole path — tighter than the vendor's own 18.30 mm feed bore. A
+      **thread-in socket** keeps the full 20 mm bore (5.0 mm max flake) and
+      matches how the vendor already connects it: the helix is the thread.
+- [ ] **Settle where the hopper actually mounts** — the Original Prusa
+      Enclosure roof, or the MK3S's own upside-down-U frame where the spool
+      holder clips on. These need completely different mounts and the question
+      is currently ambiguous. Enclosure roof: sheet metal on a 3030 extrusion
+      frame, mount spans frame members on T-nuts, longer hose drop. MK3S frame:
+      rigid and static and a short hose run, but a narrow top bar, and ~4 kg
+      there shifts the machine's centre of gravity and may excite frame
+      resonance while printing. `roof_thickness = 2` is a placeholder either
+      way.
 - [ ] **Resolve the roof bolt pattern.** Confirmed *not* inherited from
       GreenBoy3D: the vendor hopper STEP has no M4-sized holes anywhere. It was
       invented with no stated source, and the coupling resize has since moved it
