@@ -1,11 +1,27 @@
 # Review of the imported hopper design
 
 Review of `cad/hopper/` as imported in commit `f59360a`, before any changes.
-Kept as the record of what was imported; it is not updated as items are fixed.
-Progress against it is tracked in [`TODO.md`](../TODO.md). Findings 1 and the
-thin-wall item below are addressed; findings 2, 3 and 4 are open.
-Numbers below are measured from the imported source and from STLs rendered off
-it, not estimated. Actions are tracked in [`TODO.md`](../TODO.md).
+Kept as the record of what was imported; the findings below are **not** rewritten
+as they are fixed, so this stays a description of what arrived rather than of
+what exists now. Numbers are measured from the imported source and from STLs
+rendered off it, not estimated.
+
+Status, as of the current tree:
+
+| Finding | Status |
+| ------- | ------ |
+| 1. Funnel walls too shallow | **fixed** — angle is an input, measured on the corner |
+| 2. Two presets cannot be printed | **fixed** — body splits into bolted segments |
+| 3. Interface dimensions unverified | **partly** — hose measured, feed bore taken from vendor CAD; enclosure panel and its bolt pattern still open |
+| 4. Feed path missing its downstream half | **open** — hose connection built, toolhead end not |
+| Bayonet duplicates a library | **fixed** — built on `bayonet-lock-scad` |
+| Four identical locked positions | **fixed** — keyed |
+| Wall thinner than specified | **fixed** — `min_wall` is perpendicular, compensated on the corner |
+| Structure unverified | **fixed** — [`loads.md`](loads.md) |
+| No operational features | **open** — no shutoff, sight window, level sensing or cap seal |
+| Code structure | **fixed** — parameterised modules, one concern per file |
+
+Live work is tracked in [`TODO.md`](../TODO.md).
 
 ## Summary
 
