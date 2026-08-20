@@ -175,8 +175,10 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       enclosure over months. Failure mode would be slow bowing, not a break.
       Cheapest fixes in order: raise `min_wall`, more perimeters, or a
       stiffening rib at mid-height.
-- [ ] Choose and specify a gasket for the split joint. The flanges are flat and
-      bolted at six points; nothing is specified to seal flake dust between them.
+- [x] **Split joint seal specified** — closed-cell foam tape on one flange face,
+      inside the bolt circle. A consumable rather than a groove and an O-ring:
+      printed flanges are not flat enough for a hard seal, and it costs no
+      geometry. See [`docs/printing.md`](docs/printing.md).
 - [x] **Restructure the SCAD.** Parameterised modules under `use <>` instead of
       globals through `include <>`, one concern per file, each previewing
       standalone, with asserts throughout.

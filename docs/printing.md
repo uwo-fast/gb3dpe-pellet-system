@@ -63,8 +63,22 @@ infill.
 | hub → plate | 4 × M4 × 16 | through the plate, self-tapping into the hub's 4.2 mm blind holes |
 | coupling retainers | 2 × M4 grub | one per socket; the lower exits on the skirt's cone, so it wants a grub screw or one whose head need not seat flat |
 | split joint | 6 × M4 × 20 + nuts | plus 2 × Ø4 dowels, which locate while the bolts clamp |
+| split joint seal | closed-cell foam tape, ~2 mm × 10 mm | one face only, inside the bolt circle |
 | MK3S clamp | 2 × M4 grub | pinch the frame; the saddle roof carries the weight |
 | panel variant | 4 × M4 + washers | **washers or a backing plate**, not bare heads on sheet |
+
+### The split joint seal
+
+Closed-cell foam tape — EPDM or neoprene, around 2 mm thick and 10 mm wide —
+run round one flange face inside the bolt circle. Deliberately a consumable
+rather than a groove and an O-ring: what leaks here is flake dust rather than
+liquid, printed flanges are never flat enough to seal metal-to-metal anyway,
+and foam takes up that error where a hard seal would need the flatness it
+cannot get. It also costs no geometry, so nothing has to be reprinted to
+change it.
+
+Compress it with the bolts, not beyond about half its thickness. The dowels set
+the alignment, so the tape is not being asked to hold anything in place.
 
 ## Assembly order
 
