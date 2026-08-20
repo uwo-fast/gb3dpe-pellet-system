@@ -75,6 +75,18 @@ check:
         echo ok
       fi
     done
+    # Every module file, rendered on its own. Uses echo export because the
+    # function-only files have no geometry and STL export fails on an empty
+    # top-level object -- echo export exits 0 there, and the grep below is what
+    # actually catches problems either way.
+    for f in cad/hopper/*.scad; do
+      printf '  %-5s %-8s ' "mod" "$(basename "$f" .scad | sed 's/^hopper_//')"
+      out=$(openscad -o "$tmp/mod.echo" -D '$fn={{check_facets}}' "$f" 2>&1)
+      rc=$?
+      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out" "$tmp/mod.echo"; then
+        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" "$tmp/mod.echo" | head -3 | sed 's/^/      /'; fail=1
+      else echo ok; fi
+    done
     # Examples set their own $fn as any consumer should, so the gate overrides
     # it -- at their preview quality a sweep takes minutes and proves nothing
     # extra, since this checks that they compile and their asserts hold.
