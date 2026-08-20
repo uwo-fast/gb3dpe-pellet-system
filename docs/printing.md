@@ -6,7 +6,7 @@ test piece.
 
 ## Print the coupon first
 
-`just coupon` — roughly 150 g of feedstock and a couple of hours on the bed.
+`just coupon` — roughly 210 g of feedstock and a couple of hours on the bed.
 It is the real angle, throat, wall and corner radii, so it presents the surface
 the hopper will. Fill it and watch whether it empties completely and whether
 material moves across the whole wall rather than draining a channel down the

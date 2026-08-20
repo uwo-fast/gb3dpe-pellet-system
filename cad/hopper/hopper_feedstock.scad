@@ -23,8 +23,11 @@ include <hopper_flow.scad>
 //   is not interchangeable with the steel those figures assume. Regrind is set
 //   steeper because irregular flake nests and bridges (Wijay Systems).
 //   Bulk density spans roughly 450-850 kg/m3 across resin types (Conair);
-//   virgin PLA sits mid-range, and the regrind figure is an estimate because
-//   flake density is variable rather than a property.
+//   virgin PLA sits mid-range. The REGRIND figure is MEASURED, not estimated:
+//   342 g settled to the 700 mL line of a beaker = 0.489 kg/L, on shredded
+//   black Polymaker PolyLite PLA. See docs/feedstock.md for provenance -- bulk
+//   density is a property of the shred, not of the polymer, so it travels with
+//   the machine and the material together.
 //   A hopper that bridges in service wants a measured wall friction angle
 //   against an actual printed surface, not a nudge to these. Tracked in TODO.md.
 //
@@ -33,7 +36,7 @@ include <hopper_flow.scad>
 // vertical.
 
 FEEDSTOCK_VIRGIN = ["virgin pellets", 60, 0.62, FLOW_RATIO_CONVERGING_PELLET, FLOW_RATIO_PARALLEL_PELLET];
-FEEDSTOCK_REGRIND = ["regrind flake", 70, 0.35, FLOW_RATIO_CONVERGING_FLAKE, FLOW_RATIO_PARALLEL_FLAKE];
+FEEDSTOCK_REGRIND = ["regrind flake", 70, 0.489, FLOW_RATIO_CONVERGING_FLAKE, FLOW_RATIO_PARALLEL_FLAKE];
 
 feedstock_registry = [FEEDSTOCK_VIRGIN, FEEDSTOCK_REGRIND];
 

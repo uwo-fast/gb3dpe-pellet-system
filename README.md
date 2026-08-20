@@ -99,6 +99,7 @@ change.
 ## Documentation
 
 - [GreenBoy3D Pellet Extruder V1 — hardware reference](docs/greenboy3d-extruder.md)
+- [Feedstock](docs/feedstock.md) — measured bulk density and provenance
 - [Printing and assembly](docs/printing.md) — parts, orientations, hardware, order
 - [Load cases](docs/loads.md) — hand calculations and what they do not cover
 - [Design notes](docs/design-notes.md) — why the geometry is the way it is, and where the numbers came from

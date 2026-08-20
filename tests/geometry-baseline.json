@@ -178,8 +178,8 @@
       -60.0,
       -46.0
     ],
-    "triangles": 2384,
-    "volume_mm3": 105475.126
+    "triangles": 2668,
+    "volume_mm3": 107050.289
   },
   "plate@175x175": {
     "bbox_mm": [
@@ -192,8 +192,8 @@
       -60.0,
       -46.0
     ],
-    "triangles": 2384,
-    "volume_mm3": 105475.126
+    "triangles": 2668,
+    "volume_mm3": 107050.289
   },
   "plate@202x202": {
     "bbox_mm": [
@@ -206,7 +206,7 @@
       -60.0,
       -46.0
     ],
-    "triangles": 2384,
-    "volume_mm3": 105475.126
+    "triangles": 2668,
+    "volume_mm3": 107050.289
   }
 }

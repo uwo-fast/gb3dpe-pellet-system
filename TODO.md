@@ -24,15 +24,14 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       feedstocks. The 60°/70° minimums in `hopper_feedstock.scad` are design
       targets taken from general practice, not measurements, and the critical
       mass-flow angle depends on the wall finish as much as the material. Also
-      measure the regrind bulk density; **0.35 kg/L is a retained assumption**,
-      not a measurement, and it drives every capacity figure in the repo
-      including the 3.03 kg headline. Weigh a known volume when convenient.
+      The regrind bulk density is now MEASURED at 0.489 kg/L — see
+      docs/feedstock.md. The angles remain the open half of this.
 - [x] **Printability solved.** The body splits into bolted segments, so no part
       exceeds the MK3S envelope. `require_printable` is now on by default, so the
       gate enforces it rather than reporting it.
 - [x] **Capacity presets re-derived.** Presets are footprints only; the funnel
       comes from the wall angle and the bin from whatever height the segments
-      leave. At 202 x 202 in two segments that is **3.03 kg regrind / 5.38 kg
+      leave. At 202 x 202 in two segments that is **4.24 kg regrind / 5.38 kg
       virgin** — against a 20-30 g stock cup, roughly 100-200x, or 15-24 hours of
       printing per fill.
 - [ ] **Get the CURRENT vendor hopper CAD.** The installed part has a square
@@ -79,10 +78,10 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       holder turns out to have no frame slot at all, so it is a cantilever hook
       and not a pattern to carry 3 kg. Hopper axis offset 40 mm so the outlet
       passes beside the frame.
-- [ ] **Confirm the frame thickness with calipers.** 6.2 mm is documented and
-      the slot is cut at 6.6, which accepts 6.2–6.5 and rejects 6.8. If the real
-      frame is at the top of that band the fit will be tight; `frame_clearance`
-      is the knob.
+- [x] **Frame measured**: 6.3 mm steel, 40.5 mm top bar — not the 6.2 mm
+      aluminium public sources describe. Slot accepts 6.2–6.5, grip depth
+      reduced to 30 so the jaws stay well inside the bar, and the saddle now
+      fillets into the plate.
 - [ ] **Build the enclosure panel plate.** The universal plate already is one
       bar the hole pattern, which is blocked on measuring the panel.
 - [ ] **Decide whether the bare-MK3S mount is actually wise.** It works, but it
@@ -99,7 +98,7 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       - **Mounting adapter, swappable**: bolts to the feed head on a pattern we
         define, and presents the target interface — `panel` (flat, bolts
         through the drilled enclosure sheet), `frame` (grips the MK3S's
-        370 x 370 x 6.2 mm aluminium plate, the way the spool holder does), or
+        370 x 370 mm frame, measured 6.3 mm steel), or
         `stand` (separate bench stand).
 
       This also settles the roof bolt-pattern item below: the feed-head-to-
@@ -225,8 +224,8 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       them on lab storage or a private location before that directory is
       cleared.
 
-- [ ] Confirm the hose's handedness and, if it is left-hand, flip
-      `hose_handedness` and reprint the outlet.
+- [x] **Hose confirmed**: 20 ID / 21 OD / 25 over a 2 mm-radius rib, 8 mm pitch,
+      right-handed. The default was correct.
 
 ## Admin
 

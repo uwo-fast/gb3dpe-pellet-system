@@ -26,9 +26,9 @@ def main() -> int:
     ap.add_argument("--min-wall", type=float, default=3.0)
     ap.add_argument("--body-height", type=float, default=410.0)
     ap.add_argument("--segments", type=int, default=2)
-    ap.add_argument("--density", type=float, default=0.35, help="feedstock, kg/L")
+    ap.add_argument("--density", type=float, default=0.489, help="feedstock, kg/L (measured, see docs/feedstock.md)")
     ap.add_argument("--mount-offset", type=float, default=40.0)
-    ap.add_argument("--grip-depth", type=float, default=40.0)
+    ap.add_argument("--grip-depth", type=float, default=30.0)
     args = ap.parse_args()
 
     inset = args.min_wall / math.sin(math.radians(args.angle))

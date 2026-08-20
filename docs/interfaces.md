@@ -101,7 +101,8 @@ the thing to size for, and plate thickness is a parameter for that reason.
 Plates:
 
 - **MK3S frame** (`hopper_plate_mk3s.scad`) — clamps the printer's own
-  370 × 370 × 6.2 mm aluminium frame. Built; see below.
+  370 × 370 mm frame — measured as **6.3 mm steel**, 40.5 mm across the top
+  bar. Built; see below.
 - **Panel** (`hopper_plate_panel.scad`) — bolts through a drilled flat sheet,
   for the Original Prusa Enclosure or anything similar. Built. The pattern is
   parametric because where the holes can go depends on what is behind the

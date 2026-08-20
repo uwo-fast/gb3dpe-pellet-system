@@ -31,10 +31,13 @@ use <hopper_util.scad>
 // PRINTS UPSIDE DOWN: plate face on the bed, saddle legs pointing up, slot
 // opening upward. Nothing overhangs in that orientation.
 
-// Documented figure for the MK3/MK3S frame: a 370 x 370 mm aluminium plate,
-// 6.2 mm thick. Worth a caliper check, and parametric so it does not matter
-// much if it is a little off.
-MK3S_FRAME_THICKNESS = 6.2;
+// MEASURED on the bench, not taken from documentation: the MK3S frame's top
+// bar is STEEL, 6.3 mm thick and 40.5 mm tall. Public sources describe the
+// frame as 6.2 mm aluminium; both differ from what is actually on this machine.
+// Steel changes nothing structurally here -- the clamp does not care and the
+// frame was never the weak part -- but it is worth recording as measured.
+MK3S_FRAME_THICKNESS = 6.3;
+MK3S_FRAME_BAR_HEIGHT = 40.5;
 
 /**
  * Smallest offset from the frame plane to the hopper axis that still clears
@@ -54,10 +57,19 @@ module hopper_plate_mk3s(
   bolts = 4,
   bolt_diameter = 4.5,
   frame_thickness = MK3S_FRAME_THICKNESS,
-  frame_clearance = 0.4,
+  frame_clearance = 0.3,
+  frame_bar_height = MK3S_FRAME_BAR_HEIGHT,
   offset = 40,
-  grip_depth = 40,
+  // Well inside the bar rather than most of the way down it. At 40 the saddle
+  // reached within half a millimetre of the bar's lower edge, which leaves
+  // nothing for tolerance and puts the jaw tips where the bar ends.
+  grip_depth = 30,
   jaw = 5,
+  // Fillet where the saddle meets the plate. That junction is where the
+  // cantilever's bending moment is highest and a sharp re-entrant corner is a
+  // stress raiser; it also prints as a supported slope in the flipped
+  // orientation rather than a right angle.
+  fillet = 4,
   saddle_length = 80,
   saddle_roof = 6,
   clamp_screws = 2,
@@ -87,6 +99,17 @@ module hopper_plate_mk3s(
     clamp_screw_spacing + clamp_screw_diameter < saddle_length,
     str("hopper_plate_mk3s: clamp screws do not fit within saddle_length ", saddle_length)
   );
+  assert(
+    grip_depth < frame_bar_height,
+    str(
+      "hopper_plate_mk3s: grip_depth (", grip_depth, ") must stay inside the frame bar (",
+      frame_bar_height, ") or the jaws hang off its lower edge"
+    )
+  );
+  assert(
+    offset + _saddle_w / 2 + fillet <= size[0] / 2,
+    str("hopper_plate_mk3s: the fillet would run off the plate edge")
+  );
 
   difference() {
     union() {
@@ -95,6 +118,17 @@ module hopper_plate_mk3s(
         skirt_diameter=skirt_diameter, bolt_depth=bolt_depth, bolts=bolts,
         bolt_diameter=bolt_diameter
       );
+
+      // Fillet blending the saddle into the plate. Hulled between the saddle's
+      // own section and a larger one at the plate face, so it flares outward
+      // going up -- no overhang once the part is printed plate-face-down.
+      if (fillet > 0)
+        hull() {
+          translate([-offset, 0, -fillet])
+            rounded_box(_saddle_w, saddle_length, 0.01, 3);
+          translate([-offset, 0, -0.01])
+            rounded_box(_saddle_w + 2 * fillet, saddle_length + 2 * fillet, 0.01, 3 + fillet);
+        }
 
       // Saddle, hanging from the plate's UNDERSIDE. rounded_box sits on z = 0
       // and extends upward, so the plate occupies 0..thickness and its

@@ -22,10 +22,9 @@
 // not tube_od + 2 * helix -- 21 + 4 = 25, which is what a caliper reads across
 // the ribs.
 
-// Supplied with the GreenBoy3D kit. Measured on the bench, not published.
-// Handedness has NOT been confirmed and is the one value here worth doubting --
-// if it is wrong the hose simply will not screw in, which is obvious
-// immediately and cheap to correct, since the outlet is a small part.
+// Supplied with the GreenBoy3D kit. Measured on the bench, not published:
+// 20 mm bore, 21 mm over the tube wall, a 2 mm-radius rib giving 25 mm overall,
+// 8 mm pitch, right-handed. All confirmed by caliper and eye.
 HOSE_GB3D = ["GB3D 1 m conveyor", 20, 21, 4, 8, "right"];
 
 hose_registry = [HOSE_GB3D];

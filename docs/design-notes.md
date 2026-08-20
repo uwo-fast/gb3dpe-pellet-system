@@ -30,11 +30,14 @@ and bridges where free-flowing pellets do not [W].
 Treat these as provisional. A hopper that bridges in service wants a measured
 wall friction angle against an actual printed surface, not a nudge to these.
 
-## Bulk densities: 0.62 kg/L virgin, 0.35 kg/L regrind
+## Bulk densities: 0.62 kg/L virgin (assumed), 0.489 kg/L regrind (measured)
 
 Pellet bulk density spans roughly 450–850 kg/m³ across resin types [C]; virgin
 PLA sits near the middle of that. Regrind flake is markedly lighter and its
-density is variable rather than a property [W], so 0.35 kg/L is an estimate.
+density is variable rather than a property [W] — which is exactly why the
+regrind figure is now **measured** rather than assumed: 0.489 kg/L on our own
+shred. See [`feedstock.md`](feedstock.md). Virgin is still the general-practice
+0.62 and worth measuring the same way if it ever becomes the main feedstock.
 
 These only affect the reported capacity, never the geometry. Every capacity
 figure in this repo inherits their uncertainty.
