@@ -85,10 +85,8 @@ module hopper_hub(
         translate([0, 0, -1]) cylinder(h = _skirt_h + 2, d = hub_plate_hole(joint));
       }
 
-      // Outlet socket, turned end for end so it opens downward. Rotated rather
-      // than mirrored: mirroring a bayonet reverses its handedness, and the
-      // outlet would then need the opposite turn direction to mate.
-      translate([0, 0, _half]) rotate([180, 0, 0]) joint_socket(joint);
+      // Outlet socket, opening downward at the bed face.
+      joint_socket_inverted(joint);
 
       // Body socket, opening upward.
       translate([0, 0, _half]) joint_socket(joint);

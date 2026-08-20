@@ -268,6 +268,23 @@ module joint_socket(joint) {
   _bayonet_half(joint, "lock");
 }
 
+/**
+ * The same pair turned end for end: a socket that opens DOWNWARD and the neck
+ * that enters it from below. Both still occupy z = 0 to part_height.
+ *
+ * Turned with rotate, never mirror. Mirroring reverses a bayonet's handedness,
+ * so a mirrored socket needs a neck built to the opposite turn direction to
+ * mate — which renders perfectly and simply never locks. Keeping the flip in
+ * here means no caller has to know that.
+ */
+module joint_socket_inverted(joint) {
+  translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_socket(joint);
+}
+
+module joint_neck_inverted(joint) {
+  translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_neck(joint);
+}
+
 // Standalone preview ($fn passed on the call, never assigned at top level --
 // it would otherwise override the driver's choice for this file's modules): neck at the origin, socket beside it.
 _demo = hopper_joint();

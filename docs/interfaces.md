@@ -68,6 +68,21 @@ instead of two.
 Quick-release here is the point: clearing a jam by twisting the outlet off beats
 undoing fasteners, and swapping hose types becomes a small reprint.
 
+### As built
+
+| Part | Size | Prints |
+| ---- | ---- | ------ |
+| hub | 95 skirt, 72 tube, 36 tall, straight 50 bore | standing on its bottom face |
+| plate | 120 × 120 × 6, Ø65.3 hole, 4 × M4 at Ø79 | flat |
+| outlet | Ø64 over the pins, 83 tall | standing on the hose socket |
+
+Verified by intersection rather than by eye: every coupling in the stack seats
+free and captures at an identical 115.31 mm³ when displaced 3 mm, a bolt passes
+cleanly from under the plate into the hub's blind fixings, and a model of the
+real hose screws into the outlet's socket without interference. The outlet's
+bore widens monotonically from the hose end up to the coupling, so in the flow
+direction it converges with no ledge.
+
 ## C — mount
 
 Ours to define, so it is a documented number rather than an inherited one. A
