@@ -12,7 +12,7 @@ hopper.
 | **B — outlet** | hub ↔ outlet module | the hose |
 | **C — mount** | hub ↔ machine plate | the machine |
 
-## Why the mount is a bulkhead, not a flange
+## Why nothing connects to the plate
 
 The obvious layout — a plate carrying the hopper socket above and the outlet
 below — cannot be printed. A bayonet socket only accepts from one end, so a
@@ -22,19 +22,26 @@ bed instead. **You can have quick-release on one face of a plate, not both.**
 The imported mount had exactly this problem, which is why it printed badly in
 every orientation.
 
-So no connection lives on the plate. The hub is a plain vertical tube that
-passes *through* the plate and is clamped by a collar underneath, the way a
-bulkhead tank fitting works. Every part then prints in its natural orientation
-with no support:
+So the connections move off the plate and onto a **hub**: a short tube with a
+bayonet socket at each end, bolted down to the plate from underneath. The body
+twists into the top, the outlet twists into the bottom, and the plate stays a
+flat piece of material with holes in it.
 
 | Part | Prints |
 | ---- | ------ |
-| **hub** | standing on its bottom face. Body socket at the top, shoulder mid-height, plain barrel below it, outlet socket at the bottom. No flange, so nothing overhangs — the shoulder is chamfered. |
-| **plate** | flat. One hole, one machine bolt pattern, no features on either face. Could as easily be laser-cut, acrylic or plywood as printed. |
-| **collar** | flat. Goes on under the plate and clamps the hub down. |
-| **outlet** | bayonets into the hub's bottom. |
+| **hub** | standing on its bottom face. A skirt flares out to 85 mm at the bed and tapers *in* to the 72 mm tube, so there is no overhang anywhere — both sockets are internal bores. |
+| **plate** | flat. A clearance hole, four holes for the hub, and the machine's own pattern. No features on either face, so it can equally be laser-cut, acrylic or plywood. |
+| **outlet** | neck upward. Converges to the hose socket, which sits on the bed. |
 
-It also means the plate — the only machine-specific part — is the simplest and
+Two things fall out of bolting the hub down rather than clamping it:
+
+- **The hopper stays retained with the outlet removed.** If the outlet were what
+  held the stack together, twisting it off to clear a jam would leave 3 kg of
+  full hopper loose on the plate.
+- **The hub cannot rotate** when the body is twisted into it, so no separate
+  anti-rotation feature is needed.
+
+The plate — the only machine-specific part — is then also the simplest and
 cheapest thing in the stack to get wrong and reprint, which is the right place
 for the uncertainty to sit.
 
@@ -46,19 +53,35 @@ rule — see [`design-notes.md`](design-notes.md).
 
 ## B — outlet
 
-A second bayonet on the same library, sized from the hose rather than from the
-hopper. **Bore 24 mm**, giving neck 30 mm in a socket 39.3 mm at `pin_radius`
-3.0. The hose is 20 mm ID and the toolhead's own feed bore caps the system at
-4.58 mm regardless, so 24 mm carries headroom without bulking out the outlet.
+**The same coupling as A**, not a smaller one. That looks wasteful until you
+follow the bore: the hose is 20 mm, so the path has to converge from 50 mm to
+20 mm *somewhere*, and a converging section is exactly where material arches.
+Putting a second, smaller coupling in the hub would move that convergence into
+the part that is bolted down. Keeping the coupling identical lets the hub run a
+straight 50 mm bore and puts the whole convergence inside the outlet module —
+which is the part you can twist off in seconds.
+
+**The jam-prone geometry belongs in the quick-release part.** That is the reason
+for the choice, and reusing the coupling also means one interface to verify
+instead of two.
 
 Quick-release here is the point: clearing a jam by twisting the outlet off beats
 undoing fasteners, and swapping hose types becomes a small reprint.
 
 ## C — mount
 
-Ours to define, so it is a documented number rather than an inherited one. The
-hub's barrel and shoulder plus the collar thread are the whole interface; a
-plate satisfies it by having the right hole and clearance for the collar.
+Ours to define, so it is a documented number rather than an inherited one. A
+plate satisfies it with three things:
+
+| Feature | Size | Why |
+| ------- | ---- | --- |
+| central clearance hole | **Ø65.3** | must clear the outlet neck's **pins** at Ø64.3, not the Ø58 neck |
+| hub fixings | 4 × M4 on a **Ø78** circle | outboard of the hub's 72 mm tube, inboard of its 85 mm skirt |
+| machine pattern | machine-specific | the only part that touches reality |
+
+Bearing is a non-issue — the hub seats on a 722 mm² annulus, which is 0.04 MPa
+at 3 kg against roughly 50 MPa for PETG. Plate *bending* around a 65 mm hole is
+the thing to size for, and plate thickness is a parameter for that reason.
 
 Planned plates:
 
