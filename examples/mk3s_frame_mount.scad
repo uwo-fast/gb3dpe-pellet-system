@@ -15,16 +15,17 @@ joint = hopper_joint();
 conveyor = hose(0);
 
 plate_thickness = 6;
-frame_thickness = 6.2;
-frame_offset = 40;
+frame_thickness = 6.3;
+frame_offset = 47;
 saddle_roof = 6;
 
 // Datum is the plate's top face, matching the driver.
 outlet_drop = joint_neck_height(joint) - outlet_height(joint, conveyor, 70, 24);
 
 echo(str(
-  "hopper axis sits ", frame_offset, " mm from the frame plane; minimum is ",
-  mk3s_min_offset(joint, frame_thickness)
+  "hopper axis sits ", frame_offset, " mm from the frame plane. Two minimums: ",
+  mk3s_outlet_offset(joint, frame_thickness), " so the outlet clears the frame, and ",
+  mk3s_saddle_offset(joint, frame_thickness), " so the saddle clears the plate's hole"
 ));
 
 color(colour_plate())

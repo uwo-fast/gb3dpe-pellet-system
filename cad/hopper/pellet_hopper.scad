@@ -121,7 +121,7 @@ plate_variant = "mk3s"; // [universal,mk3s,panel]
 // How far the hopper's axis sits from the frame plane. The outlet hangs below
 // the plate, so it has to pass BESIDE the frame rather than through it; the
 // plate asserts its own minimum.
-frame_offset = 40;
+frame_offset = 47;
 // Documented for the MK3/MK3S. Parametric because it is worth a caliper check.
 frame_thickness = 6.2;
 frame_clearance = 0.4;
@@ -136,7 +136,7 @@ panel_bolt_spacing = [100, 100];
 // The plate is the only machine-specific part, and deliberately the simplest:
 // flat, holes only. Machine-specific variants difference their own pattern out
 // of it. See docs/interfaces.md.
-plate_size = [120, 120];
+plate_size = [130, 130];
 plate_thickness = 6;
 plate_corner_radius = 6;
 

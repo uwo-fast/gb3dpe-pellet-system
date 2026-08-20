@@ -73,7 +73,7 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 | Part | Size | Prints |
 | ---- | ---- | ------ |
 | hub | 95 skirt, 72 tube, 36 tall, straight 50 bore | standing on its bottom face |
-| plate | 120 × 120 × 6, Ø65.0 hole, 4 × M4 at Ø79 | flat |
+| plate | 130 × 130 × 6, Ø65.0 hole, 4 × M4 at Ø79 | flat |
 | outlet | Ø64 over the pins, 83 tall | standing on the hose socket |
 
 Verified by intersection rather than by eye: every coupling in the stack seats
@@ -122,16 +122,19 @@ that stays seated because the spool's weight holds it down. Fine for a kilogram
 of filament; not a pattern to carry three kilograms of pellets. So this one
 straddles the frame and pinches it.
 
-**The hopper axis is offset 40 mm from the frame plane, not over it.** The
+**The hopper axis is offset 47 mm from the frame plane, not over it.** The
 outlet hangs below the plate and has to pass *beside* the frame rather than
-through it. The plate computes its own minimum — 38.6 mm for this coupling —
-and asserts against it. That offset is also why Prusa's holder is an L-arm: the
+through it. There are **two** minimums and the second is the one that bites:
+the outlet clearing the frame needs 38.6 mm, but the saddle — jaws and fillet
+included — is wider than the bar it grips and must also sit clear of the
+plate's own clearance hole, which needs 46.8. Both are asserted, and the error
+says which one it was. That offset is also why Prusa's holder is an L-arm: the
 same constraint produced the same shape.
 
 The saddle's roof carries the vertical load, sitting on the frame's top edge, so
 the two clamp screws only resist sliding and tipping rather than holding the
-weight in friction. At 3 kg on a 40 mm offset the couple across a 40 mm grip is
-about 29 N.
+weight in friction. At the loaded 4.24 kg on a 47 mm offset, the couple across a
+30 mm grip is about 65 N.
 
 Verified: the frame clears the plate, hub and outlet; the slot accepts 6.2 and
 6.5 mm and rejects 6.8. It prints upside down — plate face on the bed, saddle

@@ -40,16 +40,35 @@ MK3S_FRAME_THICKNESS = 6.3;
 MK3S_FRAME_BAR_HEIGHT = 40.5;
 
 /**
- * Smallest offset from the frame plane to the hopper axis that still clears
- * both the plate's hole and the outlet hanging through it.
+ * Smallest offset from the frame plane to the hopper axis.
+ *
+ * TWO constraints, and the second is the one that bites. The outlet hangs below
+ * the plate and must pass beside the frame — that sets a floor of about 39 mm.
+ * But the SADDLE also has to sit clear of the plate's own clearance hole, and
+ * with its jaws and fillet it is wider than the frame it grips, so it needs
+ * more. Missing the second one leaves the saddle hanging over the hole, partly
+ * filling the opening the outlet passes through.
  */
-function mk3s_min_offset(joint, frame_thickness = MK3S_FRAME_THICKNESS, margin = 3) =
+function mk3s_outlet_offset(joint, frame_thickness = MK3S_FRAME_THICKNESS, margin = 3) =
   frame_thickness / 2 + margin +
   max(hub_plate_hole(joint) / 2, joint_neck_od(joint) / 2);
 
+// Defaults here MUST match hopper_plate_mk3s()'s own, or the figure it reports
+// is not the figure it enforces.
+function mk3s_saddle_offset(joint, frame_thickness = MK3S_FRAME_THICKNESS,
+                            frame_clearance = 0.3, jaw = 7, fillet = 4) =
+  hub_plate_hole(joint) / 2 + (frame_thickness + frame_clearance) / 2 + jaw + fillet;
+
+function mk3s_min_offset(joint, frame_thickness = MK3S_FRAME_THICKNESS,
+                         frame_clearance = 0.3, jaw = 7, fillet = 4) =
+  max(
+    mk3s_outlet_offset(joint, frame_thickness),
+    mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet)
+  );
+
 module hopper_plate_mk3s(
   joint,
-  size = [120, 120],
+  size = [130, 130],
   thickness = 6,
   corner_radius = 6,
   skirt_diameter = 95,
@@ -59,12 +78,16 @@ module hopper_plate_mk3s(
   frame_thickness = MK3S_FRAME_THICKNESS,
   frame_clearance = 0.3,
   frame_bar_height = MK3S_FRAME_BAR_HEIGHT,
-  offset = 40,
+  offset = 47,
   // Well inside the bar rather than most of the way down it. At 40 the saddle
   // reached within half a millimetre of the bar's lower edge, which leaves
   // nothing for tolerance and puts the jaw tips where the bar ends.
   grip_depth = 30,
-  jaw = 5,
+  // Thicker than the frame needs, because the jaw is a cantilever taking the
+  // mount's overturning couple and its stress goes as 1/thickness^2. Widening
+  // it pushes the offset out a little, which raises the couple -- but only
+  // linearly, so it wins comfortably.
+  jaw = 7,
   // Fillet where the saddle meets the plate. That junction is where the
   // cantilever's bending moment is highest and a sharp re-entrant corner is a
   // stress raiser; it also prints as a supported slope in the flipped
@@ -79,13 +102,16 @@ module hopper_plate_mk3s(
   _slot = frame_thickness + frame_clearance;
   _saddle_w = _slot + 2 * jaw;
   _saddle_h = grip_depth + saddle_roof;
-  _min_offset = mk3s_min_offset(joint, frame_thickness);
+  _min_offset = mk3s_min_offset(joint, frame_thickness, frame_clearance, jaw, fillet);
 
   assert(
     offset >= _min_offset,
     str(
       "hopper_plate_mk3s: offset (", offset, ") is under the minimum ", _min_offset,
-      " — the outlet hanging below the plate would foul the frame"
+      ". Either the outlet hanging below the plate fouls the frame (needs ",
+      mk3s_outlet_offset(joint, frame_thickness),
+      "), or the saddle and its fillet overhang the plate's clearance hole (needs ",
+      mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet), ")"
     )
   );
   assert(

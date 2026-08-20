@@ -22,7 +22,7 @@ why the wall angle is the assumption most worth testing.
 | body segment 1 | 1 | 202 × 202 × 205 | ~0.66 kg | as modelled |
 | cap | 1 | 209 × 209 × 19 | ~0.22 kg | **flip** — top face down |
 | hub | 1 | 95 × 95 × 36 | ~0.08 kg | as modelled |
-| plate (MK3S) | 1 | 120 × 120 × 52 | ~0.13 kg | **flip** — plate face down |
+| plate (MK3S) | 1 | 130 × 130 × 42 | ~0.16 kg | **flip** — plate face down |
 | outlet | 1 | 59 × 61 × 83 | ~0.06 kg | as modelled |
 
 About 1.5 kg of PETG all told. Segment 1 at 202 × 202 leaves 4 mm either side

@@ -27,8 +27,10 @@ def main() -> int:
     ap.add_argument("--body-height", type=float, default=410.0)
     ap.add_argument("--segments", type=int, default=2)
     ap.add_argument("--density", type=float, default=0.489, help="feedstock, kg/L (measured, see docs/feedstock.md)")
-    ap.add_argument("--mount-offset", type=float, default=40.0)
+    ap.add_argument("--mount-offset", type=float, default=47.0)
     ap.add_argument("--grip-depth", type=float, default=30.0)
+    ap.add_argument("--jaw", type=float, default=7.0)
+    ap.add_argument("--mass", type=float, default=4.24, help="loaded hopper, kg")
     args = ap.parse_args()
 
     inset = args.min_wall / math.sin(math.radians(args.angle))
@@ -64,14 +66,14 @@ def main() -> int:
     modulus = (args.min_wall / 1000) ** 2 / 6
     report("bin wall bending (strip model)", moment / modulus / 1e6, "governs")
 
-    for kg in (3.0, 4.0):
+    for kg in (args.mass, args.mass * 1.5):
         force = kg * G
         couple = force * (args.mount_offset / 1000) / (args.grip_depth / 1000)
-        z_jaw = 0.080 * 0.005 ** 2 / 6
-        report(f"clamp jaw bending, {kg:.0f} kg",
+        z_jaw = 0.080 * (args.jaw / 1000) ** 2 / 6
+        report(f"clamp jaw bending, {kg:.2f} kg",
                couple * (args.grip_depth / 1000) / z_jaw / 1e6, f"({couple:.0f} N couple)")
-        z_plate = 0.120 * 0.006 ** 2 / 6
-        report(f"plate cantilever, {kg:.0f} kg",
+        z_plate = 0.130 * 0.006 ** 2 / 6
+        report(f"plate cantilever, {kg:.2f} kg",
                force * (args.mount_offset / 1000) / z_plate / 1e6)
 
     seat = math.pi * ((72 / 2) ** 2 - (65.3 / 2) ** 2)

@@ -11,9 +11,9 @@ regrind density of 0.489 kg/L — see [`feedstock.md`](feedstock.md).
 | ---- | ------ | ------------- |
 | Split flange bearing | 0.003 MPa | >1000 |
 | **Bin wall bending** | **6.27 MPa** | **4.8 — governs** |
-| Clamp jaw bending, 3 kg | 3.53 MPa | 8.5 |
-| Clamp jaw bending, 4 kg | 4.71 MPa | 6.4 |
-| Plate cantilever, 3 kg | 1.64 MPa | 18.3 |
+| Clamp jaw bending, 4.24 kg | 2.99 MPa | 10.0 |
+| Clamp jaw bending, 6.36 kg | 4.49 MPa | 6.7 |
+| Plate cantilever, 4.24 kg | 2.51 MPa | 12.0 |
 | Hub annular seat, 4 kg | 0.05 MPa | >500 |
 
 Against **30 MPa**, not PETG's ~50 MPa bulk yield. These parts are printed and
@@ -37,6 +37,11 @@ much lower is not worth computing until something says it matters.
 **The clamp jaw** is a cantilever of the grip depth, taking the couple that the
 mount's offset generates. The saddle roof carries the vertical load on the
 frame's top edge, so the jaw sees only the overturning couple.
+
+The jaw is 7 mm — thicker than gripping a 6.3 mm bar needs. Its stress goes as
+1/thickness², while thickening it pushes the offset out and raises the couple
+only linearly, so it wins comfortably: 5 mm gave a safety factor of 5.3 at the
+loaded mass, 7 mm gives 10.0.
 
 ## The thing safety factors do not cover
 
