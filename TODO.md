@@ -223,6 +223,9 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       them on lab storage or a private location before that directory is
       cleared.
 
+- [ ] Confirm the hose's handedness and, if it is left-hand, flip
+      `hose_handedness` and reprint the outlet.
+
 ## Admin
 
 - [ ] Add ORCIDs to `CITATION.cff` if the authors have them.
