@@ -12,7 +12,15 @@ is reusable across every angle you want to compare (`just coupon 60` for the
 shallower one).
 
 **Print both inverted** — flange down for the funnel, ring down for the stand.
-Everything slopes inward that way and nothing overhangs.
+Everything slopes inward that way and nothing overhangs, and each part lands its
+widest face on the bed.
+
+The stand's legs splay outward toward their feet, so it has no bottom ring:
+in this orientation the carrying ring is the one on the bed, so a second ring at
+the far end does nothing for adhesion, and four splayed legs on a 170 mm ring
+already tip at about 34° under a coupon weighing well under a kilogram. Its
+legs are solid blocks rather than shells, so infill does most of the work —
+roughly 90 g rather than the 310 g its solid volume suggests.
 
 **Print them on the machine and in the material that will print the hopper**, at
 the same layer height. The surface finish is the experiment: a coupon printed

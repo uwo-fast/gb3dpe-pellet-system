@@ -130,7 +130,11 @@ module flow_stand(
   ring = 8,
   height = 90,
   legs = 4,
-  leg_width = 14,
+  leg_width = 16,
+  // Legs splay outward toward the feet. It widens the base, stiffens them
+  // against splaying under load, and costs nothing to print: a few millimetres
+  // over the leg height is only a couple of degrees off vertical.
+  leg_draft = 5,
   corner_radius = 8
 ) {
   assert(outer > opening, str("flow_stand: outer (", outer, ") must exceed opening (", opening, ")"));
@@ -147,6 +151,12 @@ module flow_stand(
         FLOW_FLANGE_OUTER, ") it has to carry")
   );
 
+  assert(
+    atan(leg_draft / height) < 30,
+    str("flow_stand: leg_draft ", leg_draft, " over ", height,
+        " mm is ", atan(leg_draft / height), " degrees off vertical -- too much to print clean")
+  );
+
   _leg_r = (opening + outer) / 4;
 
   union() {
@@ -156,17 +166,20 @@ module flow_stand(
     }
 
     // Legs at the mid-faces, overlapping the ring so they are one solid.
+    //
+    // No ring tying their far ends. In the print orientation the CARRYING ring
+    // is the one on the bed, so a second ring at the other end does nothing for
+    // adhesion -- its only job was stiffening the leg ends, and four splayed
+    // legs on a 170 mm ring already tip at about 34 degrees under a coupon that
+    // weighs well under a kilogram. Dropping it is one less feature and a
+    // cleaner print.
     for (i = [0:legs - 1])
       rotate([0, 0, i * 360 / legs])
-        translate([_leg_r, 0, 0])
-          rounded_box(leg_width, leg_width, height, 2);
-
-    // Feet, tying the leg ends together for stability in use.
-    translate([0, 0, height - ring]) difference() {
-      rounded_box(outer, outer, ring, corner_radius);
-      translate([0, 0, -1])
-        rounded_box(outer - 2 * leg_width, outer - 2 * leg_width, ring + 2, corner_radius);
-    }
+        hull() {
+          translate([_leg_r, 0, 0]) rounded_box(leg_width, leg_width, 0.01, 2);
+          translate([_leg_r, 0, height - 0.01])
+            rounded_box(leg_width + 2 * leg_draft, leg_width + 2 * leg_draft, 0.01, 2);
+        }
   }
 }
 
