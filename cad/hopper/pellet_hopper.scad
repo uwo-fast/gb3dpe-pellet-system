@@ -119,15 +119,28 @@ lock_bore_diameter = 50;
 plate_variant = "mk3s"; // [universal,mk3s,panel]
 
 // How far the hopper's axis sits from the frame plane. The outlet hangs below
-// the plate, so it has to pass BESIDE the frame rather than through it; the
-// plate asserts its own minimum.
+// the plate so it must pass BESIDE the frame, and the saddle must clear the
+// plate's own clearance hole. The plate asserts both minimums and says which
+// one bound.
 frame_offset = 47;
-// Documented for the MK3/MK3S. Parametric because it is worth a caliper check.
-frame_thickness = 6.2;
-frame_clearance = 0.4;
-// How far the saddle reaches down the frame, and how long it runs along it.
-frame_grip_depth = 40;
-frame_saddle_length = 80;
+
+// MEASURED on this machine: 6.3 mm steel with a 40.5 mm top bar. Public sources
+// describe the frame as 6.2 mm aluminium; both differ from what is there.
+frame_thickness = 6.3;
+frame_clearance = 0.3;
+
+// Well inside the 40.5 mm bar rather than most of the way down it.
+frame_grip_depth = 30;
+
+// Jaw stress goes as 1/thickness^2, while the offset a thicker jaw forces out
+// raises the couple only linearly -- so a thick jaw is cheap stiffness.
+frame_jaw = 7;
+frame_fillet = 4;
+
+// The MK3S plate sizes ITSELF from the offset, the saddle and the hub skirt, so
+// this margin is the only handle on how big it comes out. There is deliberately
+// no separate plate width or saddle length to set inconsistently with them.
+frame_plate_margin = 6;
 
 // For the "panel" variant: where it bolts through the sheet. Parametric because
 // where the holes can go depends on what is behind the panel, unmeasured so far.
@@ -340,8 +353,15 @@ _flange_y = segments < 2 ? 0 : max([for (c = _cut_sections) c[1] + 2 * flange_wi
 
 // Largest footprint and height of any single printed part.
 _cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
-_part_x = max([_cap_outer_x, plate_size[0], hub_skirt_diameter, _top_x, _flange_x]);
-_part_y = max([_cap_outer_y, plate_size[1], hub_skirt_diameter, _top_y, _flange_y]);
+// The MK3S plate sizes itself, so ask it rather than assume plate_size.
+_plate_actual = plate_variant == "mk3s"
+  ? mk3s_plate_size(_joint, frame_offset, frame_jaw, frame_fillet,
+                    frame_thickness, frame_clearance, hub_skirt_diameter,
+                    frame_plate_margin)
+  : plate_size;
+
+_part_x = max([_cap_outer_x, _plate_actual[0], hub_skirt_diameter, _top_x, _flange_x]);
+_part_y = max([_cap_outer_y, _plate_actual[1], hub_skirt_diameter, _top_y, _flange_y]);
 // The largest PART, not the largest assembly: a segment, not the whole body.
 _part_z = max(
   max(segments > 1 ? segment_height : _body_height, _outlet_h),
@@ -441,9 +461,11 @@ module _plate_panel() {
 }
 
 module _plate_mk3s() {
+  // No size passed: this variant derives its own, so there is nothing here that
+  // can disagree with the saddle it has to carry.
   hopper_plate_mk3s(
     joint=_joint,
-    size=plate_size,
+    margin=frame_plate_margin,
     thickness=plate_thickness,
     corner_radius=plate_corner_radius,
     skirt_diameter=hub_skirt_diameter,
@@ -454,7 +476,8 @@ module _plate_mk3s() {
     frame_clearance=frame_clearance,
     offset=frame_offset,
     grip_depth=frame_grip_depth,
-    saddle_length=frame_saddle_length
+    jaw=frame_jaw,
+    fillet=frame_fillet
   );
 }
 

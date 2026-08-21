@@ -73,7 +73,7 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 | Part | Size | Prints |
 | ---- | ---- | ------ |
 | hub | 95 skirt, 72 tube, 36 tall, straight 50 bore | standing on its bottom face |
-| plate | 130 × 130 × 6, Ø65.0 hole, 4 × M4 at Ø79 | flat |
+| plate | derived (134.6 × 134.6 for the MK3S), Ø65.0 hole, 4 × M4 at Ø79 | flat |
 | outlet | Ø64 over the pins, 83 tall | standing on the hose socket |
 
 Verified by intersection rather than by eye: every coupling in the stack seats
@@ -132,8 +132,22 @@ says which one it was. That offset is also why Prusa's holder is an L-arm: the
 same constraint produced the same shape.
 
 The saddle's roof carries the vertical load, sitting on the frame's top edge, so
-the two clamp screws only resist sliding and tipping rather than holding the
-weight in friction. At the loaded 4.24 kg on a 47 mm offset, the couple across a
+the clamp screws only resist sliding and tipping rather than holding the weight
+in friction.
+
+**Stiffness sizes this part, not strength.** A bare flat plate is well inside
+yield but deflects half a millimetre at the hub, and with 450 mm of hopper above
+that, half a millimetre becomes nearly five at the top — on a machine that
+slings its bed in Y. So the saddle spans the **full plate width** rather than a
+stub in the middle, and braces turn the flat cantilever into a T-section. Worth
+roughly fifteen to twenty times the stiffness for a few grams.
+
+**The plate sizes itself.** Its width follows from the offset, the saddle's own
+width and the hub skirt; the saddle follows the plate; the braces follow the
+clearance hole and the plate edge; the clamp screws follow the saddle. A margin
+is the only handle. That is not tidiness — a plate width and a saddle length set
+independently is precisely how the saddle ended up shorter than the braces meant
+to sit on it. At the loaded 4.24 kg on a 47 mm offset, the couple across a
 30 mm grip is about 65 N.
 
 Verified: the frame clears the plate, hub and outlet; the slot accepts 6.2 and

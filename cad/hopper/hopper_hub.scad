@@ -115,4 +115,7 @@ module hopper_hub(
 }
 
 // Standalone preview. $fn passed on the call, never assigned at top level.
-hopper_hub(joint = hopper_joint(), $fn = $preview ? 64 : 160);
+// Named rather than an inline $fn so the drift check can render this and
+// the driver's version of the same part at a matched resolution.
+preview_facets = $preview ? 48 : 96;
+hopper_hub(joint = hopper_joint(), $fn = preview_facets);

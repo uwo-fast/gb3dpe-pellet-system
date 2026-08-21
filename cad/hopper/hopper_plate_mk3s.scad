@@ -26,7 +26,16 @@ use <hopper_util.scad>
 //
 // The frame carries the vertical load on the saddle's roof, sitting on the top
 // edge. The screws only stop it sliding and tipping, so they are not holding
-// three kilograms in friction.
+// the hopper in friction.
+//
+// STIFFNESS, not strength, is what sizes this part. A bare 6 mm plate is well
+// inside yield, but it deflects half a millimetre at the hub -- and with 450 mm
+// of hopper standing above that, half a millimetre at the plate is nearly five
+// at the top, on a machine that slings its bed in Y. Hence two things: the
+// saddle runs the full width of the plate rather than a stub in the middle, so
+// load does not funnel into its ends and it cannot tilt on the bar; and braces
+// turn the flat cantilever into a T-section, which is worth about four times
+// the stiffness for a few grams.
 //
 // PRINTS UPSIDE DOWN: plate face on the bed, saddle legs pointing up, slot
 // opening upward. Nothing overhangs in that orientation.
@@ -66,9 +75,50 @@ function mk3s_min_offset(joint, frame_thickness = MK3S_FRAME_THICKNESS,
     mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet)
   );
 
+// One brace: a wedge running inboard from the saddle, full height where it
+// meets it and tapering to nothing. Built as a hull between a tall thin slab
+// and a flat one, which keeps the sloped face a single plane.
+/**
+ * Plate size, derived rather than chosen.
+ *
+ * Everything about this part follows from the offset, the saddle's own width
+ * and the hub's skirt, so making the plate a free parameter only creates the
+ * chance to set it inconsistently with them -- which is exactly how the saddle
+ * ended up shorter than the braces that were meant to sit on it.
+ *
+ * Square, because the saddle spans the full width and a longer grip on the bar
+ * is what resists the mount tilting.
+ */
+function mk3s_plate_size(joint, offset = 47, jaw = 7, fillet = 4,
+                         frame_thickness = MK3S_FRAME_THICKNESS,
+                         frame_clearance = 0.3, skirt_diameter = 95, margin = 6) =
+  let (
+    saddle_w = frame_thickness + frame_clearance + 2 * jaw,
+    half = max(offset + saddle_w / 2 + fillet, skirt_diameter / 2) + margin
+  ) [2 * half, 2 * half];
+
+module _mk3s_brace(x0, y, height, reach, thickness) {
+  hull() {
+    translate([x0, y - thickness / 2, -height]) cube([0.1, thickness, height]);
+    translate([x0 + reach, y - thickness / 2, -0.1]) cube([0.1, thickness, 0.1]);
+  }
+}
+
+// Brace positions, spread between the clearance hole and the plate edge and
+// mirrored either side. Inboard of the hole there is no plate to attach to.
+function _mk3s_brace_positions(count, inner, outer) =
+  count < 1 ? [] :
+  count == 1 ? [inner, -inner] :
+  [
+    for (i = [0:count - 1])
+      each let (y = inner + (outer - inner) * i / (count - 1)) [y, -y]
+  ];
+
 module hopper_plate_mk3s(
   joint,
-  size = [130, 130],
+  // Omit to let it size itself from the offset, the saddle and the hub skirt.
+  size = undef,
+  margin = 6,
   thickness = 6,
   corner_radius = 6,
   skirt_diameter = 95,
@@ -93,15 +143,34 @@ module hopper_plate_mk3s(
   // stress raiser; it also prints as a supported slope in the flipped
   // orientation rather than a right angle.
   fillet = 4,
-  saddle_length = 80,
   saddle_roof = 6,
-  clamp_screws = 2,
+  // Braces running inboard from the saddle, standing off the plate's underside.
+  // Placed outboard of the clearance hole, where there is plate to attach to.
+  braces_per_side = 2,
+  brace_thickness = 4,
+  // Omit to run the braces from the saddle to under the hopper's axis.
+  brace_reach = undef,
+  brace_height = undef,
+  clamp_screws = 4,
   clamp_screw_diameter = 3.4,
-  clamp_screw_spacing = 44
+  clamp_screw_spacing = undef
 ) {
   _slot = frame_thickness + frame_clearance;
   _saddle_w = _slot + 2 * jaw;
   _saddle_h = grip_depth + saddle_roof;
+  _size = is_undef(size)
+    ? mk3s_plate_size(joint, offset, jaw, fillet, frame_thickness, frame_clearance,
+                      skirt_diameter, margin)
+    : size;
+  // The saddle is ALWAYS the full plate width. A stub in the middle makes its
+  // ends a stress concentration, lets the mount tilt on the bar, and leaves the
+  // outer braces standing on nothing.
+  _saddle_len = _size[1];
+  _reach = is_undef(brace_reach) ? offset - _saddle_w / 2 : brace_reach;
+  _brace_h = is_undef(brace_height) ? _saddle_h : brace_height;
+  _screw_span = is_undef(clamp_screw_spacing) ? _saddle_len - 4 * jaw : clamp_screw_spacing;
+  _brace_inner = hub_plate_hole(joint) / 2 + brace_thickness / 2 + 2;
+  _brace_outer = _size[1] / 2 - corner_radius - brace_thickness / 2;
   _min_offset = mk3s_min_offset(joint, frame_thickness, frame_clearance, jaw, fillet);
 
   assert(
@@ -115,15 +184,33 @@ module hopper_plate_mk3s(
     )
   );
   assert(
-    offset + _saddle_w / 2 <= size[0] / 2,
+    offset + _saddle_w / 2 <= _size[0] / 2,
     str(
       "hopper_plate_mk3s: the saddle reaches ", offset + _saddle_w / 2,
-      " but the plate only spans ", size[0] / 2, ". Widen the plate."
+      " but the plate only spans ", _size[0] / 2, ". Widen the plate."
     )
   );
   assert(
-    clamp_screw_spacing + clamp_screw_diameter < saddle_length,
-    str("hopper_plate_mk3s: clamp screws do not fit within saddle_length ", saddle_length)
+    _screw_span + clamp_screw_diameter < _saddle_len,
+    str("hopper_plate_mk3s: clamp screws do not fit within the saddle length ", _saddle_len)
+  );
+  // A brace outboard of the saddle has nothing to brace against: it starts in
+  // mid-air at the saddle's inner face and is joined to the plate alone, which
+  // is worse than no brace because it looks like one.
+  assert(
+    braces_per_side == 0 || _brace_outer <= _saddle_len / 2,
+    str(
+      "hopper_plate_mk3s: braces reach y ", _brace_outer,
+      " but the saddle only spans +/-", _saddle_len / 2,
+      ". Lengthen the saddle, or narrow the plate so the braces stay over it."
+    )
+  );
+  assert(
+    braces_per_side == 0 || _brace_outer > _brace_inner,
+    str(
+      "hopper_plate_mk3s: no room for braces between the clearance hole (r ",
+      _brace_inner, ") and the plate edge (r ", _brace_outer, "). Widen the plate."
+    )
   );
   assert(
     grip_depth < frame_bar_height,
@@ -133,48 +220,62 @@ module hopper_plate_mk3s(
     )
   );
   assert(
-    offset + _saddle_w / 2 + fillet <= size[0] / 2,
+    offset + _saddle_w / 2 + fillet <= _size[0] / 2,
     str("hopper_plate_mk3s: the fillet would run off the plate edge")
   );
 
   difference() {
     union() {
       hopper_plate(
-        joint=joint, size=size, thickness=thickness, corner_radius=corner_radius,
+        joint=joint, size=_size, thickness=thickness, corner_radius=corner_radius,
         skirt_diameter=skirt_diameter, bolt_depth=bolt_depth, bolts=bolts,
         bolt_diameter=bolt_diameter
       );
 
-      // Fillet blending the saddle into the plate. Hulled between the saddle's
-      // own section and a larger one at the plate face, so it flares outward
-      // going up -- no overhang once the part is printed plate-face-down.
-      if (fillet > 0)
-        hull() {
-          translate([-offset, 0, -fillet])
-            rounded_box(_saddle_w, saddle_length, 0.01, 3);
-          translate([-offset, 0, -0.01])
-            rounded_box(_saddle_w + 2 * fillet, saddle_length + 2 * fillet, 0.01, 3 + fillet);
+      // Everything below the plate, clipped to the plate's own outline. With a
+      // full-width saddle the fillet would otherwise stand proud of the edge;
+      // clipping means the width is set in one place and nothing overhangs.
+      intersection() {
+        union() {
+          // Fillet blending the saddle into the plate. Hulled between the
+          // saddle's own section and a larger one at the plate face, so it
+          // flares outward going up -- no overhang once printed face-down.
+          if (fillet > 0)
+            hull() {
+              translate([-offset, 0, -fillet])
+                rounded_box(_saddle_w, _saddle_len, 0.01, 3);
+              translate([-offset, 0, -0.01])
+                rounded_box(_saddle_w + 2 * fillet, _saddle_len + 2 * fillet, 0.01, 3 + fillet);
+            }
+
+          // Saddle, hanging from the plate's UNDERSIDE. rounded_box sits on
+          // z = 0 and extends upward, so the plate occupies 0..thickness and
+          // its underside is z = 0 -- not -thickness. Hanging it from
+          // -thickness leaves it floating a plate's thickness below, which
+          // renders and slices perfectly well as two separate objects.
+          translate([-offset, 0, -_saddle_h])
+            rounded_box(_saddle_w, _saddle_len, _saddle_h + 0.1, 3);
+
+          // Braces, running inboard from the saddle's inner face.
+          for (y = _mk3s_brace_positions(braces_per_side, _brace_inner, _brace_outer))
+            _mk3s_brace(-offset + _saddle_w / 2 - 0.1, y, _brace_h, _reach, brace_thickness);
         }
 
-      // Saddle, hanging from the plate's UNDERSIDE. rounded_box sits on z = 0
-      // and extends upward, so the plate occupies 0..thickness and its
-      // underside is z = 0 -- not -thickness. Hanging the saddle from
-      // -thickness leaves it floating a plate's thickness below, which renders
-      // and slices perfectly well as two separate objects.
-      translate([-offset, 0, -_saddle_h])
-        rounded_box(_saddle_w, saddle_length, _saddle_h + 0.1, 3);
+        translate([0, 0, -_saddle_h - 1])
+          rounded_box(_size[0], _size[1], _saddle_h + 2, corner_radius);
+      }
     }
 
     // The frame slot, open at the bottom.
     translate([-offset, 0, -_saddle_h - 1 + (grip_depth + 1) / 2])
-      cube([_slot, saddle_length + 2, grip_depth + 1], center = true);
+      cube([_slot, _saddle_len + 2, grip_depth + 1], center = true);
 
     // Clamp screws through the outboard jaw only, so they pinch the frame
     // against the inboard one rather than pulling the saddle apart.
     for (i = [0:clamp_screws - 1])
       translate([
         -offset - _slot / 2 - jaw - 1,
-        -clamp_screw_spacing / 2 + i * clamp_screw_spacing / max(1, clamp_screws - 1),
+        -_screw_span / 2 + i * _screw_span / max(1, clamp_screws - 1),
         -saddle_roof - grip_depth / 2,
       ])
         rotate([0, 90, 0])
@@ -183,4 +284,7 @@ module hopper_plate_mk3s(
 }
 
 // Standalone preview.
-hopper_plate_mk3s(joint = hopper_joint(), $fn = $preview ? 48 : 96);
+// Named rather than an inline $fn so the drift check can render this and
+// the driver's version of the same part at a matched resolution.
+preview_facets = $preview ? 48 : 96;
+hopper_plate_mk3s(joint = hopper_joint(), $fn = preview_facets);

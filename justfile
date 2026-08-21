@@ -96,6 +96,16 @@ check:
         echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" "$tmp/mod.echo" | head -3 | sed 's/^/      /'; fail=1
       else echo ok; fi
     done
+    # Every part exists twice: the driver builds it, and its module file previews
+    # it. Nothing forces those to agree, and when they drift the driver quietly
+    # builds a different part from the one being looked at.
+    printf '  %-5s %-8s ' "drift" "parts"
+    if out=$(python3 scripts/drift.py --facets {{check_facets}} 2>&1); then
+      echo ok
+    else
+      echo FAIL; sed 's/^/      /' <<<"$out"; fail=1
+    fi
+
     # Examples set their own $fn as any consumer should, so the gate overrides
     # it -- at their preview quality a sweep takes minutes and proves nothing
     # extra, since this checks that they compile and their asserts hold.
