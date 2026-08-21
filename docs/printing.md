@@ -6,7 +6,19 @@ test piece.
 
 ## Print the coupon first
 
-`just coupon` — roughly 210 g of feedstock and a couple of hours on the bed.
+`just coupon` for the funnel and `just coupon-stand` for the stand it sits in.
+They print separately: the funnel then has nothing hanging off it, and one stand
+is reusable across every angle you want to compare (`just coupon 60` for the
+shallower one).
+
+**Print both inverted** — flange down for the funnel, ring down for the stand.
+Everything slopes inward that way and nothing overhangs.
+
+**Print them on the machine and in the material that will print the hopper**, at
+the same layer height. The surface finish is the experiment: a coupon printed
+some other way answers a question nobody asked.
+
+Roughly 210 g of feedstock and a couple of hours on the bed.
 It is the real angle, throat, wall and corner radii, so it presents the surface
 the hopper will. Fill it and watch whether it empties completely and whether
 material moves across the whole wall rather than draining a channel down the

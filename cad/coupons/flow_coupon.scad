@@ -11,24 +11,30 @@ use <../hopper/hopper_util.scad>
 // The whole design rests on the funnel wall angle, and those angles are design
 // targets from general practice rather than measurements. The critical
 // mass-flow angle depends on the wall friction of the surface the material
-// slides on, which for a printed part is nothing like the steel those figures
-// assume — and the shredder's output varies, which is the other half of the
-// uncertainty.
+// slides on, which for a printed part -- layer lines running horizontally round
+// the funnel -- is nothing like the steel those figures assume.
 //
-// This is the cheapest way to find out. It is the real angle, the real throat,
-// the real wall inset and the real corner radii, printed in the real material
-// on the real machine, so the surface it presents is the surface the hopper
-// will present. A couple of hours on the bed against two twenty-hour segments.
+// This is the cheapest way to find out. Real angle, real throat, real wall
+// inset, real corner radii. PRINT IT ON THE MACHINE AND IN THE MATERIAL THAT
+// WILL PRINT THE HOPPER, at the same layer height: the surface finish IS the
+// experiment, and a coupon printed some other way answers a question nobody
+// asked.
 //
-// Fill it, let it discharge, and watch for the funnel emptying completely
-// rather than leaving material clinging to the walls, and for material moving
-// across the whole surface rather than draining a channel down the middle and
-// leaving the rest standing. If it will not start without a tap, the angle is
-// too shallow for that feedstock and every capacity figure downstream needs
-// revisiting.
+// Fill it, let it discharge, and watch three things: whether it starts without
+// a tap, whether it empties completely, and whether the whole surface moves or
+// it drains a channel down the middle and leaves the rest standing. That last
+// one is ratholing, and it is the failure that matters -- a hopper that
+// ratholes holds far less than its volume says.
 //
-// Print it in the same material and with the same layer height as the hopper
-// itself: layer lines are the wall texture, and that is the thing being tested.
+// The funnel and the stand print SEPARATELY. The funnel is then a simple
+// tapered shell with nothing hanging off it, and one stand serves every angle
+// you want to compare, which is the point of testing more than one.
+
+// One stand has to fit every funnel, so the flange is a FIXED outer size
+// regardless of angle -- only its width changes. Deriving it from the funnel
+// instead would give each angle its own flange and defeat the sharing.
+FLOW_FLANGE_OUTER = 150;
+FLOW_STAND_OPENING = 132;
 
 /**
  * Top opening that puts the funnel at `angle` for a given drop, so the coupon
@@ -37,6 +43,13 @@ use <../hopper/hopper_util.scad>
 function coupon_top(throat, angle, height) =
   throat + 2 * (height / tan(angle)) / sqrt(2);
 
+/**
+ * The funnel alone. Sits on z = 0 at its throat.
+ *
+ * PRINTS INVERTED -- flange flat on the bed, throat upward. Every surface then
+ * slopes inward going up and nothing overhangs, and the flange gives the
+ * largest possible first layer.
+ */
 module flow_coupon(
   angle = 70,
   height = 80,
@@ -44,11 +57,8 @@ module flow_coupon(
   min_wall = 3,
   throat_radius = 6,
   funnel_radius = 8,
-  rim = 6,
-  legs = 4,
-  leg_height = 70,
-  leg_width = 12,
-  base_ring = 4
+  flange_outer = FLOW_FLANGE_OUTER,
+  flange_thickness = 6
 ) {
   _top = coupon_top(throat, angle, height);
   _inset = funnel_wall_inset(min_wall, angle);
@@ -62,6 +72,21 @@ module flow_coupon(
       _inset, ") by 0.8 or the inner corner cannot follow the wall in"
     )
   );
+  assert(
+    _top + 2 <= FLOW_STAND_OPENING,
+    str(
+      "flow_coupon: at ", angle, " degrees the funnel is ", _top,
+      " across, which will not pass the stand's ", FLOW_STAND_OPENING,
+      " mm opening. Shallower angles need a taller stand opening, or a shorter drop."
+    )
+  );
+  assert(
+    flange_outer - _top >= 16,
+    str(
+      "flow_coupon: at ", angle, " degrees the flange is only ",
+      (flange_outer - _top) / 2, " mm wide; it has to land on the stand's ring"
+    )
+  );
 
   _volume = funnel_volume_l(_ix, _ix, _it, height);
   echo(str(
@@ -70,68 +95,92 @@ module flow_coupon(
     _volume * feedstock_bulk_density(FEEDSTOCK_REGRIND), " kg regrind"
   ));
 
-  // Legs hang from a rim flange, OUTSIDE the funnel's outer surface. Putting
-  // them any closer in means the cavity cut runs straight through them: they
-  // are unioned before it, so it eats whatever passes through the funnel's
-  // interior, and the result is a mesh in two disconnected pieces that still
-  // renders and slices happily.
-  _flange = _top + 2 * leg_width;
-  // Legs sit at the MID-FACES, not the corners. A rounded square reaches
-  // furthest along its diagonal, so a corner leg is still inside the cavity's
-  // reach even when it looks well outside the funnel -- and the cut then eats
-  // it where it passes the flange. At a mid-face the cavity is nearest the
-  // axis, so just outside the funnel's outer surface is genuinely clear.
-  _leg_r = _top / 2 + leg_width / 2;
-
   difference() {
     union() {
-      // The funnel itself, identical in construction to the hopper's.
       loft(0, height) {
         rounded_square(throat, throat, throat_radius);
         rounded_square(_top, _top, funnel_radius);
       }
-
-      // Rim flange: stops it overfilling, and carries the legs.
-      translate([0, 0, height]) rounded_box(_flange, _flange, rim, funnel_radius);
-
-      for (i = [0:legs - 1])
-        rotate([0, 0, i * 360 / legs])
-          translate([_leg_r, 0, -leg_height])
-            // Run through the flange rather than stopping on its underside:
-            // two solids meeting on a coincident plane are not reliably one
-            // volume, and the result is a mesh in disconnected pieces.
-            rounded_box(leg_width, leg_width, leg_height + height + rim, 2);
-
-      // Base ring tying the feet together. Without it the coupon stands on four
-      // small pads under a funnel of feedstock, and the first layers are four
-      // islands.
-      difference() {
-        translate([0, 0, -leg_height])
-          rounded_box(_flange, _flange, base_ring, funnel_radius);
-        translate([0, 0, -leg_height - 1])
-          rounded_box(
-            _flange - 2 * leg_width - 4, _flange - 2 * leg_width - 4,
-            base_ring + 2, funnel_radius
-          );
-      }
+      // Flange: rests on the stand, and stops it overfilling.
+      translate([0, 0, height])
+        rounded_box(flange_outer, flange_outer, flange_thickness, funnel_radius);
     }
 
-    // Pellet path, one inset in, matching the outer stations.
     loft(-1, height) {
       rounded_square(_it, _it, throat_radius - _inset);
       rounded_square(_ix, _ix, funnel_radius - _inset);
     }
-
-    // Straight through the rim, so its wall stays one inset like the funnel's.
     translate([0, 0, height - 0.5])
-      rounded_box(_ix, _ix, rim + 1, funnel_radius - _inset);
+      rounded_box(_ix, _ix, flange_thickness + 1, funnel_radius - _inset);
   }
 }
 
-// Standalone preview and export. Exposed so `just coupon` can sweep the angle
-// without editing the file -- testing 60 against 70 on the same feedstock is
-// the point of having it.
+/**
+ * The stand. Reusable across every angle, because the flange it carries is a
+ * fixed size.
+ *
+ * PRINTS INVERTED -- ring flat on the bed, legs upward. Nothing overhangs that
+ * way; printed the other way up the ring is a horizontal ledge on four legs.
+ */
+module flow_stand(
+  opening = FLOW_STAND_OPENING,
+  // Wider than the flange it carries, so the legs have a band of ring to stand
+  // on. Sized to the flange instead leaves a 9 mm band and the legs hang off it.
+  outer = 170,
+  ring = 8,
+  height = 90,
+  legs = 4,
+  leg_width = 14,
+  corner_radius = 8
+) {
+  assert(outer > opening, str("flow_stand: outer (", outer, ") must exceed opening (", opening, ")"));
+  assert(
+    leg_width <= (outer - opening) / 2,
+    str(
+      "flow_stand: legs are ", leg_width, " wide but the ring band is only ",
+      (outer - opening) / 2, ". Widen the stand or narrow the legs."
+    )
+  );
+  assert(
+    outer > FLOW_FLANGE_OUTER,
+    str("flow_stand: outer (", outer, ") must exceed the coupon flange (",
+        FLOW_FLANGE_OUTER, ") it has to carry")
+  );
+
+  _leg_r = (opening + outer) / 4;
+
+  union() {
+    difference() {
+      rounded_box(outer, outer, ring, corner_radius);
+      translate([0, 0, -1]) rounded_box(opening, opening, ring + 2, corner_radius);
+    }
+
+    // Legs at the mid-faces, overlapping the ring so they are one solid.
+    for (i = [0:legs - 1])
+      rotate([0, 0, i * 360 / legs])
+        translate([_leg_r, 0, 0])
+          rounded_box(leg_width, leg_width, height, 2);
+
+    // Feet, tying the leg ends together for stability in use.
+    translate([0, 0, height - ring]) difference() {
+      rounded_box(outer, outer, ring, corner_radius);
+      translate([0, 0, -1])
+        rounded_box(outer - 2 * leg_width, outer - 2 * leg_width, ring + 2, corner_radius);
+    }
+  }
+}
+
+// Standalone preview and export.
+render_part = "coupon"; // [coupon,stand,both]
 angle = 70; // [40:1:80]
 height = 80;
+preview_facets = $preview ? 48 : 96;
 
-flow_coupon(angle = angle, height = height, $fn = $preview ? 48 : 96);
+if (render_part == "coupon")
+  flow_coupon(angle = angle, height = height, $fn = preview_facets);
+else if (render_part == "stand")
+  flow_stand($fn = preview_facets);
+else {
+  flow_coupon(angle = angle, height = height, $fn = preview_facets);
+  translate([FLOW_FLANGE_OUTER + 30, 0, 0]) flow_stand($fn = preview_facets);
+}

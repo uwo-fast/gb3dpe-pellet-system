@@ -148,14 +148,26 @@ geom:
 geom-baseline:
     @python3 scripts/geom_stats.py --write --facets {{geom_facets}}
 
-# Export the flow test coupon. Print it in the hopper's material and layer
-# height -- the layer lines ARE the wall texture being tested.
+# Export the flow test coupon and its stand. The funnel prints separately from
+# the stand so it has nothing hanging off it, and one stand serves every angle.
+#
+# PRINT BOTH INVERTED -- flange down for the coupon, ring down for the stand.
+# Print them on the machine and in the material that will print the hopper, at
+# the same layer height: the surface finish is the thing being tested.
 coupon angle="70" height="80":
     #!/usr/bin/env bash
     set -euo pipefail
     mkdir -p {{build}}
-    out={{build}}/flow-coupon-{{angle}}deg.stl
-    openscad --hardwarnings -o "$out" \
-      -D 'angle={{angle}}' -D 'height={{height}}' \
-      -D '$fn=96' cad/coupons/flow_coupon.scad
-    echo "$out"
+    openscad --hardwarnings -o {{build}}/flow-coupon-{{angle}}deg.stl \
+      -D 'render_part="coupon"' -D 'angle={{angle}}' -D 'height={{height}}' \
+      -D 'preview_facets=96' cad/coupons/flow_coupon.scad
+    echo "{{build}}/flow-coupon-{{angle}}deg.stl"
+
+# The stand. One print, reusable across every angle you want to compare.
+coupon-stand:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p {{build}}
+    openscad --hardwarnings -o {{build}}/flow-coupon-stand.stl \
+      -D 'render_part="stand"' -D 'preview_facets=96' cad/coupons/flow_coupon.scad
+    echo "{{build}}/flow-coupon-stand.stl"
