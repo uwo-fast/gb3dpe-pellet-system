@@ -16,9 +16,18 @@ use <hopper_util.scad>
 // Height of a cut above the body base, for `index` in 1..segments-1.
 function split_z(body_height, segments, index) = body_height * index / segments;
 
-// The eight perimeter positions on a rectangular flange: four corners and the
-// middle of each side. Eight is enough to stop a printed flange bowing between
-// fixings, which is what lets a gasket seal.
+/**
+ * The eight perimeter positions on a rectangular flange: four corners and the
+ * middle of each side. Eight is enough to stop a printed flange bowing between
+ * fixings, which is what lets a gasket seal.
+ *
+ * The first and last are diagonally opposite corners, and those two are DOWELS
+ * rather than bolts. Bolts in clearance holes leave the shells free to slide
+ * before they pull up, and a millimetre of slide steps the inside wall and
+ * gives flake an edge to catch on. Dowels locate, bolts clamp. Asking the bolts
+ * to do both would mean holding a reamed fit in eight printed holes, which is
+ * not realistic.
+ */
 function split_fixing_positions(x, y, inset) =
   let (hx = x / 2 - inset, hy = y / 2 - inset)
     [
@@ -26,21 +35,6 @@ function split_fixing_positions(x, y, inset) =
       [-hx, 0], [hx, 0],
       [-hx, hy], [0, hy], [hx, hy],
     ];
-
-/**
- * Two diagonally opposite corners are dowels rather than bolts.
- *
- * Bolts in clearance holes leave the shells free to slide before they pull up,
- * and a millimetre of slide steps the inside wall and gives flake an edge to
- * catch on. Dowels locate, bolts clamp. Asking the bolts to do both would mean
- * holding a reamed fit in eight printed holes, which is not realistic.
- */
-function split_dowel_positions(x, y, inset) =
-  let (p = split_fixing_positions(x, y, inset)) [p[0], p[7]];
-
-function split_bolt_positions(x, y, inset) =
-  let (p = split_fixing_positions(x, y, inset))
-    [for (i = [1:6]) p[i]];
 
 /**
  * The flange collar at one cut face.
@@ -63,6 +57,7 @@ module split_flange(
   up = true
 ) {
   _outer = [span[0] + 2 * width, span[1] + 2 * width];
+  _fixings = split_fixing_positions(_outer[0], _outer[1], bolt_inset);
 
   translate([0, 0, up ? 0 : -thickness]) difference() {
     rounded_box(_outer[0], _outer[1], thickness, radius + width);
@@ -70,10 +65,12 @@ module split_flange(
     translate([0, 0, -1])
       rounded_box(cavity[0], cavity[1], thickness + 2, cavity_radius);
 
-    for (p = split_bolt_positions(_outer[0], _outer[1], bolt_inset))
-      translate([p[0], p[1], -1]) cylinder(h = thickness + 2, d = bolt_diameter);
-
-    for (p = split_dowel_positions(_outer[0], _outer[1], bolt_inset))
-      translate([p[0], p[1], -1]) cylinder(h = thickness + 2, d = dowel_diameter);
+    for (i = [0:len(_fixings) - 1])
+      translate([_fixings[i][0], _fixings[i][1], -1])
+        cylinder(
+          h = thickness + 2,
+          // The two diagonally opposite corners locate; the other six clamp.
+          d = (i == 0 || i == len(_fixings) - 1) ? dowel_diameter : bolt_diameter
+        );
   }
 }
