@@ -21,9 +21,6 @@ use <hopper_util.scad>
 // Being the only machine-specific part, it is also the cheapest thing in the
 // stack to get wrong and remake. That is deliberate: the measurements we are
 // least sure of should land on the part that costs least to redo.
-//
-// Machine-specific plates difference their own pattern out of this one rather
-// than reimplementing it. See docs/interfaces.md.
 
 /**
  * The universal half of a mounting plate: outline, the hub's clearance hole,

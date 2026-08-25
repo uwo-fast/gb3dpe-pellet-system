@@ -15,9 +15,8 @@ use <../hopper/hopper_util.scad>
 // the funnel -- is nothing like the steel those figures assume.
 //
 // This is the cheapest way to find out. Real angle, real throat, real wall
-// inset, real corner radii. PRINT IT ON THE MACHINE AND IN THE MATERIAL THAT
-// WILL PRINT THE HOPPER, at the same layer height: the surface finish IS the
-// experiment, and a coupon printed some other way answers a question nobody
+// inset, real corner radii. How to export and print it is on `just coupon`,
+// and it matters: a coupon printed some other way answers a question nobody
 // asked.
 //
 // Fill it, let it discharge, and watch three things: whether it starts without
@@ -25,10 +24,6 @@ use <../hopper/hopper_util.scad>
 // it drains a channel down the middle and leaves the rest standing. That last
 // one is ratholing, and it is the failure that matters -- a hopper that
 // ratholes holds far less than its volume says.
-//
-// The funnel and the stand print SEPARATELY. The funnel is then a simple
-// tapered shell with nothing hanging off it, and one stand serves every angle
-// you want to compare, which is the point of testing more than one.
 
 // One stand has to fit every funnel, so the flange is a FIXED outer size
 // regardless of angle -- only its width changes. Deriving it from the funnel

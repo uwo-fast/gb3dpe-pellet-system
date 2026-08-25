@@ -93,9 +93,9 @@ lock_pins = 4; // [2:1:7]
 // orientation. Zero leaves the bin free to seat crosswise on the roof.
 lock_key_angle = 15; // [0:1:40]
 
-// Retaining screw. Nothing else resists the coupling backing off under a hose
-// pull, so this is a positive lock rather than a nicety: the tip seats in a
-// pocket in the neck. Pilot is sized to self-tap M4 in PETG; 0 omits it.
+// Retaining screw: a positive lock rather than a nicety, and the only thing
+// resisting a hose pull -- see hopper_joint.scad. Sized to self-tap M4 in PETG;
+// 0 omits it.
 lock_retainer_pilot = 3.4; // [0:0.1:6]
 // Clear of the entry slots and the socket gussets; hopper_joint asserts it.
 lock_retainer_angle = 140; // [0:5:355]
@@ -140,16 +140,13 @@ frame_plate_margin = 6;
 // the panel is drilled to suit -- there is no fixed pattern to match.
 panel_bolt_spacing = [100, 100];
 
-// The plate is the only machine-specific part, and deliberately the simplest:
-// flat, holes only. Machine-specific variants difference their own pattern out
-// of it. See docs/interfaces.md.
+// Used by the universal and panel variants; the mk3s one derives its own.
 plate_size = [130, 130];
 plate_thickness = 6;
 plate_corner_radius = 6;
 
-// The hub carries both couplings so the plate can stay flat. Its skirt is what
-// the fixings bite into, and its width is squeezed between the plate's
-// clearance hole and the depth a screw needs.
+// The skirt is what the hub's fixings bite into, so its width is squeezed
+// between the plate's clearance hole and the depth a screw needs.
 hub_skirt_diameter = 95;
 hub_bolt_depth = 8;
 hub_bolts = 4;

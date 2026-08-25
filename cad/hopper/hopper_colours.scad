@@ -23,7 +23,6 @@ PART_COLOURS = [
 // Wraps round rather than running off the end, so any segment count is valid.
 function part_colour(index) = PART_COLOURS[index % len(PART_COLOURS)];
 
-// Slots are handed out bottom-up through the assembled stack.
 function colour_outlet() = part_colour(0); //! Outlet, below the plate
 function colour_plate() = part_colour(1); //! Mounting plate
 function colour_hub() = part_colour(2); //! Hub

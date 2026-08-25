@@ -91,10 +91,9 @@ module hopper_hub(
       translate([0, 0, _half]) joint_socket(joint);
     }
 
-    // Retaining screws, one per socket. Without them nothing resists a
-    // coupling backing off, and the outlet is the one the hose actually pulls
-    // on. The library's own detent is a 0.6 mm post at our allowance, which is
-    // at or below one extrusion width, so it is treated as absent.
+    // Retaining screws, one per socket -- see joint_retainer_bore() for why
+    // the library's own detent does not count. The outlet's is the one that
+    // matters: the hose pulls on it.
     //
     // The lower one has to be driven long enough to break out through the
     // SKIRT, not just the socket wall. An inverted socket puts its retainer
@@ -113,8 +112,7 @@ module hopper_hub(
   }
 }
 
-// Standalone preview. $fn passed on the call, never assigned at top level.
-// Named rather than an inline $fn so the drift check can render this and
-// the driver's version of the same part at a matched resolution.
+// Standalone preview. A NAMED facet count, not an inline $fn, so drift.py can
+// render this and the driver's version of the same part at matched resolution.
 preview_facets = $preview ? 48 : 96;
 hopper_hub(joint = hopper_joint(), $fn = preview_facets);

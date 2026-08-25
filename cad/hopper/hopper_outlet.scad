@@ -118,8 +118,7 @@ module hopper_outlet(
   }
 }
 
-// Standalone preview.
-// Named rather than an inline $fn so the drift check can render this and
-// the driver's version of the same part at a matched resolution.
+// Standalone preview. A NAMED facet count, not an inline $fn, so drift.py can
+// render this and the driver's version of the same part at matched resolution.
 preview_facets = $preview ? 48 : 96;
 hopper_outlet(joint = hopper_joint(), hose = hose(0), $fn = preview_facets);
