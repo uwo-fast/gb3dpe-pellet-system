@@ -46,34 +46,26 @@ function funnel_face_angle(span, throat, height) = atan(height / ((span - throat
  */
 function funnel_wall_inset(min_wall, corner_angle) = min_wall / sin(corner_angle);
 
-/**
- * Outer span across the funnel at `z` measured from the base of the taper,
- * and the corner radius there.
- *
- * The taper is built as a hull between two thin slabs, and its sloped face runs
- * from the bottom edge of the lower slab to the bottom edge of the upper, so
- * the interpolation is linear in that range. Splitting the body needs to know
- * this section exactly, because both halves of the joint are cut from it.
- */
-function funnel_span_at(throat, span, height, z) =
-  throat + (span - throat) * z / height;
-
-function funnel_radius_at(throat_radius, funnel_radius, height, z) =
-  throat_radius + (funnel_radius - throat_radius) * z / height;
+function _lerp(a, b, t) = a + (b - a) * t;
 
 /**
  * Outer section of the body at absolute height `z`: [span_x, span_y, radius].
  * Above the taper it is the constant bin section. Only meaningful at or above
  * the base of the taper — below that the body is round, not rectangular.
+ *
+ * The taper is built as a hull between two thin slabs, and its sloped face runs
+ * from the bottom edge of the lower slab to the bottom edge of the upper, so
+ * the section is linear in that range. Splitting the body needs to know it
+ * exactly, because both halves of the joint are cut from it.
  */
 function funnel_body_section(
   throat, top_x, top_y, throat_radius, funnel_radius, funnel_base_z, funnel_height, z
 ) =
   let (t = min(1, (z - funnel_base_z) / funnel_height))
     [
-      funnel_span_at(throat, top_x, 1, t),
-      funnel_span_at(throat, top_y, 1, t),
-      funnel_radius_at(throat_radius, funnel_radius, 1, t),
+      _lerp(throat, top_x, t),
+      _lerp(throat, top_y, t),
+      _lerp(throat_radius, funnel_radius, t),
     ];
 
 // Volume of the tapered section, as a prismatoid between the two rectangles.
