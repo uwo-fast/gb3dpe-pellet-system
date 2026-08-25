@@ -4,7 +4,7 @@
 
 // include, not use: the feedstock rows are variables, and variables do not
 // cross a use<> boundary -- only modules and functions do.
-include <../hopper/hopper_feedstock.scad>
+include <../hopper/hopper_specs.scad>
 use <../hopper/hopper_funnel.scad>
 use <../hopper/hopper_util.scad>
 

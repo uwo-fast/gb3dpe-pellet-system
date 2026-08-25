@@ -2,11 +2,11 @@
 // frame, with the hub and outlet in place around it.
 // GPL-3.0-or-later
 
-use <../cad/hopper/hopper_hose.scad>;
+use <../cad/hopper/hopper_specs.scad>;
 use <../cad/hopper/hopper_hub.scad>;
 use <../cad/hopper/hopper_joint.scad>;
 use <../cad/hopper/hopper_outlet.scad>;
-use <../cad/hopper/hopper_plate_mk3s.scad>;
+use <../cad/hopper/hopper_plate.scad>;
 include <../cad/hopper/hopper_colours.scad>;
 
 $fn = $preview ? 48 : 96;

@@ -5,9 +5,8 @@
 use <../cad/hopper/hopper_body.scad>;
 use <../cad/hopper/hopper_funnel.scad>;
 use <../cad/hopper/hopper_joint.scad>;
-use <../cad/hopper/hopper_split.scad>;
 include <../cad/hopper/hopper_colours.scad>;
-include <../cad/hopper/hopper_feedstock.scad>;
+include <../cad/hopper/hopper_specs.scad>;
 
 $fn = $preview ? 64 : 128;
 

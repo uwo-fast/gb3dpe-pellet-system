@@ -70,8 +70,8 @@ clamping quietly.
 
 Anything the geometry depends on physically — how much room a particle needs,
 how steep a wall has to be, how much a litre of feedstock weighs — is a function
-in `hopper_flow.scad` or a registry row in `hopper_feedstock.scad`, never a bare
-number with a note beside it.
+or a registry row in `hopper_specs.scad`, never a bare number with a note
+beside it.
 
 That lets the same rule be read both ways. Give it a requirement and it sizes
 the geometry: `design_particle_size = 5` with regrind selected demands a 50 mm

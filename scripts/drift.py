@@ -22,7 +22,7 @@ DRIVER = Path("cad/hopper/pellet_hopper.scad")
 PAIRS = [
     ("hub", Path("cad/hopper/hopper_hub.scad")),
     ("outlet", Path("cad/hopper/hopper_outlet.scad")),
-    ("plate", Path("cad/hopper/hopper_plate_mk3s.scad")),
+    ("plate", Path("cad/hopper/hopper_plate.scad")),
 ]
 
 

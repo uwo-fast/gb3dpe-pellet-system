@@ -3,7 +3,7 @@
 // Units: mm
 
 use <hopper_funnel.scad>
-use <hopper_hose.scad>
+use <hopper_specs.scad>
 use <hopper_joint.scad>
 
 // This is the part that converges. The hub runs a straight 50 mm bore and the

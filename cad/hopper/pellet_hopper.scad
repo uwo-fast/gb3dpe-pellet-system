@@ -12,19 +12,14 @@
 // from the derived values beneath it. See docs/design-notes.md.
 
 include <hopper_colours.scad>
-include <hopper_feedstock.scad>
-include <hopper_hose.scad>
+include <hopper_specs.scad>
 use <hopper_body.scad>
 use <hopper_cap.scad>
-use <hopper_flow.scad>
 use <hopper_funnel.scad>
 use <hopper_joint.scad>
 use <hopper_hub.scad>
 use <hopper_outlet.scad>
 use <hopper_plate.scad>
-use <hopper_plate_mk3s.scad>
-use <hopper_plate_panel.scad>
-use <hopper_split.scad>
 
 /* [Render] */
 
