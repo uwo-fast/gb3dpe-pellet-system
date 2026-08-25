@@ -206,6 +206,13 @@ All established by compiling on 2021.01, not from documentation.
   never reach the panel. Hence the dummy-module fence in `pellet_hopper.scad`.
 - A failing `assert()` exits 1 on STL export and writes no file, so asserts are
   usable as a gate — but `-o file.echo` exits 0 through the same failure.
+- A top-level `assert()` **statement cannot guard the assignments above it**.
+  Assignments in a scope are evaluated before the statements run, so a bad
+  parameter reaches the geometry first and reports as `undefined operation`
+  from inside whatever function touched it — three files from the cause, with
+  the assert never firing. Put it in the assignment expression instead
+  (`x = assert(cond, msg) value;`) or inside an accessor function. That is why
+  every registry here validates its index in the accessor rather than beside it.
 - A reversed range `[begin:end]` with `begin > end` reports only `DEPRECATED`,
   exits 0 **even under `--hardwarnings`**, and iterates backwards instead of
   empty. The gate greps for it. Soft diagnostics must therefore never echo the

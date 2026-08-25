@@ -14,7 +14,6 @@
 include <hopper_colours.scad>
 include <hopper_feedstock.scad>
 include <hopper_hose.scad>
-include <hopper_sizes.scad>
 use <hopper_body.scad>
 use <hopper_cap.scad>
 use <hopper_flow.scad>
@@ -223,9 +222,26 @@ module dummy() {} // Customizer fence: nothing below here reaches the panel.
 
 $fn = $preview ? preview_facets : render_facets;
 
-_preset = hopper_preset(hopper_size);
-_top_x = hopper_top_x(_preset);
-_top_y = hopper_top_y(_preset);
+// Footprint presets, index-matched to the hopper_size dropdown above. Only the
+// footprint is a free choice -- the funnel comes from the wall angle and the bin
+// from whatever height the segments leave -- so it is all a preset carries.
+// 202 x 202 is the largest an MK3S will take once the cap's clearance and wall
+// are added: 202 + 7.2 = 209.2 against a 210 mm bed.
+_footprints = [[150, 150], [175, 175], [202, 202]];
+
+// The assert sits in the expression, not on a line of its own. A top-level
+// assert STATEMENT runs after OpenSCAD has evaluated the assignments, so an
+// out-of-range index gets as far as the funnel maths and reports itself as
+// "undefined operation" from inside norm() -- three files from the cause.
+_footprint =
+  assert(
+    hopper_size >= 0 && hopper_size < len(_footprints),
+    str("pellet_hopper: hopper_size must be 0..", len(_footprints) - 1, ", got: ", hopper_size)
+  )
+  _footprints[hopper_size];
+
+_top_x = _footprint[0];
+_top_y = _footprint[1];
 
 
 _feedstock = feedstock(feedstock_type);
@@ -326,11 +342,6 @@ _body_base = lock_height;
 _outlet_h = outlet_height(_joint, _hose, outlet_cone_angle, outlet_socket_depth);
 _cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
 
-assert(
-  segment < segments,
-  str("pellet_hopper: segment must be 0..", segments - 1, ", got: ", segment)
-);
-
 _volume_l = hopper_volume_l(
   _top_x - 2 * _inset, _top_y - 2 * _inset, throat - 2 * _inset,
   _bin_height, _funnel_height
@@ -370,7 +381,7 @@ _part_z = max(
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
 echo(str(
-  "hopper ", hopper_name(_preset), " / ", feedstock_name(_feedstock),
+  "hopper ", _top_x, "x", _top_y, " / ", feedstock_name(_feedstock),
   ": funnel corner ", funnel_angle,
   " deg, faces ", funnel_face_angle(_top_x, throat, _funnel_height),
   " / ", funnel_face_angle(_top_y, throat, _funnel_height),

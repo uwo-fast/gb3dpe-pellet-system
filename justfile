@@ -12,7 +12,7 @@ check_facets := "32"
 geom_facets := "64"
 build  := "build"
 
-# Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
+# Capacity preset index:label — must match _footprints in cad/hopper/pellet_hopper.scad
 sizes := "0:150x150 1:175x175 2:202x202"
 
 # Only the body and the cap change with the footprint preset. The hub, plate and
