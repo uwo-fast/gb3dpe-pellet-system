@@ -57,8 +57,22 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Preview colours, one per printed part, assigned bottom-up through the stack.
 - `examples/`, covered by the gate.
 
+- The CAD is eleven module files rather than seventeen. The three plate
+  variants share one file, the feedstock, flow and hose registries became
+  `hopper_specs.scad`, splitting lives with the body it splits, and the
+  footprint presets are three pairs of numbers in the driver rather than a
+  registry with accessors. Examples went from four to two.
+- `hopper_body()` takes the funnel angle rather than a height that it had to
+  `atan()` back into the angle the driver had already solved it from. The same
+  pass removed three other places where one file re-derived what another owns.
+- Assert messages are wrapped as sentences rather than split mid-phrase to fit
+  a column. No message text changed.
+
 ### Notes
 
 - The restructure is geometry-neutral. All three parts at all three capacity
   presets match the pre-refactor baseline exactly on volume, bounding box and
   triangle count.
+- So is the simplification pass that followed it: fifteen printed meshes,
+  including both extra plate variants, the upper body segment and the flow
+  coupon and its stand, match at zero tolerance rather than within 0.5%.

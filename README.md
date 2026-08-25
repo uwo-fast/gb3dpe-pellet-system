@@ -30,8 +30,8 @@ worked. Do not print from it yet.
 
 ## Repository layout
 
-- `cad/hopper/` — parametric bulk hopper: body, cap, hub, plate, outlet, and
-  machine-specific mounting plates
+- `cad/hopper/` — parametric bulk hopper: body, cap, hub, outlet, and the
+  mounting plate in its universal, MK3S-frame and panel variants
 - `docs/` — extruder hardware reference, design notes, and operating procedures
 - `cad/coupons/` — printable test pieces
 - `examples/` — one file per configuration, each rendering standalone
