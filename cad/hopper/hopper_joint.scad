@@ -298,9 +298,22 @@ module joint_retainer_pocket_inverted(joint) {
   translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_retainer_pocket(joint);
 }
 
-// Standalone preview ($fn passed on the call, never assigned at top level --
-// it would otherwise override the driver's choice for this file's modules): neck at the origin, socket beside it.
+// Standalone preview: the neck at the origin, the socket beside it, at the size
+// the 50 mm pellet outlet demands. $fn is passed on the call, never assigned at
+// top level -- that would override the driver's choice for this file's modules.
+//
+// The neck is authored PRE-ROTATED, so this orientation is the SEATED one, not
+// the insertion one: turn it back by the sweep angle to fit it.
 _demo = hopper_joint();
+
+echo(str(
+  "joint: neck OD ", joint_neck_od(_demo),
+  ", socket bore ", joint_socket_inner_d(_demo),
+  ", socket OD ", joint_socket_outer_d(_demo),
+  ", pellet bore ", joint_bore_diameter(_demo),
+  " (max ", joint_max_bore_diameter(_demo), ")"
+));
+
 joint_neck(_demo, $fn = $preview ? 64 : 160);
 translate([joint_socket_outer_d(_demo) + 10, 0, 0])
   joint_socket(_demo, $fn = $preview ? 64 : 160);

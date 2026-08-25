@@ -86,9 +86,10 @@ renders on its own, so you can open `hopper_hub.scad` directly and iterate on
 the hub without the rest of the model in the way.
 
 `examples/` holds worked configurations that drive the modules directly rather
-than through the Customizer — the shipping two-segment build, the two feedstocks
-side by side, and the coupling on its own. They are covered by `just check`, so
-they cannot drift away from the API they demonstrate.
+than through the Customizer — the two feedstocks side by side, each split into
+the segments its funnel height demands, and the MK3S frame mount with the hub
+and outlet around it. They are covered by `just check`, so they cannot drift
+away from the API they demonstrate.
 
 `just geom` exists because OpenSCAD does not emit STL facets in a stable order,
 so a mesh cannot be compared by hash. It compares signed volume, bounding box
