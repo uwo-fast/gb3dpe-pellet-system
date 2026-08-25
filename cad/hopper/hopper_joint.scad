@@ -84,69 +84,55 @@ function hopper_joint(
   )
   assert(
     shell_thickness < interface_radius,
-    str(
-      "hopper_joint: shell_thickness (", shell_thickness,
+    str("hopper_joint: shell_thickness (", shell_thickness,
       ") must be < interface_radius (", interface_radius,
-      ") or the half renders as a solid rod instead of a tube"
-    )
+      ") or the half renders as a solid rod instead of a tube")
   )
   assert(
     part_height - entry_depth > pin_radius + allowance / 2,
-    str(
-      "hopper_joint: the channel would break out of the bottom face. Needs ",
+    str("hopper_joint: the channel would break out of the bottom face. Needs ",
       "part_height - entry_depth (", part_height - entry_depth,
-      ") > pin_radius + allowance/2 (", pin_radius + allowance / 2, ")"
-    )
+      ") > pin_radius + allowance/2 (", pin_radius + allowance / 2, ")")
   )
   assert(
     bore_diameter <= max_bore,
-    str(
-      "hopper_joint: bore_diameter (", bore_diameter,
-      ") would cut into the pins. Maximum is ", max_bore,
-      " at pin_radius ", pin_radius
-    )
+    str("hopper_joint: bore_diameter (", bore_diameter,
+      ") would cut into the pins. Maximum is ", max_bore, " at pin_radius ",
+      pin_radius)
   )
   assert(
     bayonet_pin_pattern_min_gap(angles) > sweep_angle + 3 * channel_half,
-    str(
-      "hopper_joint: adjacent channels would merge into a continuous slot, ",
-      "leaving no retention. Needs min gap (", bayonet_pin_pattern_min_gap(angles),
-      ") > sweep_angle + 3 * channel half-angle (", sweep_angle + 3 * channel_half, ")"
-    )
+    str("hopper_joint: adjacent channels would merge into a continuous slot, ",
+      "leaving no retention. Needs min gap (",
+      bayonet_pin_pattern_min_gap(angles),
+      ") > sweep_angle + 3 * channel half-angle (",
+      sweep_angle + 3 * channel_half, ")")
   )
   assert(
     bayonet_pin_pattern_margin(angles) > channel_half,
-    str(
-      "hopper_joint: the key is too shallow to block a wrong seating. Needs ",
+    str("hopper_joint: the key is too shallow to block a wrong seating. Needs ",
       "margin (", bayonet_pin_pattern_margin(angles),
-      ") > channel half-angle (", channel_half, ")"
-    )
+      ") > channel half-angle (", channel_half, ")")
   )
   assert(
     retainer_pilot == 0 || retainer_z > (part_height - entry_depth) + pin_radius + allowance / 2,
-    str(
-      "hopper_joint: retainer_z (", retainer_z, ") must clear the top of the ",
-      "channel (", (part_height - entry_depth) + pin_radius + allowance / 2,
-      ") or the screw breaks into it"
-    )
+    str("hopper_joint: retainer_z (", retainer_z,
+      ") must clear the top of the channel (",
+      (part_height - entry_depth) + pin_radius + allowance / 2,
+      ") or the screw breaks into it")
   )
   assert(
     retainer_pilot == 0 || retainer_z + retainer_pilot / 2 < part_height,
-    str(
-      "hopper_joint: retainer_z (", retainer_z,
-      ") plus half the pilot must stay below part_height (", part_height, ")"
-    )
+    str("hopper_joint: retainer_z (", retainer_z,
+      ") plus half the pilot must stay below part_height (", part_height, ")")
   )
   assert(
-    retainer_pilot == 0 ||
-      _retainer_clearance(angles, retainer_angle) >
-        channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2)),
-    str(
-      "hopper_joint: retainer_angle (", retainer_angle,
+    retainer_pilot == 0 || _retainer_clearance(angles, retainer_angle) > channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2)),
+    str("hopper_joint: retainer_angle (", retainer_angle,
       ") is too close to an entry slot. Nearest is ",
-      _retainer_clearance(angles, retainer_angle), " degrees away, needs more than ",
-      channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2))
-    )
+      _retainer_clearance(angles, retainer_angle),
+      " degrees away, needs more than ",
+      channel_half + asin((retainer_pilot / 2) / (interface_radius + allowance / 2)))
   )
   [
     interface_radius, shell_thickness, allowance, part_height, entry_depth,

@@ -72,17 +72,15 @@ module hopper_outlet(
 
   assert(
     socket_depth >= 2 * hose_pitch(hose),
-    str(
-      "hopper_outlet: socket_depth (", socket_depth, ") gives under two turns at a ",
-      hose_pitch(hose), " mm pitch; the hose would strip out"
-    )
+    str("hopper_outlet: socket_depth (", socket_depth,
+      ") gives under two turns at a ", hose_pitch(hose),
+      " mm pitch; the hose would strip out")
   );
   assert(
     _socket_od < joint_neck_od(joint),
-    str(
-      "hopper_outlet: hose socket (", _socket_od, ") is wider than the neck (",
-      joint_neck_od(joint), "), so the outer wall would overhang outward instead of in"
-    )
+    str("hopper_outlet: hose socket (", _socket_od,
+      ") is wider than the neck (", joint_neck_od(joint),
+      "), so the outer wall would overhang outward instead of in")
   );
 
   difference() {

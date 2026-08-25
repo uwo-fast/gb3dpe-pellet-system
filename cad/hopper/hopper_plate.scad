@@ -237,20 +237,18 @@ module hopper_plate_mk3s(
 
   assert(
     offset >= _min_offset,
-    str(
-      "hopper_plate_mk3s: offset (", offset, ") is under the minimum ", _min_offset,
+    str("hopper_plate_mk3s: offset (", offset, ") is under the minimum ",
+      _min_offset,
       ". Either the outlet hanging below the plate fouls the frame (needs ",
       mk3s_outlet_offset(joint, frame_thickness),
       "), or the saddle and its fillet overhang the plate's clearance hole (needs ",
-      mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet), ")"
-    )
+      mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet),
+      ")")
   );
   assert(
     offset + _saddle_w / 2 <= _size[0] / 2,
-    str(
-      "hopper_plate_mk3s: the saddle reaches ", offset + _saddle_w / 2,
-      " but the plate only spans ", _size[0] / 2, ". Widen the plate."
-    )
+    str("hopper_plate_mk3s: the saddle reaches ", offset + _saddle_w / 2,
+      " but the plate only spans ", _size[0] / 2, ". Widen the plate.")
   );
   assert(
     _screw_span + clamp_screw_diameter < _saddle_len,
@@ -261,25 +259,21 @@ module hopper_plate_mk3s(
   // is worse than no brace because it looks like one.
   assert(
     braces_per_side == 0 || _brace_outer <= _saddle_len / 2,
-    str(
-      "hopper_plate_mk3s: braces reach y ", _brace_outer,
+    str("hopper_plate_mk3s: braces reach y ", _brace_outer,
       " but the saddle only spans +/-", _saddle_len / 2,
-      ". Lengthen the saddle, or narrow the plate so the braces stay over it."
-    )
+      ". Lengthen the saddle, or narrow the plate so the braces stay over it.")
   );
   assert(
     braces_per_side == 0 || _brace_outer > _brace_inner,
-    str(
-      "hopper_plate_mk3s: no room for braces between the clearance hole (r ",
-      _brace_inner, ") and the plate edge (r ", _brace_outer, "). Widen the plate."
-    )
+    str("hopper_plate_mk3s: no room for braces between the clearance hole (r ",
+      _brace_inner, ") and the plate edge (r ", _brace_outer,
+      "). Widen the plate.")
   );
   assert(
     grip_depth < frame_bar_height,
-    str(
-      "hopper_plate_mk3s: grip_depth (", grip_depth, ") must stay inside the frame bar (",
-      frame_bar_height, ") or the jaws hang off its lower edge"
-    )
+    str("hopper_plate_mk3s: grip_depth (", grip_depth,
+      ") must stay inside the frame bar (", frame_bar_height,
+      ") or the jaws hang off its lower edge")
   );
   assert(
     offset + _saddle_w / 2 + fillet <= _size[0] / 2,
@@ -386,13 +380,12 @@ module hopper_plate_panel(
   assert(
     panel_bolt_spacing[0] < size[0] && panel_bolt_spacing[1] < size[1],
     str("hopper_plate_panel: panel_bolt_spacing ", panel_bolt_spacing,
-        " must fit inside the plate ", size)
+      " must fit inside the plate ", size)
   );
   assert(
-    min(panel_bolt_spacing[0], panel_bolt_spacing[1]) / 2 - panel_bolt_diameter / 2
-      > _hub_bolt_r + bolt_diameter / 2,
+    min(panel_bolt_spacing[0], panel_bolt_spacing[1]) / 2 - panel_bolt_diameter / 2 > _hub_bolt_r + bolt_diameter / 2,
     str("hopper_plate_panel: the panel bolts would run into the hub's fixings at r ",
-        _hub_bolt_r, ". Spread them further out.")
+      _hub_bolt_r, ". Spread them further out.")
   );
 
   difference() {

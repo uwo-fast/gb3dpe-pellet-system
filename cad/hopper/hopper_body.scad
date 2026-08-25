@@ -67,11 +67,9 @@ module hopper_body(
 
   assert(
     throat > 2 * _inset,
-    str(
-      "hopper_body: throat (", throat, ") must exceed twice the wall inset (",
+    str("hopper_body: throat (", throat, ") must exceed twice the wall inset (",
       2 * _inset, ") needed for min_wall ", min_wall, " at a ", funnel_angle,
-      " degree corner"
-    )
+      " degree corner")
   );
 
   // z stations, bottom up.
@@ -93,19 +91,15 @@ module hopper_body(
 
   assert(
     _inner_throat_radius >= 0.8,
-    str(
-      "hopper_body: throat_radius (", throat_radius, ") must be at least 0.8 more ",
-      "than the wall inset (", _inset, "). Raise throat_radius to ",
-      _inset + 0.8, " or more."
-    )
+    str("hopper_body: throat_radius (", throat_radius,
+      ") must be at least 0.8 more than the wall inset (", _inset,
+      "). Raise throat_radius to ", _inset + 0.8, " or more.")
   );
   assert(
     _inner_funnel_radius >= 0.8,
-    str(
-      "hopper_body: funnel_radius (", funnel_radius, ") must be at least 0.8 more ",
-      "than the wall inset (", _inset, "). Raise funnel_radius to ",
-      _inset + 0.8, " or more."
-    )
+    str("hopper_body: funnel_radius (", funnel_radius,
+      ") must be at least 0.8 more than the wall inset (", _inset,
+      "). Raise funnel_radius to ", _inset + 0.8, " or more.")
   );
 
   _height = _bin_z + bin_height;
@@ -116,11 +110,9 @@ module hopper_body(
   // share a section. Below the taper it is round and there is nothing to bolt.
   assert(
     segments == 1 || _lo == 0 || _lo > _throat_z,
-    str(
-      "hopper_body: a cut at ", _lo, " falls in the neck or its transition, ",
-      "below ", _throat_z, ", where the section is round. Use fewer segments ",
-      "or a taller body."
-    )
+    str("hopper_body: a cut at ", _lo,
+      " falls in the neck or its transition, below ", _throat_z,
+      ", where the section is round. Use fewer segments or a taller body.")
   );
 
   module _flange_at(z, up) {

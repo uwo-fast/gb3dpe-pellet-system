@@ -65,10 +65,9 @@ module hopper_hub(
   );
   assert(
     _bolt_r - bolt_diameter / 2 > _hole_r,
-    str(
-      "hopper_hub: fixings at r ", _bolt_r, " would break into the plate's clearance hole at r ",
-      _hole_r, ". Widen the skirt or shorten bolt_depth."
-    )
+    str("hopper_hub: fixings at r ", _bolt_r,
+      " would break into the plate's clearance hole at r ", _hole_r,
+      ". Widen the skirt or shorten bolt_depth.")
   );
   // Depth is exact by construction: the bolt circle is placed bolt_depth in
   // from the skirt edge, and the flare is 45 degrees, so the material above a

@@ -67,25 +67,20 @@ module flow_coupon(
 
   assert(
     throat_radius - _inset >= 0.8,
-    str(
-      "flow_coupon: throat_radius (", throat_radius, ") must exceed the wall inset (",
-      _inset, ") by 0.8 or the inner corner cannot follow the wall in"
-    )
+    str("flow_coupon: throat_radius (", throat_radius,
+      ") must exceed the wall inset (", _inset,
+      ") by 0.8 or the inner corner cannot follow the wall in")
   );
   assert(
     _top + 2 <= FLOW_STAND_OPENING,
-    str(
-      "flow_coupon: at ", angle, " degrees the funnel is ", _top,
+    str("flow_coupon: at ", angle, " degrees the funnel is ", _top,
       " across, which will not pass the stand's ", FLOW_STAND_OPENING,
-      " mm opening. Shallower angles need a taller stand opening, or a shorter drop."
-    )
+      " mm opening. Shallower angles need a taller stand opening, or a shorter drop.")
   );
   assert(
     flange_outer - _top >= 16,
-    str(
-      "flow_coupon: at ", angle, " degrees the flange is only ",
-      (flange_outer - _top) / 2, " mm wide; it has to land on the stand's ring"
-    )
+    str("flow_coupon: at ", angle, " degrees the flange is only ",
+      (flange_outer - _top) / 2, " mm wide; it has to land on the stand's ring")
   );
 
   _volume = funnel_volume_l(_ix, _ix, _it, height);
@@ -140,21 +135,20 @@ module flow_stand(
   assert(outer > opening, str("flow_stand: outer (", outer, ") must exceed opening (", opening, ")"));
   assert(
     leg_width <= (outer - opening) / 2,
-    str(
-      "flow_stand: legs are ", leg_width, " wide but the ring band is only ",
-      (outer - opening) / 2, ". Widen the stand or narrow the legs."
-    )
+    str("flow_stand: legs are ", leg_width, " wide but the ring band is only ",
+      (outer - opening) / 2, ". Widen the stand or narrow the legs.")
   );
   assert(
     outer > FLOW_FLANGE_OUTER,
     str("flow_stand: outer (", outer, ") must exceed the coupon flange (",
-        FLOW_FLANGE_OUTER, ") it has to carry")
+      FLOW_FLANGE_OUTER, ") it has to carry")
   );
 
   assert(
     atan(leg_draft / height) < 30,
-    str("flow_stand: leg_draft ", leg_draft, " over ", height,
-        " mm is ", atan(leg_draft / height), " degrees off vertical -- too much to print clean")
+    str("flow_stand: leg_draft ", leg_draft, " over ", height, " mm is ",
+      atan(leg_draft / height),
+      " degrees off vertical -- too much to print clean")
   );
 
   _leg_r = (opening + outer) / 4;

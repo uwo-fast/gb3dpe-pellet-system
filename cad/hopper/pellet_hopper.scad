@@ -244,11 +244,9 @@ _min_angle = feedstock_min_funnel_angle(_feedstock);
 
 assert(
   funnel_angle >= _min_angle,
-  str(
-    "pellet_hopper: funnel_angle ", funnel_angle, " is below the minimum ",
+  str("pellet_hopper: funnel_angle ", funnel_angle, " is below the minimum ",
     _min_angle, " degrees for ", feedstock_name(_feedstock),
-    ". Raise the angle or pick a different feedstock."
-  )
+    ". Raise the angle or pick a different feedstock.")
 );
 
 // The angle is the input; the drop is solved from it.
@@ -262,11 +260,10 @@ _bin_height = segments * segment_height - lock_height - neck_transition_height -
 
 assert(
   _bin_height > 0,
-  str(
-    "pellet_hopper: a ", funnel_angle, " degree funnel on a ", _top_x, "x", _top_y,
-    " footprint needs ", _funnel_height, " mm of drop, leaving no room for storage in ",
-    segments, " x ", segment_height, " mm. Use more segments or a smaller footprint."
-  )
+  str("pellet_hopper: a ", funnel_angle, " degree funnel on a ", _top_x, "x",
+    _top_y, " footprint needs ", _funnel_height,
+    " mm of drop, leaving no room for storage in ", segments, " x ",
+    segment_height, " mm. Use more segments or a smaller footprint.")
 );
 
 // One joint spec, shared by both halves so they cannot drift apart.
@@ -292,11 +289,9 @@ _neck_od = joint_neck_od(_joint);
 
 assert(
   (_neck_od - lock_bore_diameter) / 2 >= min_wall,
-  str(
-    "pellet_hopper: a ", lock_bore_diameter, " mm bore leaves only ",
-    (_neck_od - lock_bore_diameter) / 2, " mm of neck wall, under min_wall ", min_wall,
-    ". Raise lock_interface_radius or lower the bore."
-  )
+  str("pellet_hopper: a ", lock_bore_diameter, " mm bore leaves only ",
+    (_neck_od - lock_bore_diameter) / 2, " mm of neck wall, under min_wall ",
+    min_wall, ". Raise lock_interface_radius or lower the bore.")
 );
 
 // Handedness is overridden here rather than in the registry, so the registry
@@ -314,11 +309,11 @@ _required_parallel = flow_min_opening(design_particle_size, feedstock_parallel_r
 
 assert(
   _bore >= _required_outlet,
-  str(
-    "pellet_hopper: outlet ", _bore, " mm is too small for ", design_particle_size,
-    " mm ", feedstock_name(_feedstock), ". Needs at least ", _required_outlet,
-    " mm (", feedstock_converging_ratio(_feedstock), "x particle at a converging outlet)."
-  )
+  str("pellet_hopper: outlet ", _bore, " mm is too small for ",
+    design_particle_size, " mm ", feedstock_name(_feedstock),
+    ". Needs at least ", _required_outlet, " mm (",
+    feedstock_converging_ratio(_feedstock),
+    "x particle at a converging outlet).")
 );
 
 // Geometry -> capability. The narrowest section governs the whole path.
@@ -405,11 +400,9 @@ echo(str(
 
 assert(
   !require_printable || _fits,
-  str(
-    "pellet_hopper: largest part ", [_part_x, _part_y, _part_z],
+  str("pellet_hopper: largest part ", [_part_x, _part_y, _part_z],
     " exceeds build_volume ", build_volume,
-    ". Reduce the footprint, lower funnel_angle, or split the body."
-  )
+    ". Reduce the footprint, lower funnel_angle, or split the body.")
 );
 
 module _body(which = undef) {
