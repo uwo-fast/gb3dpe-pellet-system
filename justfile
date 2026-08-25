@@ -14,7 +14,16 @@ build  := "build"
 
 # Capacity preset index:label — must match HOPPERS in cad/hopper/hopper_sizes.scad
 sizes := "0:150x150 1:175x175 2:202x202"
-parts := "body cap hub plate outlet"
+
+# Only the body and the cap change with the footprint preset. The hub, plate and
+# outlet come out identical at all three, so the gate renders them once —
+# sweeping them spent three renders proving one thing, and the driver's
+# size-dependent asserts run on every render whichever part is asked for.
+sized_parts := "body cap"
+fixed_parts := "hub plate outlet"
+parts := sized_parts + " " + fixed_parts
+plate_variants := "mk3s universal panel"
+coupon_scad := "cad/coupons/flow_coupon.scad"
 
 default:
     @just --list
@@ -31,75 +40,92 @@ check:
     set -uo pipefail
     tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
     fail=0
+
+    # One place where a render is judged, so every case below is one line.
+    #   solid  a printed part; must also come out as exactly one CGAL volume
+    #   mesh   an assembly or example, where several solids are the point
+    #   echo   a module file on its own. The function-only ones carry no
+    #          geometry and STL export fails on an empty top-level object, where
+    #          echo export exits 0 and the grep below is what catches problems.
+    run() {
+      local kind=$1 col1=$2 col2=$3 file=$4; shift 4
+      local args=() d out rc vols
+      for d in "$@"; do args+=(-D "$d"); done
+      printf '  %-7s %-13s ' "$col1" "$col2"
+      if [ "$kind" = echo ]; then
+        out=$(openscad -o "$tmp/out.echo" "${args[@]}" "$file" 2>&1); rc=$?
+        out="$out"$'\n'"$(cat "$tmp/out.echo")"
+      else
+        out=$(openscad --hardwarnings -o "$tmp/out.stl" "${args[@]}" "$file" 2>&1); rc=$?
+      fi
+      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
+        echo FAIL
+        grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | head -3 | sed 's/^/      /'
+        [ "$rc" -ne 0 ] && [ -z "$out" ] && echo "      exit $rc"
+        fail=1; return
+      fi
+      # CGAL reports one volume for the solid plus one for the space around it,
+      # so a single printable part is exactly 2. More means the part is in
+      # disconnected pieces -- which renders clean, passes every assert, and
+      # slices as several objects. Two solids meeting on a coincident plane do
+      # it, and it has caught us three times.
+      vols=$(grep -oP 'Volumes:\s*\K\d+' <<<"$out" | head -1)
+      if [ "$kind" = solid ] && [ -n "$vols" ] && [ "$vols" -ne 2 ]; then
+        echo "FAIL  $vols volumes -- the part is in disconnected pieces"
+        fail=1; return
+      fi
+      echo ok
+    }
+
     for s in {{sizes}}; do
       i=${s%%:*}; label=${s##*:}
-      for p in {{parts}}; do
-        printf '  %-5s %-8s ' "$p" "$label"
-        out=$(openscad --hardwarnings -o "$tmp/$p.stl" \
-                -D "render_part=\"$p\"" -D "hopper_size=$i" \
-                -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
-        rc=$?
-        # CGAL reports one volume for the solid plus one for the space around
-        # it, so a single printable part is exactly 2. More means the part is
-        # in disconnected pieces -- which renders clean, passes every assert,
-        # and slices as several objects. Two solids meeting on a coincident
-        # plane do it, and it has caught us three times.
-        vols=$(grep -oP 'Volumes:\s*\K\d+' <<<"$out" | head -1)
-        if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
-          echo FAIL
-          grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'
-          [ "$rc" -ne 0 ] && [ -z "$out" ] && echo "      exit $rc"
-          fail=1
-        elif [ -n "$vols" ] && [ "$vols" -ne 2 ]; then
-          echo "FAIL  $vols volumes -- the part is in disconnected pieces"
-          fail=1
-        else
-          echo ok
-        fi
+      for p in {{sized_parts}}; do
+        run solid "$p" "$label" {{hopper}} "render_part=\"$p\"" "hopper_size=$i" \
+          "render_facets={{check_facets}}"
       done
     done
+    for p in {{fixed_parts}}; do
+      run solid "$p" "any size" {{hopper}} "render_part=\"$p\"" "render_facets={{check_facets}}"
+    done
+
     # Every segment of the body at the default size: a cut that lands badly only
     # shows up on the segment it lands on.
     for g in 0 1; do
-      printf '  %-5s %-8s ' "seg$g" "default"
-      out=$(openscad --hardwarnings -o "$tmp/seg.stl" -D 'render_part="body"' \
-              -D "segment=$g" -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
-      rc=$?
-      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
-        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'; fail=1
-      else echo ok; fi
+      run solid "seg$g" default {{hopper}} 'render_part="body"' "segment=$g" \
+        "render_facets={{check_facets}}"
     done
+
+    # Every plate variant. The driver's own defaults reach one of the three, so
+    # the other two were compiled only as their standalone previews, never as
+    # the driver assembles them.
+    for v in {{plate_variants}}; do
+      run solid plate "$v" {{hopper}} 'render_part="plate"' "plate_variant=\"$v\"" \
+        "render_facets={{check_facets}}"
+    done
+
     # Composite views at one size only: they render the same solids again, so
     # sweeping every size buys nothing but minutes.
     for p in assembly all; do
-      printf '  %-5s %-8s ' "$p" "default"
-      out=$(openscad --hardwarnings -o "$tmp/$p.stl" -D "render_part=\"$p\"" \
-              -D "render_facets={{check_facets}}" {{hopper}} 2>&1)
-      rc=$?
-      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
-        echo FAIL
-        grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'
-        fail=1
-      else
-        echo ok
-      fi
+      run mesh "$p" default {{hopper}} "render_part=\"$p\"" "render_facets={{check_facets}}"
     done
-    # Every module file, rendered on its own. Uses echo export because the
-    # function-only files have no geometry and STL export fails on an empty
-    # top-level object -- echo export exits 0 there, and the grep below is what
-    # actually catches problems either way.
+
+    # The flow coupon at both angles worth comparing, and the stand. The stand
+    # is not the coupon file's default part, so nothing else here renders it.
+    for a in 70 60; do
+      run solid coupon "$a deg" {{coupon_scad}} 'render_part="coupon"' "angle=$a" \
+        'preview_facets={{check_facets}}'
+    done
+    run solid stand "" {{coupon_scad}} 'render_part="stand"' 'preview_facets={{check_facets}}'
+
+    # Every module file, rendered on its own.
     for f in cad/*/*.scad; do
-      printf '  %-5s %-8s ' "mod" "$(basename "$f" .scad | sed 's/^hopper_//')"
-      out=$(openscad -o "$tmp/mod.echo" -D '$fn={{check_facets}}' "$f" 2>&1)
-      rc=$?
-      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out" "$tmp/mod.echo"; then
-        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" "$tmp/mod.echo" | head -3 | sed 's/^/      /'; fail=1
-      else echo ok; fi
+      run echo mod "$(basename "$f" .scad | sed 's/^hopper_//')" "$f" '$fn={{check_facets}}'
     done
+
     # Every part exists twice: the driver builds it, and its module file previews
     # it. Nothing forces those to agree, and when they drift the driver quietly
     # builds a different part from the one being looked at.
-    printf '  %-5s %-8s ' "drift" "parts"
+    printf '  %-7s %-13s ' "drift" "parts"
     if out=$(python3 scripts/drift.py --facets {{check_facets}} 2>&1); then
       echo ok
     else
@@ -110,12 +136,7 @@ check:
     # it -- at their preview quality a sweep takes minutes and proves nothing
     # extra, since this checks that they compile and their asserts hold.
     for f in examples/*.scad; do
-      printf '  %-5s %-8s ' "ex" "$(basename "$f" .scad)"
-      out=$(openscad --hardwarnings -o "$tmp/ex.stl" -D '$fn={{check_facets}}' "$f" 2>&1)
-      rc=$?
-      if [ "$rc" -ne 0 ] || grep -qE 'ERROR:|WARNING:|DEPRECATED:' <<<"$out"; then
-        echo FAIL; grep -hE 'ERROR:|WARNING:|DEPRECATED:|TRACE:' <<<"$out" | sed 's/^/      /'; fail=1
-      else echo ok; fi
+      run mesh ex "$(basename "$f" .scad)" "$f" '$fn={{check_facets}}'
     done
     exit $fail
 
