@@ -26,7 +26,7 @@ module hopper_body(
   top_x,
   top_y,
   bin_height,
-  funnel_height,
+  funnel_angle,
   throat = 58,
   min_wall = 3,
   throat_radius = 6,
@@ -50,28 +50,33 @@ module hopper_body(
     top_x > throat && top_y > throat,
     str("hopper_body: top_x and top_y must exceed throat, got: ", [top_x, top_y, throat])
   );
-  assert(funnel_height > 0, str("hopper_body: funnel_height must be > 0, got: ", funnel_height));
+  assert(
+    funnel_angle > 0 && funnel_angle < 90,
+    str("hopper_body: funnel_angle is degrees from HORIZONTAL and must be in 0..90, got: ", funnel_angle)
+  );
   assert(bin_height > 0, str("hopper_body: bin_height must be > 0, got: ", bin_height));
 
   _neck_height = joint_neck_height(joint);
   _bore = joint_bore_diameter(joint);
 
-  // The funnel's shallowest surface, and the inset that gives min_wall on it.
-  _corner_angle = funnel_corner_angle(top_x, top_y, throat, funnel_height);
-  _inset = funnel_wall_inset(min_wall, _corner_angle);
+  // The angle is measured on the funnel's diagonal corner -- its shallowest
+  // surface -- so the drop follows from it, and so does the inset that gives
+  // min_wall perpendicular to that corner.
+  _funnel_height = funnel_height_for_angle(top_x, top_y, throat, funnel_angle);
+  _inset = funnel_wall_inset(min_wall, funnel_angle);
 
   assert(
     throat > 2 * _inset,
     str(
       "hopper_body: throat (", throat, ") must exceed twice the wall inset (",
-      2 * _inset, ") needed for min_wall ", min_wall, " at a ", _corner_angle,
+      2 * _inset, ") needed for min_wall ", min_wall, " at a ", funnel_angle,
       " degree corner"
     )
   );
 
   // z stations, bottom up.
   _throat_z = _neck_height + neck_transition_height;
-  _bin_z = _throat_z + funnel_height;
+  _bin_z = _throat_z + _funnel_height;
 
   // Inner surfaces, parallel to their outer at one inset.
   _inner_x = top_x - 2 * _inset;
@@ -121,7 +126,7 @@ module hopper_body(
   module _flange_at(z, up) {
     _sec = funnel_body_section(
       throat, top_x, top_y, throat_radius, funnel_radius,
-      _throat_z - 0.5, funnel_height, z
+      _throat_z, _funnel_height, z
     );
     translate([0, 0, z]) split_flange(
       span=[_sec[0], _sec[1]],
@@ -273,5 +278,5 @@ module split_flange(
 // here would silently override whatever the driver asked for.
 hopper_body(
   joint = hopper_joint(), top_x = 220, top_y = 180, bin_height = 75,
-  funnel_height = 80, $fn = $preview ? 48 : 120
+  funnel_angle = 40, $fn = $preview ? 48 : 120
 );

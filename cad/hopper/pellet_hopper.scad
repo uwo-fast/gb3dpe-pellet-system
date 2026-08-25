@@ -270,7 +270,6 @@ assert(
 );
 
 // One joint spec, shared by both halves so they cannot drift apart.
-_neck_od = 2 * (lock_interface_radius - lock_allowance / 2);
 _bore = lock_bore_diameter;
 
 _joint = hopper_joint(
@@ -288,6 +287,8 @@ _joint = hopper_joint(
   retainer_pilot=lock_retainer_pilot,
   bore_diameter=lock_bore_diameter
 );
+
+_neck_od = joint_neck_od(_joint);
 
 assert(
   (_neck_od - lock_bore_diameter) / 2 >= min_wall,
@@ -335,7 +336,10 @@ _body_height = lock_height + neck_transition_height + _funnel_height + _bin_heig
 _hub_height = hub_height(_joint);
 _body_base = lock_height;
 _outlet_h = outlet_height(_joint, _hose, outlet_cone_angle, outlet_socket_depth);
-_cap_outer_y = _top_y + 2 * cap_clearance + 2 * cap_wall;
+_cap_outer = [
+  _top_x + 2 * cap_clearance + 2 * cap_wall,
+  _top_y + 2 * cap_clearance + 2 * cap_wall,
+];
 
 _volume_l = hopper_volume_l(
   _top_x - 2 * _inset, _top_y - 2 * _inset, throat - 2 * _inset,
@@ -350,7 +354,7 @@ _cut_sections = segments < 2 ? [] : [
   for (i = [1:1:segments - 1])
     funnel_body_section(
       throat, _top_x, _top_y, throat_radius, funnel_radius,
-      lock_height + neck_transition_height - 0.5, _funnel_height,
+      lock_height + neck_transition_height, _funnel_height,
       split_z(_body_height, segments, i)
     )
 ];
@@ -358,7 +362,6 @@ _flange_x = segments < 2 ? 0 : max([for (c = _cut_sections) c[0] + 2 * flange_wi
 _flange_y = segments < 2 ? 0 : max([for (c = _cut_sections) c[1] + 2 * flange_width]);
 
 // Largest footprint and height of any single printed part.
-_cap_outer_x = _top_x + 2 * cap_clearance + 2 * cap_wall;
 // The MK3S plate sizes itself, so ask it rather than assume plate_size.
 _plate_actual = plate_variant == "mk3s"
   ? mk3s_plate_size(_joint, frame_offset, frame_jaw, frame_fillet,
@@ -366,8 +369,8 @@ _plate_actual = plate_variant == "mk3s"
                     frame_plate_margin)
   : plate_size;
 
-_part_x = max([_cap_outer_x, _plate_actual[0], hub_skirt_diameter, _top_x, _flange_x]);
-_part_y = max([_cap_outer_y, _plate_actual[1], hub_skirt_diameter, _top_y, _flange_y]);
+_part_x = max([_cap_outer[0], _plate_actual[0], hub_skirt_diameter, _top_x, _flange_x]);
+_part_y = max([_cap_outer[1], _plate_actual[1], hub_skirt_diameter, _top_y, _flange_y]);
 // The largest PART, not the largest assembly: a segment, not the whole body.
 _part_z = max(
   max(segments > 1 ? segment_height : _body_height, _outlet_h),
@@ -415,7 +418,7 @@ module _body(which = undef) {
     top_x=_top_x,
     top_y=_top_y,
     bin_height=_bin_height,
-    funnel_height=_funnel_height,
+    funnel_angle=funnel_angle,
     throat=throat,
     min_wall=min_wall,
     throat_radius=throat_radius,
@@ -447,57 +450,33 @@ module _hub() {
 }
 
 module _plate() {
-  if (plate_variant == "mk3s") _plate_mk3s();
-  else if (plate_variant == "panel") _plate_panel();
-  else _plate_universal();
-}
-
-module _plate_panel() {
-  hopper_plate_panel(
-    joint=_joint,
-    size=plate_size,
-    thickness=plate_thickness,
-    corner_radius=plate_corner_radius,
-    skirt_diameter=hub_skirt_diameter,
-    bolt_depth=hub_bolt_depth,
-    bolts=hub_bolts,
-    bolt_diameter=plate_bolt_diameter,
-    panel_bolt_spacing=panel_bolt_spacing
-  );
-}
-
-module _plate_mk3s() {
-  // No size passed: this variant derives its own, so there is nothing here that
-  // can disagree with the saddle it has to carry.
-  hopper_plate_mk3s(
-    joint=_joint,
-    margin=frame_plate_margin,
-    thickness=plate_thickness,
-    corner_radius=plate_corner_radius,
-    skirt_diameter=hub_skirt_diameter,
-    bolt_depth=hub_bolt_depth,
-    bolts=hub_bolts,
-    bolt_diameter=plate_bolt_diameter,
-    frame_thickness=frame_thickness,
-    frame_clearance=frame_clearance,
-    offset=frame_offset,
-    grip_depth=frame_grip_depth,
-    jaw=frame_jaw,
-    fillet=frame_fillet
-  );
-}
-
-module _plate_universal() {
-  hopper_plate(
-    joint=_joint,
-    size=plate_size,
-    thickness=plate_thickness,
-    corner_radius=plate_corner_radius,
-    skirt_diameter=hub_skirt_diameter,
-    bolt_depth=hub_bolt_depth,
-    bolts=hub_bolts,
-    bolt_diameter=plate_bolt_diameter
-  );
+  // Every variant carries the universal plate's own parameters, because every
+  // variant IS the universal plate plus machine features. Only the extras
+  // differ, so they are the only thing stated per branch.
+  if (plate_variant == "mk3s")
+    // No size passed: this variant derives its own, so there is nothing here
+    // that can disagree with the saddle it has to carry.
+    hopper_plate_mk3s(
+      joint=_joint, margin=frame_plate_margin, thickness=plate_thickness,
+      corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
+      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
+      frame_thickness=frame_thickness, frame_clearance=frame_clearance,
+      offset=frame_offset, grip_depth=frame_grip_depth, jaw=frame_jaw,
+      fillet=frame_fillet
+    );
+  else if (plate_variant == "panel")
+    hopper_plate_panel(
+      joint=_joint, size=plate_size, thickness=plate_thickness,
+      corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
+      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
+      panel_bolt_spacing=panel_bolt_spacing
+    );
+  else
+    hopper_plate(
+      joint=_joint, size=plate_size, thickness=plate_thickness,
+      corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
+      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter
+    );
 }
 
 module _outlet() {
@@ -551,7 +530,7 @@ if (render_part == "body") {
     translate([0, 0, plate_thickness + 10]) color(colour_hub()) _hub();
     translate([0, 0, plate_thickness + _hub_height + 20]) color(colour_outlet()) _outlet();
   }
-  translate([0, _top_y / 2 + _cap_outer_y / 2 + 40, 0])
+  translate([0, _top_y / 2 + _cap_outer[1] / 2 + 40, 0])
     color(colour_cap(segments)) _cap();
 } else {
   assert(false, str("pellet_hopper: unknown render_part: ", render_part));

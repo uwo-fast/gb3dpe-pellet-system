@@ -23,9 +23,6 @@ function funnel_corner_run(top_x, top_y, throat) =
 function funnel_height_for_angle(top_x, top_y, throat, angle) =
   funnel_corner_run(top_x, top_y, throat) * tan(angle);
 
-function funnel_corner_angle(top_x, top_y, throat, height) =
-  atan(height / funnel_corner_run(top_x, top_y, throat));
-
 // Angle of one flat face, given the full span across it. Always steeper than
 // the corner, and the two faces differ whenever the footprint is not square.
 function funnel_face_angle(span, throat, height) = atan(height / ((span - throat) / 2));
@@ -59,9 +56,12 @@ function _lerp(a, b, t) = a + (b - a) * t;
  * exactly, because both halves of the joint are cut from it.
  */
 function funnel_body_section(
-  throat, top_x, top_y, throat_radius, funnel_radius, funnel_base_z, funnel_height, z
+  throat, top_x, top_y, throat_radius, funnel_radius, throat_z, funnel_height, z
 ) =
-  let (t = min(1, (z - funnel_base_z) / funnel_height))
+  // The taper's sloped face starts half a slab BELOW the nominal throat
+  // station, because loft() centres each slab on its z. Correcting here rather
+  // than at the call sites keeps it in the one place that knows the shape.
+  let (base = throat_z - 0.5, t = min(1, (z - base) / funnel_height))
     [
       _lerp(throat, top_x, t),
       _lerp(throat, top_y, t),
