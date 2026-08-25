@@ -137,7 +137,7 @@ frame_fillet = 4;
 frame_plate_margin = 6;
 
 // For the "panel" variant: where it bolts through the sheet. Parametric because
-// where the holes can go depends on what is behind the panel, unmeasured so far.
+// the panel is drilled to suit -- there is no fixed pattern to match.
 panel_bolt_spacing = [100, 100];
 
 // The plate is the only machine-specific part, and deliberately the simplest:

@@ -105,8 +105,8 @@ Plates:
   bar. Built; see below.
 - **Panel** (`hopper_plate.scad`, `plate_variant = "panel"`) — bolts through a drilled flat sheet,
   for the Original Prusa Enclosure or anything similar. Built. The pattern is
-  parametric because where the holes can go depends on what is behind the
-  panel, which has not been measured. Drill the panel Ø65 for the outlet neck
+  parametric because the panel is drilled to suit — there is no fixed pattern
+  to match. Drill the panel Ø65 for the outlet neck
   and use washers or a backing plate: four M4 heads on thin sheet under a
   sustained few kilograms will dimple it long before anything breaks.
 - **Stand** — decouples the load from the printer entirely. Worth having, since

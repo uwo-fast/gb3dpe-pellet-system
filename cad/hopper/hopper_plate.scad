@@ -352,9 +352,9 @@ module hopper_plate_mk3s(
 // that is all a flat panel needs — the panel carries the load in bending and
 // the plate just spreads it.
 //
-// The pattern is deliberately parametric rather than fixed. Where the holes can
-// go depends on what is behind the panel, and that has not been measured; the
-// numbers here are a starting point, not a specification.
+// The pattern is parametric because the panel is drilled to suit the
+// installation. There is no fixed pattern to match and nothing to measure: pick
+// a spacing that clears whatever is behind the sheet, and drill for it.
 //
 // Drill the panel for the OUTLET first and the bolts second. The outlet's neck
 // passes through, so the panel needs a clearance hole matching the plate's,

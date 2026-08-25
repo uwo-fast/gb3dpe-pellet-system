@@ -82,8 +82,10 @@ system. Items move out of here into commits, issues, or docs as they resolve.
       aluminium public sources describe. Slot accepts 6.2–6.5, grip depth
       reduced to 30 so the jaws stay well inside the bar, and the saddle now
       fillets into the plate.
-- [ ] **Build the enclosure panel plate.** The universal plate already is one
-      bar the hole pattern, which is blocked on measuring the panel.
+- [x] **The enclosure panel plate is built.** `hopper_plate.scad` at
+      `plate_variant = "panel"`. The bolt pattern stays parametric by design —
+      the panel is drilled to suit the installation, so there is no fixed
+      pattern to match and nothing to measure.
 - [ ] **Decide whether the bare-MK3S mount is actually wise.** It works, but it
       puts ~3 kg at roughly 800 mm on a machine that slings its bed in Y. The
       `stand` variant would decouple that entirely and is not much work now the
