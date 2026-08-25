@@ -36,7 +36,8 @@ color(colour_plate())
 color(colour_hub()) hopper_hub(joint);
 color(colour_outlet()) translate([0, 0, outlet_drop]) hopper_outlet(joint, conveyor);
 
-// The printer's frame: a 6.2 mm plate whose top edge seats on the saddle roof.
+// The printer's frame, at the measured thickness set above: its top edge seats
+// on the saddle roof.
 // Shown as a background object -- it is not part of what you print.
 %translate([-frame_offset - frame_thickness / 2, -110, -plate_thickness - saddle_roof - 300])
   cube([frame_thickness, 220, 300]);

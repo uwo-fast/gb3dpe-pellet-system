@@ -110,8 +110,8 @@ system. Items move out of here into commits, issues, or docs as they resolve.
 
 - [ ] **Check what 3 kg on top does to the bare-MK3S case.** The body is 410 mm
       on a 370 mm frame, so roughly 800 mm overall with the mass at the top, on
-      a machine that slings its bed in Y. The frame is stiff enough (6.2 mm
-      aluminium, already carries a spool holder) but this is several times a
+      a machine that slings its bed in Y. The frame is stiff enough (6.3 mm
+      steel as measured, already carries a spool holder) but this is several times a
       full spool and much higher up. Worth watching frame resonance on fast
       moves before trusting it. The enclosure case puts the load on the
       enclosure instead, and the `stand` adapter decouples it entirely.

@@ -109,7 +109,7 @@ lock_bore_diameter = 50;
 
 // Which machine this mounts to. "universal" is the bare interface with no
 // machine features -- the starting point for a new adapter. "mk3s" clamps to
-// the printer's own 6.2 mm aluminium frame.
+// the printer's own frame bar, measured on this machine as 6.3 mm steel.
 plate_variant = "mk3s"; // [universal,mk3s,panel]
 
 // How far the hopper's axis sits from the frame plane. The outlet hangs below
