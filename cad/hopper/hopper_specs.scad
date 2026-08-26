@@ -139,9 +139,11 @@ function feedstock(index) =
 // the ribs.
 
 // Supplied with the GreenBoy3D kit. Measured on the bench, not published:
-// 20 mm bore, 21 mm over the tube wall, a 2 mm-radius rib giving 25 mm overall,
-// 8 mm pitch, right-handed. All confirmed by caliper and eye.
-HOSE_GB3D = ["GB3D 1 m conveyor", 20, 21, 4, 8, "right"];
+// 20 mm bore, 21 mm over the tube wall, and a semicircular rib of 3.5 mm
+// diameter wound at 7.6 mm pitch, giving 24.5 mm overall. Right-handed is still
+// unconfirmed -- print one coupon of each from
+// cad/coupons/hose_thread_coupon.scad to settle it.
+HOSE_GB3D = ["GB3D 1 m conveyor", 20, 21, 3.5, 7.6, "right"];
 
 hose_registry = [HOSE_GB3D];
 
