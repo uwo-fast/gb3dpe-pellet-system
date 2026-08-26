@@ -26,6 +26,16 @@ Nothing here can be settled at the keyboard.
       [`docs/feedstock.md`](docs/feedstock.md); virgin is still general-practice
       0.62 and worth measuring the same way if it becomes the main feedstock.
 
+- [ ] **Settle the hose thread on a coupon.** `just hose-coupon 0.4 right`
+      exports one; the clearance and the handedness are both guesses, and the
+      thread is now the only thing resisting the outlet backing off the hub.
+      Print a few clearances and one of each handedness. It should start by hand
+      without cross-threading, wind the full depth without forcing, and hold when
+      you hang the coupon off a metre of hose and twist it. Whatever wins goes
+      into `hopper_outlet`'s clearance and `hose_handedness`, and the coupon file
+      can then go. Until it does, strain-relieve the hose near the outlet — that
+      removes the torque rather than resisting it.
+
 - [ ] **Caliper the toolhead's feed bore.** Ø18.30 mm was taken off the vendor
       STEP rather than measured. It is the narrowest section in the whole path,
       so it — not anything we draw — is what caps the system: the spec echo

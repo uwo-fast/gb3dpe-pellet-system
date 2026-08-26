@@ -78,10 +78,15 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 
 Verified by intersection rather than by eye: every coupling in the stack seats
 free and captures at an identical 115.31 mm³ when displaced 3 mm, a bolt passes
-cleanly from under the plate through the hub's fixings, and a model of the
-real hose screws into the outlet's socket without interference. The outlet's
-bore widens monotonically from the hose end up to the coupling, so in the flow
+cleanly from under the plate through the hub's fixings. The outlet's bore
+widens monotonically from the hose end up to the coupling, so in the flow
 direction it converges with no ledge.
+
+The hose-into-socket check does **not** carry over. It was run against a thread
+that turned out to be cutting a tenth of its groove, so it was passing a hose
+through what was nearly a plain bore. With a real thread cut it has to be redone
+-- on a printed coupon rather than in CGAL, which is what
+`cad/coupons/hose_thread_coupon.scad` is for.
 
 ## C — mount
 

@@ -49,8 +49,6 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   keyed so the rectangular bin cannot seat crosswise on the roof. This adds a
   required external library, pinned by commit.
 
-- A retaining screw through the socket into a pocket in the neck, since the
-  library's own detent is too small to print at our allowance.
 - Operating procedures (first flash, PINDA jog test) rescued out of untracked
   scratch into `docs/operations/`.
 
@@ -67,6 +65,31 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   pass removed three other places where one file re-derived what another owns.
 - Assert messages are wrapped as sentences rather than split mid-phrase to fit
   a column. No message text changed.
+- The hub's fixings pass through the flange to a nut, counterbored so the nut
+  seats flat, instead of self-tapping into blind holes. Where the bolt circle
+  sits is now the input and the depth follows from the 45 degree flare, rather
+  than the reverse.
+
+### Fixed
+
+- The hose thread was cutting 11% of its groove. `linear_extrude(twist=)`
+  collapses the swept section at this radius and pitch -- 292 mm3 against the
+  2557 mm3 of helical rod it should be -- so the outlet's socket was a smooth
+  bore with a scratch in it and no hose would ever have wound into it. It is now
+  the rib's section swept along its own helix as one polyhedron.
+- The conveyor hose's rib was recorded as 4 mm at 8 mm pitch. Measured, it is a
+  semicircular 3.5 mm section at 7.6 mm pitch. The rib is the thread, so a wrong
+  pitch means the hose does not start at all.
+
+### Removed
+
+- The two coupling retaining screws, and the whole apparatus behind them: three
+  spec fields, three asserts, four modules, three accessors and three driver
+  parameters. Gravity already prevents the upper joint releasing -- rotation
+  alone leaves a loaded bin sitting where it was -- and the lower screw could
+  only ever exit on the skirt's 45 degree cone, where no head seats. The
+  outlet's retention now rests on the bayonet and on the hose thread, which
+  `cad/coupons/hose_thread_coupon.scad` exists to settle.
 
 ### Notes
 
@@ -76,3 +99,7 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - So is the simplification pass that followed it: fifteen printed meshes,
   including both extra plate variants, the upper body segment and the flow
   coupon and its stand, match at zero tolerance rather than within 0.5%.
+- The design changes after it are NOT geometry-neutral, deliberately: the
+  retainer removal, the hose profile, the thread fix and the hub's through-bolts
+  each moved the parts they were meant to move and nothing else, which the
+  baseline is what proves.

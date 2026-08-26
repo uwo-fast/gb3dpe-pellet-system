@@ -60,6 +60,7 @@ just check      # compile every part at every size, any diagnostic fails
 just geom       # check rendered geometry against the committed baseline
 just render     # write STLs for every part and size to build/
 just coupon     # export the flow test coupon (just coupon 60 for a shallower one)
+just hose-coupon # export a hose-thread test coupon at one clearance
 just edit       # open the assembly in the OpenSCAD GUI Customizer
 ```
 
