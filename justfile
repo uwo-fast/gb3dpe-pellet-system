@@ -24,6 +24,7 @@ fixed_parts := "hub plate outlet"
 parts := sized_parts + " " + fixed_parts
 plate_variants := "mk3s universal panel"
 coupon_scad := "cad/coupons/flow_coupon.scad"
+hose_coupon_scad := "cad/coupons/hose_thread_coupon.scad"
 
 default:
     @just --list
@@ -116,6 +117,8 @@ check:
         'preview_facets={{check_facets}}'
     done
     run solid stand "" {{coupon_scad}} 'render_part="stand"' 'preview_facets={{check_facets}}'
+    run solid hose "coupon" {{hose_coupon_scad}} 'render_part="one"' \
+      'preview_facets={{check_facets}}'
 
     # Every module file, rendered on its own.
     for f in cad/*/*.scad; do
@@ -169,14 +172,13 @@ geom:
 geom-baseline:
     @python3 scripts/geom_stats.py --write --facets {{geom_facets}}
 
-# Export the flow test coupon and its stand. The funnel prints separately from
-# the stand so it has nothing hanging off it, and one stand serves every angle.
-#
-# PRINT BOTH INVERTED -- flange down for the coupon, ring down for the stand.
-# Print them on the machine and in the material that will print the hopper, at
-# the same layer height: the surface finish is the thing being tested.
+# Export the flow test coupon at one funnel angle.
 coupon angle="70" height="80":
     #!/usr/bin/env bash
+    # PRINT IT INVERTED, flange down. Print it on the machine and in the material
+    # that will print the hopper, at the same layer height: the surface finish is
+    # the thing being tested. The stand is a separate print -- `just coupon-stand`
+    # -- so the funnel has nothing hanging off it and one stand serves every angle.
     set -euo pipefail
     mkdir -p {{build}}
     openscad --hardwarnings -o {{build}}/flow-coupon-{{angle}}deg.stl \
@@ -184,11 +186,39 @@ coupon angle="70" height="80":
       -D 'preview_facets=96' cad/coupons/flow_coupon.scad
     echo "{{build}}/flow-coupon-{{angle}}deg.stl"
 
-# The stand. One print, reusable across every angle you want to compare.
+# Export the flow coupon's stand. One print, reusable across every angle.
 coupon-stand:
     #!/usr/bin/env bash
+    # PRINT IT INVERTED, ring down on the bed.
     set -euo pipefail
     mkdir -p {{build}}
     openscad --hardwarnings -o {{build}}/flow-coupon-stand.stl \
       -D 'render_part="stand"' -D 'preview_facets=96' cad/coupons/flow_coupon.scad
     echo "{{build}}/flow-coupon-stand.stl"
+
+# Export a sweep of hose-thread test coupons, one per clearance.
+hose-coupon handedness="right":
+    #!/usr/bin/env bash
+    # PRINT THEM THE WAY THE OUTLET PRINTS -- socket mouth down on the bed. Screw
+    # the real hose into each, keep the tightest that still winds in by hand, then
+    # hang the coupon off the hose and twist it to see whether it holds. The file
+    # header lists what to look for. Handedness is unconfirmed: run this once as
+    # right and once as left, and whichever starts is the answer.
+    set -euo pipefail
+    mkdir -p {{build}}
+    out={{build}}/hose-coupon-sweep-{{handedness}}.stl
+    openscad --hardwarnings -o "$out" \
+      -D 'render_part="sweep"' -D 'handedness="{{handedness}}"' \
+      -D 'preview_facets=96' {{hose_coupon_scad}}
+    echo "$out"
+
+# One hose coupon at a single clearance, once the sweep has narrowed it down.
+hose-coupon-one clearance="0.4" handedness="right":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    mkdir -p {{build}}
+    out={{build}}/hose-coupon-{{clearance}}mm-{{handedness}}.stl
+    openscad --hardwarnings -o "$out" \
+      -D 'render_part="one"' -D 'clearance={{clearance}}' \
+      -D 'handedness="{{handedness}}"' -D 'preview_facets=96' {{hose_coupon_scad}}
+    echo "$out"

@@ -25,8 +25,12 @@ use <hopper_joint.scad>
  * Swept by twisting an offset circle up the extrusion — the rib pitch converts
  * straight to degrees of twist per mm. Handedness has to match the hose or it
  * simply will not screw in.
+ *
+ * Public because cad/coupons/hose_thread_coupon.scad tests THIS module rather
+ * than a copy of it: a clearance settled on the coupon is a clearance the
+ * outlet will print, with nothing in between to get wrong.
  */
-module _hose_thread(hose, depth, clearance = 0.4, segments_per_turn = 48) {
+module hose_thread(hose, depth, clearance = 0.4, segments_per_turn = 48) {
   _turns = depth / hose_pitch(hose);
   _sign = hose_handed(hose) == "right" ? -1 : 1;
 
@@ -103,7 +107,7 @@ module hopper_outlet(
     // Hose bore and its thread, opening downward at the bed face.
     translate([0, 0, -1])
       cylinder(h = socket_depth + 1, d = hose_tube_od(hose) + clearance);
-    translate([0, 0, -0.5]) _hose_thread(hose, socket_depth + 0.5, clearance);
+    translate([0, 0, -0.5]) hose_thread(hose, socket_depth + 0.5, clearance);
 
     // The converging pellet path: hose bore up to the coupling's full bore.
     translate([0, 0, socket_depth])
