@@ -3,6 +3,7 @@
 > Bulk pellet feed system, mounts, and operating docs for the GreenBoy3D pellet
 > extruder running on a Prusa MK3S.
 
+[![check](https://github.com/uwo-fast/gb3dpe-pellet-system/actions/workflows/check.yml/badge.svg)](https://github.com/uwo-fast/gb3dpe-pellet-system/actions/workflows/check.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![Contributions welcome](https://img.shields.io/badge/Contributions-welcome-brightgreen.svg)](https://github.com/uwo-fast/.github/blob/main/CONTRIBUTING.md)
 
@@ -23,10 +24,19 @@ for the extruder that GreenBoy3D does not supply.
 Firmware lives separately, in
 [`uwo-fast/Prusa-Firmware-GB3DPE`](https://github.com/uwo-fast/Prusa-Firmware-GB3DPE).
 
-**Status: early.** The hopper CAD in `cad/hopper/` is an imported first draft
-under active review — see [the design review](docs/hopper-design-review.md) for
-what does and does not hold up, and [`TODO.md`](TODO.md) for what is being
-worked. Do not print from it yet.
+**Status: designed, not yet printed.** The hopper CAD started as an imported
+draft and has been through a full review — see
+[the review](docs/hopper-design-review.md) for what the draft got wrong and
+what has since been fixed. Every part compiles and holds its asserts under
+`just check`, and the geometry is regression-tested against a committed
+baseline.
+
+What has not happened is a print. The funnel's wall angle, the hose thread's
+fit and the mount under load are all design targets rather than measurements,
+so treat the numbers as provisional. The **test coupons are meant to be
+printed** — `just coupon` and `just hose-coupon` exist precisely to turn three
+of those targets into measurements. [`TODO.md`](TODO.md) lists what needs the
+bench.
 
 ## Repository layout
 
