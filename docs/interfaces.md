@@ -78,7 +78,7 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 
 Verified by intersection rather than by eye: every coupling in the stack seats
 free and captures at an identical 115.31 mm³ when displaced 3 mm, a bolt passes
-cleanly from under the plate into the hub's blind fixings, and a model of the
+cleanly from under the plate through the hub's fixings, and a model of the
 real hose screws into the outlet's socket without interference. The outlet's
 bore widens monotonically from the hose end up to the coupling, so in the flow
 direction it converges with no ledge.
@@ -91,7 +91,7 @@ plate satisfies it with three things:
 | Feature | Size | Why |
 | ------- | ---- | --- |
 | central clearance hole | **Ø65.0** | must clear the outlet neck's **pins** at Ø64.0, not the Ø58 neck |
-| hub fixings | 4 × M4 on a **Ø78** circle | outboard of the hub's 72 mm tube, inboard of its 85 mm skirt |
+| hub fixings | 4 × M4 on a **Ø79** circle | outboard of the hub's 72 mm tube, inboard of its 95 mm skirt; through-bolted, nut in a Ø8 counterbore |
 | machine pattern | machine-specific | the only part that touches reality |
 
 Bearing is a non-issue — the hub seats on a 722 mm² annulus, which is 0.04 MPa

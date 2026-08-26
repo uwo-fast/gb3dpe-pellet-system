@@ -80,7 +80,7 @@ infill.
 
 | Where | Fastener | Notes |
 | ----- | -------- | ----- |
-| hub → plate | 4 × M4 × 16 | through the plate, self-tapping into the hub's 4.2 mm blind holes |
+| hub → plate | 4 × M4 × 20 + nuts | straight through both; the nut seats in the hub's counterbore, which spotfaces the skirt's cone flat |
 | split joint | 6 × M4 × 20 + nuts | plus 2 × Ø4 dowels, which locate while the bolts clamp |
 | split joint seal | closed-cell foam tape, ~2 mm × 10 mm | one face only, inside the bolt circle |
 | MK3S clamp | 2 × M4 grub | pinch the frame; the saddle roof carries the weight |
@@ -101,7 +101,8 @@ the alignment, so the tape is not being asked to hold anything in place.
 
 ## Assembly order
 
-1. Bolt the **hub** down to the **plate** from underneath.
+1. Bolt the **hub** down to the **plate**: bolts up from under the plate, nuts
+   into the hub's counterbores. There is 4 mm of flange under each seat.
 2. Mount the plate: MK3S clamp over the frame's top edge and pinch, or bolt
    through the drilled panel. Panel hole is **Ø65**.
 3. Twist the **outlet** up into the hub's lower socket.

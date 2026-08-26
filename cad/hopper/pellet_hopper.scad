@@ -140,12 +140,14 @@ plate_corner_radius = 6;
 // The skirt is what the hub's fixings bite into, so its width is squeezed
 // between the plate's clearance hole and the depth a screw needs.
 hub_skirt_diameter = 95;
-hub_bolt_depth = 8;
+// Where the hub's fixings sit. The only free choice among them: the depth of
+// material over the counterbore, and everything else, follows from it.
+hub_bolt_circle = 79;
 hub_bolts = 4;
-// Into the hub: blind, sized for a self-tapping screw or an insert.
-hub_bolt_diameter = 4.2;
-// Through the plate: clearance.
+// M4 through both parts, nut in the hub's counterbore.
 plate_bolt_diameter = 4.5;
+// Flat seat cut into the skirt's cone for that nut.
+hub_counterbore = 8;
 
 /* [Hose] */
 
@@ -423,8 +425,9 @@ module _hub() {
     joint=_joint,
     skirt_diameter=hub_skirt_diameter,
     bolts=hub_bolts,
-    bolt_diameter=hub_bolt_diameter,
-    bolt_depth=hub_bolt_depth
+    bolt_circle=hub_bolt_circle,
+    bolt_diameter=plate_bolt_diameter,
+    counterbore=hub_counterbore
   );
 }
 
@@ -438,7 +441,7 @@ module _plate() {
     hopper_plate_mk3s(
       joint=_joint, margin=frame_plate_margin, thickness=plate_thickness,
       corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
-      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
+      bolt_circle=hub_bolt_circle, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
       frame_thickness=frame_thickness, frame_clearance=frame_clearance,
       offset=frame_offset, grip_depth=frame_grip_depth, jaw=frame_jaw,
       fillet=frame_fillet
@@ -447,14 +450,14 @@ module _plate() {
     hopper_plate_panel(
       joint=_joint, size=plate_size, thickness=plate_thickness,
       corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
-      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
+      bolt_circle=hub_bolt_circle, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
       panel_bolt_spacing=panel_bolt_spacing
     );
   else
     hopper_plate(
       joint=_joint, size=plate_size, thickness=plate_thickness,
       corner_radius=plate_corner_radius, skirt_diameter=hub_skirt_diameter,
-      bolt_depth=hub_bolt_depth, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter
+      bolt_circle=hub_bolt_circle, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter
     );
 }
 

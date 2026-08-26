@@ -35,13 +35,13 @@ module hopper_plate(
   thickness = 6,
   corner_radius = 6,
   skirt_diameter = 95,
-  bolt_depth = 8,
+  bolt_circle = 79,
   bolts = 4,
   bolt_diameter = 4.5,
   bolt_angle = 45
 ) {
   _hole = hub_plate_hole(joint);
-  _bolt_r = hub_bolt_circle(skirt_diameter, bolt_depth) / 2;
+  _bolt_r = bolt_circle / 2;
 
   assert(
     size[0] > skirt_diameter && size[1] > skirt_diameter,
@@ -181,7 +181,7 @@ module hopper_plate_mk3s(
   thickness = 6,
   corner_radius = 6,
   skirt_diameter = 95,
-  bolt_depth = 8,
+  bolt_circle = 79,
   bolts = 4,
   bolt_diameter = 4.5,
   frame_thickness = MK3S_FRAME_THICKNESS,
@@ -281,7 +281,7 @@ module hopper_plate_mk3s(
     union() {
       hopper_plate(
         joint=joint, size=_size, thickness=thickness, corner_radius=corner_radius,
-        skirt_diameter=skirt_diameter, bolt_depth=bolt_depth, bolts=bolts,
+        skirt_diameter=skirt_diameter, bolt_circle=bolt_circle, bolts=bolts,
         bolt_diameter=bolt_diameter
       );
 
@@ -364,7 +364,7 @@ module hopper_plate_panel(
   thickness = 6,
   corner_radius = 6,
   skirt_diameter = 95,
-  bolt_depth = 8,
+  bolt_circle = 79,
   bolts = 4,
   bolt_diameter = 4.5,
   panel_bolt_spacing = [100, 100],
@@ -372,7 +372,7 @@ module hopper_plate_panel(
   counterbore = 8,
   counterbore_depth = 3
 ) {
-  _hub_bolt_r = hub_bolt_circle(skirt_diameter, bolt_depth) / 2;
+  _hub_bolt_r = bolt_circle / 2;
 
   assert(
     panel_bolt_spacing[0] < size[0] && panel_bolt_spacing[1] < size[1],
@@ -388,7 +388,7 @@ module hopper_plate_panel(
   difference() {
     hopper_plate(
       joint=joint, size=size, thickness=thickness, corner_radius=corner_radius,
-      skirt_diameter=skirt_diameter, bolt_depth=bolt_depth, bolts=bolts,
+      skirt_diameter=skirt_diameter, bolt_circle=bolt_circle, bolts=bolts,
       bolt_diameter=bolt_diameter
     );
 
