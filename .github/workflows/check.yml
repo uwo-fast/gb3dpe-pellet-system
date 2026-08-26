@@ -1,0 +1,40 @@
+# Runs the same gate as `just check`, which is what the repo treats as CI.
+#
+# `just geom` is deliberately NOT here. It compares rendered meshes against a
+# committed baseline at zero tolerance, which only holds for one OpenSCAD build
+# -- a runner on a different version would fail it for reasons that have nothing
+# to do with the change. It stays a local check, run against the machine the
+# baseline was captured on.
+name: check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install OpenSCAD
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends openscad xvfb
+          openscad --version
+
+      - uses: extractions/setup-just@v2
+
+      # No git tags on the library, so it is pinned by commit -- the same one
+      # docs/design-notes.md records.
+      - name: Install bayonet-lock-scad
+        run: |
+          git clone --quiet https://github.com/CameronBrooks11/bayonet-lock-scad \
+            "$HOME/.local/share/OpenSCAD/libraries/bayonet-lock-scad"
+          git -C "$HOME/.local/share/OpenSCAD/libraries/bayonet-lock-scad" checkout --quiet 85c43ae
+
+      # xvfb because some OpenSCAD builds still want a display to export from,
+      # even headless.
+      - name: just check
+        run: xvfb-run -a just check
