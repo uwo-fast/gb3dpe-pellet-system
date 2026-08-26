@@ -117,8 +117,6 @@ check:
         'preview_facets={{check_facets}}'
     done
     run solid stand "" {{coupon_scad}} 'render_part="stand"' 'preview_facets={{check_facets}}'
-    run solid hose "coupon" {{hose_coupon_scad}} 'render_part="one"' \
-      'preview_facets={{check_facets}}'
 
     # Every module file, rendered on its own.
     for f in cad/*/*.scad; do
@@ -196,29 +194,16 @@ coupon-stand:
       -D 'render_part="stand"' -D 'preview_facets=96' cad/coupons/flow_coupon.scad
     echo "{{build}}/flow-coupon-stand.stl"
 
-# Export a sweep of hose-thread test coupons, one per clearance.
-hose-coupon handedness="right":
+# Export a hose-thread test coupon at one clearance.
+hose-coupon clearance="0.4" handed="right":
     #!/usr/bin/env bash
-    # PRINT THEM THE WAY THE OUTLET PRINTS -- socket mouth down on the bed. Screw
-    # the real hose into each, keep the tightest that still winds in by hand, then
-    # hang the coupon off the hose and twist it to see whether it holds. The file
-    # header lists what to look for. Handedness is unconfirmed: run this once as
-    # right and once as left, and whichever starts is the answer.
+    # Print socket-mouth-down, as modelled. Screw the real hose in: it should
+    # start by hand, wind the full depth without forcing, and hold when you hang
+    # the coupon off the hose and twist it. Keep the tightest that manages all
+    # three, then put it in hopper_outlet's clearance.
     set -euo pipefail
     mkdir -p {{build}}
-    out={{build}}/hose-coupon-sweep-{{handedness}}.stl
+    out={{build}}/hose-coupon-{{clearance}}-{{handed}}.stl
     openscad --hardwarnings -o "$out" \
-      -D 'render_part="sweep"' -D 'handedness="{{handedness}}"' \
-      -D 'preview_facets=96' {{hose_coupon_scad}}
-    echo "$out"
-
-# One hose coupon at a single clearance, once the sweep has narrowed it down.
-hose-coupon-one clearance="0.4" handedness="right":
-    #!/usr/bin/env bash
-    set -euo pipefail
-    mkdir -p {{build}}
-    out={{build}}/hose-coupon-{{clearance}}mm-{{handedness}}.stl
-    openscad --hardwarnings -o "$out" \
-      -D 'render_part="one"' -D 'clearance={{clearance}}' \
-      -D 'handedness="{{handedness}}"' -D 'preview_facets=96' {{hose_coupon_scad}}
+      -D 'clearance={{clearance}}' -D 'handed="{{handed}}"' {{hose_coupon_scad}}
     echo "$out"
