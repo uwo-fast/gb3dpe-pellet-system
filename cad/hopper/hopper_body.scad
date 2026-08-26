@@ -67,9 +67,11 @@ module hopper_body(
 
   assert(
     throat > 2 * _inset,
-    str("hopper_body: throat (", throat, ") must exceed twice the wall inset (",
+    str(
+      "hopper_body: throat (", throat, ") must exceed twice the wall inset (",
       2 * _inset, ") needed for min_wall ", min_wall, " at a ", funnel_angle,
-      " degree corner")
+      " degree corner"
+    )
   );
 
   // z stations, bottom up.
@@ -91,15 +93,19 @@ module hopper_body(
 
   assert(
     _inner_throat_radius >= 0.8,
-    str("hopper_body: throat_radius (", throat_radius,
+    str(
+      "hopper_body: throat_radius (", throat_radius,
       ") must be at least 0.8 more than the wall inset (", _inset,
-      "). Raise throat_radius to ", _inset + 0.8, " or more.")
+      "). Raise throat_radius to ", _inset + 0.8, " or more."
+    )
   );
   assert(
     _inner_funnel_radius >= 0.8,
-    str("hopper_body: funnel_radius (", funnel_radius,
+    str(
+      "hopper_body: funnel_radius (", funnel_radius,
       ") must be at least 0.8 more than the wall inset (", _inset,
-      "). Raise funnel_radius to ", _inset + 0.8, " or more.")
+      "). Raise funnel_radius to ", _inset + 0.8, " or more."
+    )
   );
 
   _height = _bin_z + bin_height;
@@ -110,9 +116,11 @@ module hopper_body(
   // share a section. Below the taper it is round and there is nothing to bolt.
   assert(
     segments == 1 || _lo == 0 || _lo > _throat_z,
-    str("hopper_body: a cut at ", _lo,
+    str(
+      "hopper_body: a cut at ", _lo,
       " falls in the neck or its transition, below ", _throat_z,
-      ", where the section is round. Use fewer segments or a taller body.")
+      ", where the section is round. Use fewer segments or a taller body."
+    )
   );
 
   module _flange_at(z, up) {
@@ -121,17 +129,17 @@ module hopper_body(
       _throat_z, _funnel_height, z
     );
     translate([0, 0, z]) split_flange(
-      span=[_sec[0], _sec[1]],
-      radius=_sec[2],
-      cavity=[_sec[0] - 2 * _inset, _sec[1] - 2 * _inset],
-      cavity_radius=_sec[2] - _inset,
-      width=flange_width,
-      thickness=flange_thickness,
-      bolt_diameter=flange_bolt_diameter,
-      bolt_inset=flange_inset,
-      dowel_diameter=flange_dowel_diameter,
-      up=up
-    );
+        span=[_sec[0], _sec[1]],
+        radius=_sec[2],
+        cavity=[_sec[0] - 2 * _inset, _sec[1] - 2 * _inset],
+        cavity_radius=_sec[2] - _inset,
+        width=flange_width,
+        thickness=flange_thickness,
+        bolt_diameter=flange_bolt_diameter,
+        bolt_inset=flange_inset,
+        dowel_diameter=flange_dowel_diameter,
+        up=up
+      );
   }
 
   intersection() {
@@ -142,50 +150,50 @@ module hopper_body(
     }
     // Slab for this segment. Generous in plan; the body bounds it.
     translate([0, 0, (_lo + _hi) / 2])
-      cube([4 * top_x, 4 * top_y, _hi - _lo], center = true);
+      cube([4 * top_x, 4 * top_y, _hi - _lo], center=true);
   }
 
   module _whole()
-  difference() {
-    union() {
-      // Neck comes from the library pre-rotated into its seated orientation.
-      // Its own bore is narrow; the pellet bore is opened out below.
-      joint_neck(joint);
+    difference() {
+      union() {
+        // Neck comes from the library pre-rotated into its seated orientation.
+        // Its own bore is narrow; the pellet bore is opened out below.
+        joint_neck(joint);
 
-      // Round neck out to the square throat.
-      loft(_neck_height, _throat_z) {
-        circle(d = joint_neck_od(joint));
-        rounded_square(throat, throat, throat_radius);
+        // Round neck out to the square throat.
+        loft(_neck_height, _throat_z) {
+          circle(d=joint_neck_od(joint));
+          rounded_square(throat, throat, throat_radius);
+        }
+
+        // Throat out to the full bin section.
+        loft(_throat_z, _bin_z) {
+          rounded_square(throat, throat, throat_radius);
+          rounded_square(top_x, top_y, funnel_radius);
+        }
+
+        translate([0, 0, _bin_z]) rounded_box(top_x, top_y, bin_height, funnel_radius);
       }
 
-      // Throat out to the full bin section.
+      // Pellet path, matching the outer stations one wall in.
+      translate([0, 0, -1]) cylinder(h=_neck_height + 2, d=_bore);
+
+      // The lower section is thickened because it is buried inside the bore
+      // above, where extra thickness cannot reach an exposed surface.
+      loft(_neck_height, _throat_z, slab0=2) {
+        circle(d=_bore);
+        rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
+      }
+
       loft(_throat_z, _bin_z) {
-        rounded_square(throat, throat, throat_radius);
-        rounded_square(top_x, top_y, funnel_radius);
+        rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
+        rounded_square(_inner_x, _inner_y, _inner_funnel_radius);
       }
 
-      translate([0, 0, _bin_z]) rounded_box(top_x, top_y, bin_height, funnel_radius);
+      // Open to the top: the cap closes it.
+      translate([0, 0, _bin_z - 0.5])
+        rounded_box(_inner_x, _inner_y, bin_height + 2, _inner_funnel_radius);
     }
-
-    // Pellet path, matching the outer stations one wall in.
-    translate([0, 0, -1]) cylinder(h = _neck_height + 2, d = _bore);
-
-    // The lower section is thickened because it is buried inside the bore
-    // above, where extra thickness cannot reach an exposed surface.
-    loft(_neck_height, _throat_z, slab0 = 2) {
-      circle(d = _bore);
-      rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
-    }
-
-    loft(_throat_z, _bin_z) {
-      rounded_square(_inner_throat, _inner_throat, _inner_throat_radius);
-      rounded_square(_inner_x, _inner_y, _inner_funnel_radius);
-    }
-
-    // Open to the top: the cap closes it.
-    translate([0, 0, _bin_z - 0.5])
-      rounded_box(_inner_x, _inner_y, bin_height + 2, _inner_funnel_radius);
-  }
 }
 
 // ===== Splitting into segments =====
@@ -215,12 +223,16 @@ function split_z(body_height, segments, index) = body_height * index / segments;
  * not realistic.
  */
 function split_fixing_positions(x, y, inset) =
-  let (hx = x / 2 - inset, hy = y / 2 - inset)
-    [
-      [-hx, -hy], [0, -hy], [hx, -hy],
-      [-hx, 0], [hx, 0],
-      [-hx, hy], [0, hy], [hx, hy],
-    ];
+  let (hx = x / 2 - inset, hy = y / 2 - inset) [
+      [-hx, -hy],
+      [0, -hy],
+      [hx, -hy],
+      [-hx, 0],
+      [hx, 0],
+      [-hx, hy],
+      [0, hy],
+      [hx, hy],
+  ];
 
 /**
  * The flange collar at one cut face.
@@ -246,24 +258,24 @@ module split_flange(
   _fixings = split_fixing_positions(_outer[0], _outer[1], bolt_inset);
 
   translate([0, 0, up ? 0 : -thickness]) difference() {
-    rounded_box(_outer[0], _outer[1], thickness, radius + width);
+      rounded_box(_outer[0], _outer[1], thickness, radius + width);
 
-    translate([0, 0, -1])
-      rounded_box(cavity[0], cavity[1], thickness + 2, cavity_radius);
+      translate([0, 0, -1])
+        rounded_box(cavity[0], cavity[1], thickness + 2, cavity_radius);
 
-    for (i = [0:len(_fixings) - 1])
-      translate([_fixings[i][0], _fixings[i][1], -1])
-        cylinder(
-          h = thickness + 2,
-          // The two diagonally opposite corners locate; the other six clamp.
-          d = (i == 0 || i == len(_fixings) - 1) ? dowel_diameter : bolt_diameter
-        );
-  }
+      for (i = [0:len(_fixings) - 1])
+        translate([_fixings[i][0], _fixings[i][1], -1])
+          cylinder(
+            h=thickness + 2,
+            // The two diagonally opposite corners locate; the other six clamp.
+            d=(i == 0 || i == len(_fixings) - 1) ? dowel_diameter : bolt_diameter
+          );
+    }
 }
 
 // Standalone preview. $fn is passed on the call, never assigned at top level --
 // see docs/design-notes.md for why that is not optional.
 hopper_body(
-  joint = hopper_joint(), top_x = 220, top_y = 180, bin_height = 75,
-  funnel_angle = 40, $fn = $preview ? 48 : 120
+  joint=hopper_joint(), top_x=220, top_y=180, bin_height=75,
+  funnel_angle=40, $fn=$preview ? 48 : 120
 );

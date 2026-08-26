@@ -6,11 +6,11 @@ lets one hopper serve a bare MK3S, an enclosed one, and machines we have never
 seen — someone with a different printer makes one small adapter, not a new
 hopper.
 
-| Interface | Between | Varies with |
-| --------- | ------- | ----------- |
-| **A — hopper** | body ↔ hub | never |
-| **B — outlet** | hub ↔ outlet module | the hose |
-| **C — mount** | hub ↔ machine plate | the machine |
+| Interface      | Between             | Varies with |
+| -------------- | ------------------- | ----------- |
+| **A — hopper** | body ↔ hub          | never       |
+| **B — outlet** | hub ↔ outlet module | the hose    |
+| **C — mount**  | hub ↔ machine plate | the machine |
 
 ## Why nothing connects to the plate
 
@@ -27,11 +27,11 @@ bayonet socket at each end, bolted down to the plate from underneath. The body
 twists into the top, the outlet twists into the bottom, and the plate stays a
 flat piece of material with holes in it.
 
-| Part | Prints |
-| ---- | ------ |
-| **hub** | standing on its bottom face. A skirt flares out to 85 mm at the bed and tapers *in* to the 72 mm tube, so there is no overhang anywhere — both sockets are internal bores. |
-| **plate** | flat. A clearance hole, four holes for the hub, and the machine's own pattern. No features on either face, so it can equally be laser-cut, acrylic or plywood. |
-| **outlet** | neck upward. Converges to the hose socket, which sits on the bed. |
+| Part       | Prints                                                                                                                                                                     |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **hub**    | standing on its bottom face. A skirt flares out to 85 mm at the bed and tapers _in_ to the 72 mm tube, so there is no overhang anywhere — both sockets are internal bores. |
+| **plate**  | flat. A clearance hole, four holes for the hub, and the machine's own pattern. No features on either face, so it can equally be laser-cut, acrylic or plywood.             |
+| **outlet** | neck upward. Converges to the hose socket, which sits on the bed.                                                                                                          |
 
 Two things fall out of bolting the hub down rather than clamping it:
 
@@ -55,7 +55,7 @@ rule — see [`design-notes.md`](design-notes.md).
 
 **The same coupling as A**, not a smaller one. That looks wasteful until you
 follow the bore: the hose is 20 mm, so the path has to converge from 50 mm to
-20 mm *somewhere*, and a converging section is exactly where material arches.
+20 mm _somewhere_, and a converging section is exactly where material arches.
 Putting a second, smaller coupling in the hub would move that convergence into
 the part that is bolted down. Keeping the coupling identical lets the hub run a
 straight 50 mm bore and puts the whole convergence inside the outlet module —
@@ -70,11 +70,11 @@ undoing fasteners, and swapping hose types becomes a small reprint.
 
 ### As built
 
-| Part | Size | Prints |
-| ---- | ---- | ------ |
-| hub | 95 skirt, 72 tube, 36 tall, straight 50 bore | standing on its bottom face |
-| plate | derived (134.6 × 134.6 for the MK3S), Ø65.0 hole, 4 × M4 at Ø79 | flat |
-| outlet | Ø64 over the pins, 83 tall | standing on the hose socket |
+| Part   | Size                                                            | Prints                      |
+| ------ | --------------------------------------------------------------- | --------------------------- |
+| hub    | 95 skirt, 72 tube, 36 tall, straight 50 bore                    | standing on its bottom face |
+| plate  | derived (134.6 × 134.6 for the MK3S), Ø65.0 hole, 4 × M4 at Ø79 | flat                        |
+| outlet | Ø64 over the pins, 83 tall                                      | standing on the hose socket |
 
 Verified by intersection rather than by eye: every coupling in the stack seats
 free and captures at an identical 115.31 mm³ when displaced 3 mm, a bolt passes
@@ -93,14 +93,14 @@ through what was nearly a plain bore. With a real thread cut it has to be redone
 Ours to define, so it is a documented number rather than an inherited one. A
 plate satisfies it with three things:
 
-| Feature | Size | Why |
-| ------- | ---- | --- |
-| central clearance hole | **Ø65.0** | must clear the outlet neck's **pins** at Ø64.0, not the Ø58 neck |
-| hub fixings | 4 × M4 on a **Ø79** circle | outboard of the hub's 72 mm tube, inboard of its 95 mm skirt; through-bolted, nut in a Ø8 counterbore |
-| machine pattern | machine-specific | the only part that touches reality |
+| Feature                | Size                       | Why                                                                                                   |
+| ---------------------- | -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| central clearance hole | **Ø65.0**                  | must clear the outlet neck's **pins** at Ø64.0, not the Ø58 neck                                      |
+| hub fixings            | 4 × M4 on a **Ø79** circle | outboard of the hub's 72 mm tube, inboard of its 95 mm skirt; through-bolted, nut in a Ø8 counterbore |
+| machine pattern        | machine-specific           | the only part that touches reality                                                                    |
 
 Bearing is a non-issue — the hub seats on a 722 mm² annulus, which is 0.04 MPa
-at 3 kg against roughly 50 MPa for PETG. Plate *bending* around a 65 mm hole is
+at 3 kg against roughly 50 MPa for PETG. Plate _bending_ around a 65 mm hole is
 the thing to size for, and plate thickness is a parameter for that reason.
 
 Plates:
@@ -128,7 +128,7 @@ of filament; not a pattern to carry three kilograms of pellets. So this one
 straddles the frame and pinches it.
 
 **The hopper axis is offset 47 mm from the frame plane, not over it.** The
-outlet hangs below the plate and has to pass *beside* the frame rather than
+outlet hangs below the plate and has to pass _beside_ the frame rather than
 through it. There are **two** minimums and the second is the one that bites:
 the outlet clearing the frame needs 38.6 mm, but the saddle — jaws and fillet
 included — is wider than the bar it grips and must also sit clear of the

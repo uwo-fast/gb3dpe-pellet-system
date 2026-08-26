@@ -35,10 +35,12 @@ for (i = [0:len(feedstock_registry) - 1]) {
   funnel_height = funnel_height_for_angle(top_x, top_y, throat, angle);
   bin_height = body_height - lock_height - neck_transition_height - funnel_height;
 
-  echo(str(
-    feedstock_name(stock), " at ", angle, " deg: funnel ", funnel_height,
-    " mm, bin ", bin_height, " mm, ", segments, " x ", segment_height, " mm segments"
-  ));
+  echo(
+    str(
+      feedstock_name(stock), " at ", angle, " deg: funnel ", funnel_height,
+      " mm, bin ", bin_height, " mm, ", segments, " x ", segment_height, " mm segments"
+    )
+  );
 
   // Each segment dropped to z = 0, side by side, the way they go on the bed.
   for (g = [0:segments - 1])

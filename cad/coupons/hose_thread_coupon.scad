@@ -36,27 +36,28 @@ _h = turns * pitch;
 module round_thread(r_path, r_sec, lead, sweep, seg = 64, sec = 32) {
   n = round(sweep * seg);
   pts = [
-    for (i = [0:n]) let (a = 360 * i / seg, z = i / seg * lead - lead)
-      for (j = [0:sec - 1]) let (t = 360 * j / sec)
-        [(r_path + r_sec * cos(t)) * cos(a),
-         (r_path + r_sec * cos(t)) * sin(a),
-         z + r_sec * sin(t)]
+    for (i = [0:n]) let (a = 360 * i / seg, z = i / seg * lead - lead) for (j = [0:sec - 1]) let (t = 360 * j / sec) [
+        (r_path + r_sec * cos(t)) * cos(a),
+        (r_path + r_sec * cos(t)) * sin(a),
+        z + r_sec * sin(t),
+    ],
   ];
   polyhedron(
-    points = pts,
-    faces = concat(
+    points=pts,
+    faces=concat(
       [[for (j = [sec - 1:-1:0]) j]],
       [[for (j = [0:sec - 1]) n * sec + j]],
-      [for (i = [0:n - 1]) for (j = [0:sec - 1]) let (k = (j + 1) % sec)
-        [i * sec + j, i * sec + k, (i + 1) * sec + k, (i + 1) * sec + j]]
+      [
+        for (i = [0:n - 1]) for (j = [0:sec - 1]) let (k = (j + 1) % sec) [i * sec + j, i * sec + k, (i + 1) * sec + k, (i + 1) * sec + j],
+      ]
     ),
-    convexity = 8
+    convexity=8
   );
 }
 
 difference() {
-  cylinder(h = _h, d = tube_od + rib + 2 * wall);
-  translate([0, 0, -0.5]) cylinder(h = _h + 1, d = tube_od + clearance);
+  cylinder(h=_h, d=tube_od + rib + 2 * wall);
+  translate([0, 0, -0.5]) cylinder(h=_h + 1, d=tube_od + clearance);
   // Right-handed as generated; mirroring reverses the helix.
   mirror([handed == "right" ? 0 : 1, 0, 0])
     round_thread(tube_od / 2, (rib + clearance) / 2, pitch, turns + 2);

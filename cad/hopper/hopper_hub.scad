@@ -42,8 +42,7 @@ function hub_skirt_height(joint, skirt_diameter) =
 
 // What a plate has to clear: the outlet neck's PINS, not its neck.
 function hub_plate_hole(joint, clearance = 1.0) =
-  2 * (joint_interface_radius(joint) - joint_allowance(joint) / 2 + joint_pin_radius(joint))
-  + clearance;
+  2 * (joint_interface_radius(joint) - joint_allowance(joint) / 2 + joint_pin_radius(joint)) + clearance;
 
 function hub_height(joint) = 2 * joint_neck_height(joint);
 
@@ -76,15 +75,19 @@ module hopper_hub(
   );
   assert(
     _bolt_r - bolt_diameter / 2 > _hole_r,
-    str("hopper_hub: fixings at r ", _bolt_r,
+    str(
+      "hopper_hub: fixings at r ", _bolt_r,
       " would break into the plate's clearance hole at r ", _hole_r,
-      ". Move the bolt circle out or widen the skirt.")
+      ". Move the bolt circle out or widen the skirt."
+    )
   );
   assert(
     _seat_z >= 3,
-    str("hopper_hub: a ", bolt_circle, " bolt circle with a ", counterbore,
+    str(
+      "hopper_hub: a ", bolt_circle, " bolt circle with a ", counterbore,
       " counterbore leaves only ", _seat_z,
-      " mm under the seat. Move the bolt circle in, or narrow the counterbore.")
+      " mm under the seat. Move the bolt circle in, or narrow the counterbore."
+    )
   );
 
   difference() {
@@ -94,8 +97,8 @@ module hopper_hub(
       // sockets are added -- at the shell diameter it would fill in the lower
       // socket's own channels, since the neck's pins stand proud of its shell.
       difference() {
-        cylinder(h = _skirt_h, d1 = skirt_diameter, d2 = _socket_od);
-        translate([0, 0, -1]) cylinder(h = _skirt_h + 2, d = hub_plate_hole(joint));
+        cylinder(h=_skirt_h, d1=skirt_diameter, d2=_socket_od);
+        translate([0, 0, -1]) cylinder(h=_skirt_h + 2, d=hub_plate_hole(joint));
       }
 
       // Outlet socket, opening downward at the bed face.
@@ -109,8 +112,8 @@ module hopper_hub(
     // seat on what would otherwise be a 45 degree slope.
     for (i = [0:bolts - 1])
       rotate([0, 0, i * 360 / bolts + bolt_angle]) {
-        translate([_bolt_r, 0, -1]) cylinder(h = _skirt_h + 2, d = bolt_diameter);
-        translate([_bolt_r, 0, _seat_z]) cylinder(h = _skirt_h + 2, d = counterbore);
+        translate([_bolt_r, 0, -1]) cylinder(h=_skirt_h + 2, d=bolt_diameter);
+        translate([_bolt_r, 0, _seat_z]) cylinder(h=_skirt_h + 2, d=counterbore);
       }
   }
 }
@@ -118,4 +121,4 @@ module hopper_hub(
 // Standalone preview. A NAMED facet count, not an inline $fn, so drift.py can
 // render this and the driver's version of the same part at matched resolution.
 preview_facets = $preview ? 48 : 96;
-hopper_hub(joint = hopper_joint(), $fn = preview_facets);
+hopper_hub(joint=hopper_joint(), $fn=preview_facets);

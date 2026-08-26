@@ -114,7 +114,8 @@ function feedstock(index) =
   assert(
     is_num(index) && index >= 0 && index < len(feedstock_registry),
     str("feedstock: index must be 0..", len(feedstock_registry) - 1, ", got: ", index)
-  ) feedstock_registry[index];
+  )
+  feedstock_registry[index];
 
 // ===== Conveyor hose =====
 
@@ -164,4 +165,5 @@ function hose(index) =
   assert(
     is_num(index) && index >= 0 && index < len(hose_registry),
     str("hose: index must be 0..", len(hose_registry) - 1, ", got: ", index)
-  ) hose_registry[index];
+  )
+  hose_registry[index];

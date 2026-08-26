@@ -25,10 +25,10 @@ module rounded_square(x, y, radius = 0) {
   _radius = fitted_radius(x, y, radius);
 
   if (_radius <= 0) {
-    square([x, y], center = true);
+    square([x, y], center=true);
   } else {
     // offset out then in leaves the outer corners rounded and the size intact.
-    offset(r = _radius) offset(delta = -_radius) square([x, y], center = true);
+    offset(r=_radius) offset(delta=-_radius) square([x, y], center=true);
   }
 }
 
@@ -36,7 +36,7 @@ module rounded_square(x, y, radius = 0) {
 module rounded_box(x, y, z, radius = 0) {
   assert(z > 0, str("rounded_box: z must be > 0, got: ", z));
 
-  linear_extrude(height = z) rounded_square(x, y, radius);
+  linear_extrude(height=z) rounded_square(x, y, radius);
 }
 
 /**
@@ -58,15 +58,15 @@ module loft(z0, z1, slab0 = 1, slab1 = 1) {
   assert(slab0 > 0 && slab1 > 0, str("loft: slabs must be > 0, got: ", [slab0, slab1]));
 
   hull() {
-    translate([0, 0, z0 - slab0 / 2]) linear_extrude(height = slab0) children(0);
-    translate([0, 0, z1 - slab1 / 2]) linear_extrude(height = slab1) children(1);
+    translate([0, 0, z0 - slab0 / 2]) linear_extrude(height=slab0) children(0);
+    translate([0, 0, z1 - slab1 / 2]) linear_extrude(height=slab1) children(1);
   }
 }
 
 // Standalone preview. $fn is passed on the call, never assigned at top level --
 // see docs/design-notes.md. `use <>` does not run this; `include <>` would.
-rounded_box(40, 25, 6, 4, $fn = $preview ? 48 : 120);
-translate([60, 0, 0]) loft(0, 30, $fn = $preview ? 48 : 120) {
-  circle(d = 12);
-  rounded_square(40, 25, 6);
-}
+rounded_box(40, 25, 6, 4, $fn=$preview ? 48 : 120);
+translate([60, 0, 0]) loft(0, 30, $fn=$preview ? 48 : 120) {
+    circle(d=12);
+    rounded_square(40, 25, 6);
+  }

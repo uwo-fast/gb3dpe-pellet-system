@@ -36,14 +36,14 @@ why the wall angle is the assumption most worth testing.
 
 ## Parts
 
-| Part | Qty | Size (mm) | PETG | Orientation |
-| ---- | --- | --------- | ---- | ----------- |
-| body segment 0 | 1 | 173 × 173 × 205 | ~0.37 kg | **flip** — flange down |
-| body segment 1 | 1 | 202 × 202 × 205 | ~0.66 kg | as modelled |
-| cap | 1 | 209 × 209 × 19 | ~0.22 kg | **flip** — top face down |
-| hub | 1 | 95 × 95 × 36 | ~0.08 kg | as modelled |
-| plate (MK3S) | 1 | 130 × 130 × 42 | ~0.16 kg | **flip** — plate face down |
-| outlet | 1 | 59 × 61 × 83 | ~0.06 kg | as modelled |
+| Part           | Qty | Size (mm)       | PETG     | Orientation                |
+| -------------- | --- | --------------- | -------- | -------------------------- |
+| body segment 0 | 1   | 173 × 173 × 205 | ~0.37 kg | **flip** — flange down     |
+| body segment 1 | 1   | 202 × 202 × 205 | ~0.66 kg | as modelled                |
+| cap            | 1   | 209 × 209 × 19  | ~0.22 kg | **flip** — top face down   |
+| hub            | 1   | 95 × 95 × 36    | ~0.08 kg | as modelled                |
+| plate (MK3S)   | 1   | 130 × 130 × 42  | ~0.16 kg | **flip** — plate face down |
+| outlet         | 1   | 59 × 61 × 83    | ~0.06 kg | as modelled                |
 
 About 1.5 kg of PETG all told. Segment 1 at 202 × 202 leaves 4 mm either side
 on an MK3S bed, and the cap at 209 leaves half a millimetre — check first layer
@@ -78,13 +78,13 @@ infill.
 
 ## Hardware
 
-| Where | Fastener | Notes |
-| ----- | -------- | ----- |
-| hub → plate | 4 × M4 × 20 + nuts | straight through both; the nut seats in the hub's counterbore, which spotfaces the skirt's cone flat |
-| split joint | 6 × M4 × 20 + nuts | plus 2 × Ø4 dowels, which locate while the bolts clamp |
-| split joint seal | closed-cell foam tape, ~2 mm × 10 mm | one face only, inside the bolt circle |
-| MK3S clamp | 2 × M4 grub | pinch the frame; the saddle roof carries the weight |
-| panel variant | 4 × M4 + washers | **washers or a backing plate**, not bare heads on sheet |
+| Where            | Fastener                             | Notes                                                                                                |
+| ---------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| hub → plate      | 4 × M4 × 20 + nuts                   | straight through both; the nut seats in the hub's counterbore, which spotfaces the skirt's cone flat |
+| split joint      | 6 × M4 × 20 + nuts                   | plus 2 × Ø4 dowels, which locate while the bolts clamp                                               |
+| split joint seal | closed-cell foam tape, ~2 mm × 10 mm | one face only, inside the bolt circle                                                                |
+| MK3S clamp       | 2 × M4 grub                          | pinch the frame; the saddle roof carries the weight                                                  |
+| panel variant    | 4 × M4 + washers                     | **washers or a backing plate**, not bare heads on sheet                                              |
 
 ### The split joint seal
 

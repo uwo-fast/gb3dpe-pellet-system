@@ -17,7 +17,7 @@ disagreed with what XYZ calibration showed (PINDA landing ~20 mm right and
 
 The firmware places the nozzle, and the PINDA rides at a fixed offset from it.
 If we put the **nozzle** over a fixed bed mark, then the **PINDA** over the
-*same* mark, the difference in machine coordinates between those two positions
+_same_ mark, the difference in machine coordinates between those two positions
 **is** the physical offset — no homing accuracy required.
 
 ## What you need
@@ -35,7 +35,7 @@ If we put the **nozzle** over a fixed bed mark, then the **PINDA** over the
 2. Jog X/Y until the **nozzle tip** is dead-center over the mark. Lower Z close
    to confirm alignment by eye.
 3. Record the machine position — send `M114`, note **N = (Nx, Ny)**.
-4. Raise Z, then jog until the **PINDA center** is dead over the *same* mark.
+4. Raise Z, then jog until the **PINDA center** is dead over the _same_ mark.
 5. Record the machine position — `M114`, note **P = (Px, Py)**.
 
 ## Compute the true offset
@@ -46,24 +46,25 @@ Y_offset_true = Ny - Py
 ```
 
 Sign check (Prusa convention: X "-left +right", Y "-front +behind"):
-- PINDA is right of nozzle  -> Px < Nx -> X_offset_true positive. Good.
+
+- PINDA is right of nozzle -> Px < Nx -> X_offset_true positive. Good.
 - PINDA is behind the nozzle -> Py > Ny... use the formula as written and keep
   the sign; the config field uses the same convention.
 
 ## Interpret
 
-| Result | Meaning | Next step |
-|--------|---------|-----------|
-| ~40 / ~-1.4 | Config offset is wrong (graph paper under-measured X ~20 mm) | Set `X/Y_PROBE_OFFSET_FROM_EXTRUDER` to the measured values; then D10 + mesh over the reachable (right-shifted) area |
-| ~20 / ~8.6 (matches config) | Offset is fine; **X home is shifting ~20 mm** | Investigate X StallGuard homing (toolhead mass) — offset is not the problem |
-| something else | Measure again / re-check the mark alignment | Report the numbers |
+| Result                      | Meaning                                                      | Next step                                                                                                            |
+| --------------------------- | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| ~40 / ~-1.4                 | Config offset is wrong (graph paper under-measured X ~20 mm) | Set `X/Y_PROBE_OFFSET_FROM_EXTRUDER` to the measured values; then D10 + mesh over the reachable (right-shifted) area |
+| ~20 / ~8.6 (matches config) | Offset is fine; **X home is shifting ~20 mm**                | Investigate X StallGuard homing (toolhead mass) — offset is not the problem                                          |
+| something else              | Measure again / re-check the mark alignment                  | Report the numbers                                                                                                   |
 
 ## Record here
 
-- N (nozzle over mark):  Nx = ______  Ny = ______
-- P (PINDA over mark):   Px = ______  Py = ______
-- X_offset_true = Nx - Px = ______
-- Y_offset_true = Ny - Py = ______
+- N (nozzle over mark): Nx = `______` Ny = `______`
+- P (PINDA over mark): Px = `______` Py = `______`
+- X_offset_true = Nx - Px = `______`
+- Y_offset_true = Ny - Py = `______`
 
 ## Reminders
 

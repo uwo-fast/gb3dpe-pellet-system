@@ -22,16 +22,20 @@ saddle_roof = 6;
 // Datum is the plate's top face, matching the driver.
 outlet_drop = joint_neck_height(joint) - outlet_height(joint, conveyor, 70, 24);
 
-echo(str(
-  "hopper axis sits ", frame_offset, " mm from the frame plane. Two minimums: ",
-  mk3s_outlet_offset(joint, frame_thickness), " so the outlet clears the frame, and ",
-  mk3s_saddle_offset(joint, frame_thickness), " so the saddle clears the plate's hole"
-));
+echo(
+  str(
+    "hopper axis sits ", frame_offset, " mm from the frame plane. Two minimums: ",
+    mk3s_outlet_offset(joint, frame_thickness), " so the outlet clears the frame, and ",
+    mk3s_saddle_offset(joint, frame_thickness), " so the saddle clears the plate's hole"
+  )
+);
 
 color(colour_plate())
   translate([0, 0, -plate_thickness])
-    hopper_plate_mk3s(joint=joint, thickness=plate_thickness,
-                      frame_thickness=frame_thickness, offset=frame_offset);
+    hopper_plate_mk3s(
+      joint=joint, thickness=plate_thickness,
+      frame_thickness=frame_thickness, offset=frame_offset
+    );
 
 color(colour_hub()) hopper_hub(joint);
 color(colour_outlet()) translate([0, 0, outlet_drop]) hopper_outlet(joint, conveyor);

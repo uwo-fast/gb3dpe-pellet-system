@@ -61,7 +61,7 @@ Nothing here can be settled at the keyboard.
 ## Blocked on the vendor
 
 - [ ] **Get the CURRENT vendor hopper CAD.** The installed part has a square
-      pellet opening *and* a circular port the spiral hose threads into. The
+      pellet opening _and_ a circular port the spiral hose threads into. The
       hopper in our July scrape has neither — zero circular features in its STEP
       — so the vendor has revised it. If the current one already carries a hose
       port, most of the downstream adapter below is already solved. The vendor

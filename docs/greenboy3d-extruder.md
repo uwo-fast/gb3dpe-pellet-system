@@ -28,21 +28,21 @@ it uses no pneumatic feed — pellets fall into a small hopper on the head.
 
 From the [shop product page](https://shop.greenboy3d.de/products/greenboy3d-pellet-extruder-v1):
 
-| Parameter            | Value                                    |
-| -------------------- | ---------------------------------------- |
-| System voltage       | 24 V                                     |
-| Heat cartridge       | 70 W, 24 V                               |
-| Thermistor           | 1x, type not specified                   |
-| Fans                 | 2x                                       |
-| Drive                | planetary-geared stepper, ratio not published |
-| Max hotend temp      | 330 °C stock; ~300 °C with PLA-printed parts; 420 °C upgraded |
-| Max ambient          | 80 °C                                    |
-| Nozzle               | M6 thread, 0.4–2.5 mm                    |
-| Flow rate            | 125–200 g/h at 1 mm nozzle               |
-| Pellet size          | 0.3–5 mm                                 |
-| Retraction           | mechanical (reversing screw), no firmware values |
-| Net weight           | ~700 g                                   |
-| Price                | €389                                     |
+| Parameter       | Value                                                         |
+| --------------- | ------------------------------------------------------------- |
+| System voltage  | 24 V                                                          |
+| Heat cartridge  | 70 W, 24 V                                                    |
+| Thermistor      | 1x, type not specified                                        |
+| Fans            | 2x                                                            |
+| Drive           | planetary-geared stepper, ratio not published                 |
+| Max hotend temp | 330 °C stock; ~300 °C with PLA-printed parts; 420 °C upgraded |
+| Max ambient     | 80 °C                                                         |
+| Nozzle          | M6 thread, 0.4–2.5 mm                                         |
+| Flow rate       | 125–200 g/h at 1 mm nozzle                                    |
+| Pellet size     | 0.3–5 mm                                                      |
+| Retraction      | mechanical (reversing screw), no firmware values              |
+| Net weight      | ~700 g                                                        |
+| Price           | €389                                                          |
 
 Kit contents: barrel, screw (improved version), heating block, coupling,
 fasteners, planetary geared stepper, 70 W/24 V cartridge, thermistor, 2 fans,
@@ -64,15 +64,15 @@ Bounding boxes measured from the vendor STL files. These are not redistributed
 here — they come with the kit and their licence is unstated. Download from the
 [vendor wiki](https://wiki.greenboy3d.de/) and keep them alongside your kit.
 
-| Part                          | Bounding box (mm)        |
-| ----------------------------- | ------------------------ |
-| Pellet-Extruder-Hopper        | 43.11 × 40.18 × 45.50    |
-| Pellet-Extruder-Hopper-Cap    | 43.22 × 54.30 × 6.99     |
-| Pellet-Extruder-Fan-Duct      | 104.38 × 44.16 × 68.42   |
-| Prusa-MK3S+Adapter            | 78.37 × 60.45 × 85.23    |
-| Proximity-Sensor-Adapter 8/12 | 31.00 × 24.00 × 35.00    |
-| Internal-Sliding-Pit          | 37.40 × 19.77 × 11.47    |
-| External-Sliding-Pit          | 46.59 × 50.75 × 12.50    |
+| Part                          | Bounding box (mm)      |
+| ----------------------------- | ---------------------- |
+| Pellet-Extruder-Hopper        | 43.11 × 40.18 × 45.50  |
+| Pellet-Extruder-Hopper-Cap    | 43.22 × 54.30 × 6.99   |
+| Pellet-Extruder-Fan-Duct      | 104.38 × 44.16 × 68.42 |
+| Prusa-MK3S+Adapter            | 78.37 × 60.45 × 85.23  |
+| Proximity-Sensor-Adapter 8/12 | 31.00 × 24.00 × 35.00  |
+| Internal-Sliding-Pit          | 37.40 × 19.77 × 11.47  |
+| External-Sliding-Pit          | 46.59 × 50.75 × 12.50  |
 
 Two findings from those measurements drive this project:
 

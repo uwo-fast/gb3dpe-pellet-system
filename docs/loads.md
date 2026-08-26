@@ -7,14 +7,14 @@ Figures below are the shipping configuration: 202 × 202, two segments, regrind
 at 70°, 3 mm minimum wall, mounted on the MK3S frame, at the **measured**
 regrind density of 0.489 kg/L — see [`feedstock.md`](feedstock.md).
 
-| Case | Stress | Safety factor |
-| ---- | ------ | ------------- |
-| Split flange bearing | 0.003 MPa | >1000 |
-| **Bin wall bending** | **6.27 MPa** | **4.8 — governs** |
-| Clamp jaw bending, 4.24 kg | 2.99 MPa | 10.0 |
-| Clamp jaw bending, 6.36 kg | 4.49 MPa | 6.7 |
-| Plate cantilever, 4.24 kg | 2.51 MPa | 12.0 |
-| Hub annular seat, 4 kg | 0.05 MPa | >500 |
+| Case                       | Stress       | Safety factor     |
+| -------------------------- | ------------ | ----------------- |
+| Split flange bearing       | 0.003 MPa    | >1000             |
+| **Bin wall bending**       | **6.27 MPa** | **4.8 — governs** |
+| Clamp jaw bending, 4.24 kg | 2.99 MPa     | 10.0              |
+| Clamp jaw bending, 6.36 kg | 4.49 MPa     | 6.7               |
+| Plate cantilever, 4.24 kg  | 2.51 MPa     | 12.0              |
+| Hub annular seat, 4 kg     | 0.05 MPa     | >500              |
 
 Against **30 MPa**, not PETG's ~50 MPa bulk yield. These parts are printed and
 loaded across layers, so the bulk figure flatters them. That 30 is an

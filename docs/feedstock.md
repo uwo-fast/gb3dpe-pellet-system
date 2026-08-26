@@ -7,13 +7,13 @@ recording rather than looked up.
 
 ## Regrind — measured
 
-| | |
-| --- | --- |
-| Material | Polymaker PolyLite PLA, black |
-| Form | shredded in-house, sieved to 3 mm |
-| Method | gently settled in a beaker to the 700 mL line |
-| Mass | 342 g |
-| **Bulk density** | **0.489 kg/L** |
+|                  |                                               |
+| ---------------- | --------------------------------------------- |
+| Material         | Polymaker PolyLite PLA, black                 |
+| Form             | shredded in-house, sieved to 3 mm             |
+| Method           | gently settled in a beaker to the 700 mL line |
+| Mass             | 342 g                                         |
+| **Bulk density** | **0.489 kg/L**                                |
 
 That is 40% denser than the 0.35 kg/L previously assumed from general practice,
 and it moves two numbers that matter:

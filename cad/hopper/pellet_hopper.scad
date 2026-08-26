@@ -210,7 +210,7 @@ require_printable = true;
 preview_facets = 48; // [12:4:96]
 render_facets = 120; // [24:8:240]
 
-module dummy() {} // Customizer fence: nothing below here reaches the panel.
+module dummy(){} // Customizer fence: nothing below here reaches the panel.
 
 $fn = $preview ? preview_facets : render_facets;
 
@@ -235,15 +235,16 @@ _footprint =
 _top_x = _footprint[0];
 _top_y = _footprint[1];
 
-
 _feedstock = feedstock(feedstock_type);
 _min_angle = feedstock_min_funnel_angle(_feedstock);
 
 assert(
   funnel_angle >= _min_angle,
-  str("pellet_hopper: funnel_angle ", funnel_angle, " is below the minimum ",
+  str(
+    "pellet_hopper: funnel_angle ", funnel_angle, " is below the minimum ",
     _min_angle, " degrees for ", feedstock_name(_feedstock),
-    ". Raise the angle or pick a different feedstock.")
+    ". Raise the angle or pick a different feedstock."
+  )
 );
 
 // The angle is the input; the drop is solved from it.
@@ -257,10 +258,12 @@ _bin_height = segments * segment_height - lock_height - neck_transition_height -
 
 assert(
   _bin_height > 0,
-  str("pellet_hopper: a ", funnel_angle, " degree funnel on a ", _top_x, "x",
+  str(
+    "pellet_hopper: a ", funnel_angle, " degree funnel on a ", _top_x, "x",
     _top_y, " footprint needs ", _funnel_height,
     " mm of drop, leaving no room for storage in ", segments, " x ",
-    segment_height, " mm. Use more segments or a smaller footprint.")
+    segment_height, " mm. Use more segments or a smaller footprint."
+  )
 );
 
 // One joint spec, shared by both halves so they cannot drift apart.
@@ -283,17 +286,23 @@ _neck_od = joint_neck_od(_joint);
 
 assert(
   (_neck_od - lock_bore_diameter) / 2 >= min_wall,
-  str("pellet_hopper: a ", lock_bore_diameter, " mm bore leaves only ",
+  str(
+    "pellet_hopper: a ", lock_bore_diameter, " mm bore leaves only ",
     (_neck_od - lock_bore_diameter) / 2, " mm of neck wall, under min_wall ",
-    min_wall, ". Raise lock_interface_radius or lower the bore.")
+    min_wall, ". Raise lock_interface_radius or lower the bore."
+  )
 );
 
 // Handedness is overridden here rather than in the registry, so the registry
 // keeps describing the part as bought and this stays a one-switch change.
 _hose_row = hose(hose_type);
 _hose = [
-  hose_name(_hose_row), hose_bore(_hose_row), hose_tube_od(_hose_row),
-  hose_helix(_hose_row), hose_pitch(_hose_row), hose_handedness,
+  hose_name(_hose_row),
+  hose_bore(_hose_row),
+  hose_tube_od(_hose_row),
+  hose_helix(_hose_row),
+  hose_pitch(_hose_row),
+  hose_handedness,
 ];
 
 // Requirement -> geometry. The converging outlet is where arches form, so it
@@ -303,22 +312,26 @@ _required_parallel = flow_min_opening(design_particle_size, feedstock_parallel_r
 
 assert(
   _bore >= _required_outlet,
-  str("pellet_hopper: outlet ", _bore, " mm is too small for ",
+  str(
+    "pellet_hopper: outlet ", _bore, " mm is too small for ",
     design_particle_size, " mm ", feedstock_name(_feedstock),
     ". Needs at least ", _required_outlet, " mm (",
     feedstock_converging_ratio(_feedstock),
-    "x particle at a converging outlet).")
+    "x particle at a converging outlet)."
+  )
 );
 
 // Geometry -> capability. The narrowest section governs the whole path.
-_path_max_particle = flow_path_max_particle([
-  [throat - 2 * _inset, feedstock_converging_ratio(_feedstock)],
-  [_bore, feedstock_converging_ratio(_feedstock)],
-  [hose_bore(_hose), feedstock_parallel_ratio(_feedstock)],
-  // The toolhead's own bore. Not ours to size, and it is the binding section,
-  // so leaving it out would report a system limit we do not actually have.
-  [GB3DPE_FEED_BORE, feedstock_parallel_ratio(_feedstock)],
-]);
+_path_max_particle = flow_path_max_particle(
+  [
+    [throat - 2 * _inset, feedstock_converging_ratio(_feedstock)],
+    [_bore, feedstock_converging_ratio(_feedstock)],
+    [hose_bore(_hose), feedstock_parallel_ratio(_feedstock)],
+    // The toolhead's own bore. Not ours to size, and it is the binding section,
+    // so leaving it out would report a system limit we do not actually have.
+    [GB3DPE_FEED_BORE, feedstock_parallel_ratio(_feedstock)],
+  ]
+);
 
 // Overall body height, and how far the feedthrough hangs below the flange.
 _body_height = lock_height + neck_transition_height + _funnel_height + _bin_height;
@@ -339,23 +352,26 @@ _capacity_kg = hopper_capacity_kg(_volume_l, feedstock_bulk_density(_feedstock))
 // The body's widest point is not the bin: it is the flange at a split, which
 // stands proud of whatever section the cut lands on. Missing this let a
 // configuration 16 mm over the envelope report as fitting.
-_cut_sections = segments < 2 ? [] : [
-  for (i = [1:1:segments - 1])
-    funnel_body_section(
+_cut_sections =
+  segments < 2 ? []
+  : [
+    for (i = [1:1:segments - 1]) funnel_body_section(
       throat, _top_x, _top_y, throat_radius, funnel_radius,
       lock_height + neck_transition_height, _funnel_height,
       split_z(_body_height, segments, i)
-    )
-];
+    ),
+  ];
 _flange_x = segments < 2 ? 0 : max([for (c = _cut_sections) c[0] + 2 * flange_width]);
 _flange_y = segments < 2 ? 0 : max([for (c = _cut_sections) c[1] + 2 * flange_width]);
 
 // Largest footprint and height of any single printed part.
 // The MK3S plate sizes itself, so ask it rather than assume plate_size.
-_plate_actual = plate_variant == "mk3s"
-  ? mk3s_plate_size(_joint, frame_offset, frame_jaw, frame_fillet,
-                    frame_thickness, frame_clearance, hub_skirt_diameter,
-                    frame_plate_margin)
+_plate_actual =
+  plate_variant == "mk3s" ? mk3s_plate_size(
+      _joint, frame_offset, frame_jaw, frame_fillet,
+      frame_thickness, frame_clearance, hub_skirt_diameter,
+      frame_plate_margin
+    )
   : plate_size;
 
 _part_x = max([_cap_outer[0], _plate_actual[0], hub_skirt_diameter, _top_x, _flange_x]);
@@ -367,36 +383,44 @@ _part_z = max(
 );
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
-echo(str(
-  "hopper ", _top_x, "x", _top_y, " / ", feedstock_name(_feedstock),
-  ": funnel corner ", funnel_angle,
-  " deg, faces ", funnel_face_angle(_top_x, throat, _funnel_height),
-  " / ", funnel_face_angle(_top_y, throat, _funnel_height),
-  " deg; funnel rise ", _funnel_height,
-  "; body height ", _body_height,
-  "; wall inset ", _inset,
-  "; volume ", _volume_l, " L = ", _capacity_kg, " kg"
-));
+echo(
+  str(
+    "hopper ", _top_x, "x", _top_y, " / ", feedstock_name(_feedstock),
+    ": funnel corner ", funnel_angle,
+    " deg, faces ", funnel_face_angle(_top_x, throat, _funnel_height),
+    " / ", funnel_face_angle(_top_y, throat, _funnel_height),
+    " deg; funnel rise ", _funnel_height,
+    "; body height ", _body_height,
+    "; wall inset ", _inset,
+    "; volume ", _volume_l, " L = ", _capacity_kg, " kg"
+  )
+);
 
-echo(str(
-  "spec: outlet ", _bore, " mm (needs ", _required_outlet, " for ",
-  design_particle_size, " mm ", feedstock_name(_feedstock),
-  "); hose bore ", hose_bore(_hose),
-  " mm (needs ", _required_parallel,
-  "); whole path passes up to ", _path_max_particle, " mm"
-));
+echo(
+  str(
+    "spec: outlet ", _bore, " mm (needs ", _required_outlet, " for ",
+    design_particle_size, " mm ", feedstock_name(_feedstock),
+    "); hose bore ", hose_bore(_hose),
+    " mm (needs ", _required_parallel,
+    "); whole path passes up to ", _path_max_particle, " mm"
+  )
+);
 
-echo(str(
-  "build fit: largest part ", [_part_x, _part_y, _part_z],
-  " vs envelope ", build_volume,
-  _fits ? " -- fits" : " -- DOES NOT FIT"
-));
+echo(
+  str(
+    "build fit: largest part ", [_part_x, _part_y, _part_z],
+    " vs envelope ", build_volume,
+    _fits ? " -- fits" : " -- DOES NOT FIT"
+  )
+);
 
 assert(
   !require_printable || _fits,
-  str("pellet_hopper: largest part ", [_part_x, _part_y, _part_z],
+  str(
+    "pellet_hopper: largest part ", [_part_x, _part_y, _part_z],
     " exceeds build_volume ", build_volume,
-    ". Reduce the footprint, lower funnel_angle, or split the body.")
+    ". Reduce the footprint, lower funnel_angle, or split the body."
+  )
 );
 
 module _body(which = undef) {
@@ -423,7 +447,7 @@ module _body(which = undef) {
 
 // Every segment, each already at its true height and its own colour.
 module _body_all() {
-  for (i = [0:segments - 1]) color(colour_body_segment(i)) _body(which = i);
+  for (i = [0:segments - 1]) color(colour_body_segment(i)) _body(which=i);
 }
 
 module _hub() {
@@ -441,7 +465,7 @@ module _plate() {
   // Every variant carries the universal plate's own parameters, because every
   // variant IS the universal plate plus machine features. Only the extras
   // differ, so they are the only thing stated per branch.
-  if (plate_variant == "mk3s")
+  if (plate_variant == "mk3s") {
     // No size passed: this variant derives its own, so there is nothing here
     // that can disagree with the saddle it has to carry.
     hopper_plate_mk3s(
@@ -452,6 +476,7 @@ module _plate() {
       offset=frame_offset, grip_depth=frame_grip_depth, jaw=frame_jaw,
       fillet=frame_fillet
     );
+  }
   else if (plate_variant == "panel")
     hopper_plate_panel(
       joint=_joint, size=plate_size, thickness=plate_thickness,

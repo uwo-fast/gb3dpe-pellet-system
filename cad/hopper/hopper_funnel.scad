@@ -25,7 +25,7 @@ function funnel_height_for_angle(top_x, top_y, throat, angle) =
 
 // Angle of one flat face, given the full span across it. Always steeper than
 // the corner, and the two faces differ whenever the footprint is not square.
-function funnel_face_angle(span, throat, height) = atan(height / ((span - throat) / 2));
+function funnel_face_angle(span, throat, height) = atan(height / ( (span - throat) / 2));
 
 /**
  * Horizontal inset that yields `min_wall` of material measured PERPENDICULAR to
@@ -56,29 +56,33 @@ function _lerp(a, b, t) = a + (b - a) * t;
  * exactly, because both halves of the joint are cut from it.
  */
 function funnel_body_section(
-  throat, top_x, top_y, throat_radius, funnel_radius, throat_z, funnel_height, z
+  throat,
+  top_x,
+  top_y,
+  throat_radius,
+  funnel_radius,
+  throat_z,
+  funnel_height,
+  z
 ) =
   // The taper's sloped face starts half a slab BELOW the nominal throat
   // station, because loft() centres each slab on its z. Correcting here rather
   // than at the call sites keeps it in the one place that knows the shape.
-  let (base = throat_z - 0.5, t = min(1, (z - base) / funnel_height))
-    [
+  let (base = throat_z - 0.5, t = min(1, (z - base) / funnel_height)) [
       _lerp(throat, top_x, t),
       _lerp(throat, top_y, t),
       _lerp(throat_radius, funnel_radius, t),
-    ];
+  ];
 
 // Volume of the tapered section, as a prismatoid between the two rectangles.
 // Corner rounding is ignored, so this reads slightly high.
 function funnel_volume_l(inner_x, inner_y, inner_throat, height) =
-  let (a1 = inner_throat * inner_throat, a2 = inner_x * inner_y)
-    height / 3 * (a1 + a2 + sqrt(a1 * a2)) / 1e6;
+  let (a1 = inner_throat * inner_throat, a2 = inner_x * inner_y) height / 3 * (a1 + a2 + sqrt(a1 * a2)) / 1e6;
 
 function bin_volume_l(inner_x, inner_y, bin_height) = inner_x * inner_y * bin_height / 1e6;
 
 // Usable volume, ignoring the neck and its transition.
 function hopper_volume_l(inner_x, inner_y, inner_throat, bin_height, funnel_height) =
-  bin_volume_l(inner_x, inner_y, bin_height) +
-  funnel_volume_l(inner_x, inner_y, inner_throat, funnel_height);
+  bin_volume_l(inner_x, inner_y, bin_height) + funnel_volume_l(inner_x, inner_y, inner_throat, funnel_height);
 
 function hopper_capacity_kg(volume_l, bulk_density) = volume_l * bulk_density;

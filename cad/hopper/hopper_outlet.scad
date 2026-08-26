@@ -40,18 +40,17 @@ module hose_thread(hose, depth, clearance = 0.4, seg = 64, sec = 32) {
 
   mirror([hose_handed(hose) == "right" ? 0 : 1, 0, 0])
     polyhedron(
-      points = [
-        for (i = [0:_n]) let (a = 360 * i / seg, z = i / seg * _lead)
-          for (j = [0:sec - 1]) let (t = 360 * j / sec)
-            [(_r + _rs * cos(t)) * cos(a), (_r + _rs * cos(t)) * sin(a), z + _rs * sin(t)]
+      points=[
+        for (i = [0:_n]) let (a = 360 * i / seg, z = i / seg * _lead) for (j = [0:sec - 1]) let (t = 360 * j / sec) [(_r + _rs * cos(t)) * cos(a), (_r + _rs * cos(t)) * sin(a), z + _rs * sin(t)],
       ],
-      faces = concat(
+      faces=concat(
         [[for (j = [sec - 1:-1:0]) j]],
         [[for (j = [0:sec - 1]) _n * sec + j]],
-        [for (i = [0:_n - 1]) for (j = [0:sec - 1]) let (k = (j + 1) % sec)
-          [i * sec + j, i * sec + k, (i + 1) * sec + k, (i + 1) * sec + j]]
+        [
+          for (i = [0:_n - 1]) for (j = [0:sec - 1]) let (k = (j + 1) % sec) [i * sec + j, i * sec + k, (i + 1) * sec + k, (i + 1) * sec + j],
+        ]
       ),
-      convexity = 8
+      convexity=8
     );
 }
 
@@ -93,50 +92,54 @@ module hopper_outlet(
 
   assert(
     socket_depth >= 2 * hose_pitch(hose),
-    str("hopper_outlet: socket_depth (", socket_depth,
+    str(
+      "hopper_outlet: socket_depth (", socket_depth,
       ") gives under two turns at a ", hose_pitch(hose),
-      " mm pitch; the hose would strip out")
+      " mm pitch; the hose would strip out"
+    )
   );
   assert(
     _socket_od < joint_neck_od(joint),
-    str("hopper_outlet: hose socket (", _socket_od,
+    str(
+      "hopper_outlet: hose socket (", _socket_od,
       ") is wider than the neck (", joint_neck_od(joint),
-      "), so the outer wall would overhang outward instead of in")
+      "), so the outer wall would overhang outward instead of in"
+    )
   );
 
   difference() {
     union() {
-      cylinder(h = socket_depth, d = _socket_od);
+      cylinder(h=socket_depth, d=_socket_od);
       // Flares out to meet the neck. Gentle enough to print unsupported.
       translate([0, 0, socket_depth])
-        cylinder(h = _cone_h, d1 = _socket_od, d2 = joint_neck_od(joint));
+        cylinder(h=_cone_h, d1=_socket_od, d2=joint_neck_od(joint));
 
       // Collar straddling the cone/neck junction. The cone ends exactly where
       // the neck begins, and two solids meeting on a coincident plane are not
       // reliably one volume -- without this the outlet is two disconnected
       // pieces that render clean and slice as two objects.
       translate([0, 0, _neck_z - _WELD])
-        cylinder(h = 2 * _WELD, d = joint_neck_od(joint));
+        cylinder(h=2 * _WELD, d=joint_neck_od(joint));
 
       translate([0, 0, _neck_z]) joint_neck_inverted(joint);
     }
 
     // Hose bore and its thread, opening downward at the bed face.
     translate([0, 0, -1])
-      cylinder(h = socket_depth + 1, d = hose_tube_od(hose) + bore_clearance);
+      cylinder(h=socket_depth + 1, d=hose_tube_od(hose) + bore_clearance);
     translate([0, 0, -0.5]) hose_thread(hose, socket_depth + 0.5, thread_clearance);
 
     // The converging pellet path: hose bore up to the coupling's full bore.
     translate([0, 0, socket_depth])
-      cylinder(h = _cone_h, d1 = hose_bore(hose), d2 = joint_bore_diameter(joint));
+      cylinder(h=_cone_h, d1=hose_bore(hose), d2=joint_bore_diameter(joint));
 
     // Straight through the neck.
     translate([0, 0, _neck_z - 0.5])
-      cylinder(h = joint_neck_height(joint) + 1, d = joint_bore_diameter(joint));
+      cylinder(h=joint_neck_height(joint) + 1, d=joint_bore_diameter(joint));
   }
 }
 
 // Standalone preview. A NAMED facet count, not an inline $fn, so drift.py can
 // render this and the driver's version of the same part at matched resolution.
 preview_facets = $preview ? 48 : 96;
-hopper_outlet(joint = hopper_joint(), hose = hose(0), $fn = preview_facets);
+hopper_outlet(joint=hopper_joint(), hose=hose(0), $fn=preview_facets);

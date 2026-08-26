@@ -22,7 +22,7 @@ Hopper literature usually quotes the angle from **vertical**; ours is from
 ## Feedstock minimum angles: 60° virgin, 70° regrind
 
 Design targets from general bulk-solids practice, **not measurements**. The
-critical mass-flow angle depends on the material *and* on the wall friction of
+critical mass-flow angle depends on the material _and_ on the wall friction of
 the surface it slides on [J], so a printed wall is not interchangeable with the
 steel these figures assume. Regrind is set steeper because irregular flake nests
 and bridges where free-flowing pellets do not [W].
@@ -97,7 +97,7 @@ Four decisions worth recording:
 **The locked position is `+sweep_angle`, not a common origin.** The library
 README says instantiating both halves at a common origin gives the locked
 position. Measured by intersecting the two halves, it does not: a common origin
-is the *entry* position, and for `turn_direction = "CCW"` locked is
+is the _entry_ position, and for `turn_direction = "CCW"` locked is
 `+sweep_angle`. At +25° the halves seat with no interference and stay captured
 with 99.6 mm³ of overlap when lifted by `entry_depth`; at 0° they lift straight
 out. `joint_neck()` is therefore authored pre-rotated, so the body's nominal
@@ -147,7 +147,7 @@ again.
 **Anti-rotation is not a screw.** A radial self-tapping M4 into a pocket in the
 neck was tried and removed. Two sockets are not the same case, and treating them
 as a symmetric pair was the mistake: disengaging a bayonet means rotating back
-through `sweep_angle` and *then* travelling `entry_depth` axially, and gravity
+through `sweep_angle` and _then_ travelling `entry_depth` axially, and gravity
 sits on opposite sides of that travel at each end. At the **upper** socket the
 body must be lifted 12 mm against its own loaded 4.24 kg, so rotation alone
 releases nothing and the screw guarded a failure gravity already prevents. At
@@ -199,7 +199,7 @@ to be subtracted and the `sin θ` compensation still has to be written by hand.
 Measured on this geometry the plain-OpenSCAD version rendered slightly faster.
 Not worth a second dependency and ~1850 global symbols for one `tan()`.
 
-Revisit if rounded *horizontal* edges (a bin rim, a funnel-to-bin fillet) or
+Revisit if rounded _horizontal_ edges (a bin rim, a funnel-to-bin fillet) or
 threads are ever needed; those are genuinely painful to hand-roll.
 
 ## OpenSCAD behaviour this repo depends on
@@ -246,9 +246,9 @@ All established by compiling on 2021.01, not from documentation.
 
 ## References
 
-- [C] Conair — *What is Bulk Density?* <https://www.conairgroup.com/resources/resource/what-is-bulk-density/>
-- [J] Jenike & Johanson — *Designing bulk material storage and feeding systems* <https://jenike.com/designing-end-to-end-bulk-material-storage-and-feeding-systems-hoppers-silos-mass-flow-feeders/>
-- [W] Wijay Systems — *Plastic pellet conveying systems* <https://wijaysystems.com/plastic-pellet-conveying-systems/>
-- [P] Prusa Research — *Original Prusa i3 MK3S+* <https://www.prusa3d.com/product/original-prusa-i3-mk3s-3d-printer-3/>
+- [C] Conair — _What is Bulk Density?_ <https://www.conairgroup.com/resources/resource/what-is-bulk-density/>
+- [J] Jenike & Johanson — _Designing bulk material storage and feeding systems_ <https://jenike.com/designing-end-to-end-bulk-material-storage-and-feeding-systems-hoppers-silos-mass-flow-feeders/>
+- [W] Wijay Systems — _Plastic pellet conveying systems_ <https://wijaysystems.com/plastic-pellet-conveying-systems/>
+- [P] Prusa Research — _Original Prusa i3 MK3S+_ <https://www.prusa3d.com/product/original-prusa-i3-mk3s-3d-printer-3/>
 - [B] `bayonet-lock-scad` <https://github.com/CameronBrooks11/bayonet-lock-scad>
 - GreenBoy3D sources are listed in [`greenboy3d-extruder.md`](greenboy3d-extruder.md).

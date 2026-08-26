@@ -8,18 +8,18 @@ rendered off it, not estimated.
 
 Status, as of the current tree:
 
-| Finding | Status |
-| ------- | ------ |
-| 1. Funnel walls too shallow | **fixed** — angle is an input, measured on the corner |
-| 2. Two presets cannot be printed | **fixed** — body splits into bolted segments |
-| 3. Interface dimensions unverified | **partly** — hose measured, feed bore taken from vendor CAD; enclosure panel and its bolt pattern still open |
-| 4. Feed path missing its downstream half | **open** — hose connection built, toolhead end not |
-| Bayonet duplicates a library | **fixed** — built on `bayonet-lock-scad` |
-| Four identical locked positions | **fixed** — keyed |
-| Wall thinner than specified | **fixed** — `min_wall` is perpendicular, compensated on the corner |
-| Structure unverified | **fixed** — [`loads.md`](loads.md) |
-| No operational features | **open** — no shutoff, sight window, level sensing or cap seal |
-| Code structure | **fixed** — parameterised modules, one concern per file |
+| Finding                                  | Status                                                                                                       |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 1. Funnel walls too shallow              | **fixed** — angle is an input, measured on the corner                                                        |
+| 2. Two presets cannot be printed         | **fixed** — body splits into bolted segments                                                                 |
+| 3. Interface dimensions unverified       | **partly** — hose measured, feed bore taken from vendor CAD; enclosure panel and its bolt pattern still open |
+| 4. Feed path missing its downstream half | **open** — hose connection built, toolhead end not                                                           |
+| Bayonet duplicates a library             | **fixed** — built on `bayonet-lock-scad`                                                                     |
+| Four identical locked positions          | **fixed** — keyed                                                                                            |
+| Wall thinner than specified              | **fixed** — `min_wall` is perpendicular, compensated on the corner                                           |
+| Structure unverified                     | **fixed** — [`loads.md`](loads.md)                                                                           |
+| No operational features                  | **open** — no shutoff, sight window, level sensing or cap seal                                               |
+| Code structure                           | **fixed** — parameterised modules, one concern per file                                                      |
 
 Live work is tracked in [`TODO.md`](../TODO.md).
 
@@ -94,11 +94,11 @@ it, so the geometry cannot silently violate the target.
 Bounding boxes measured from rendered STLs, against the MK3S envelope of
 250 × 210 × 210 mm:
 
-| Part        | 2.5 kg          | 5 kg            | 10 kg           |
-| ----------- | --------------- | --------------- | --------------- |
-| body        | 220 × 180 × 183 | 300 × 240 × 213 | 390 × 300 × 238 |
-| cap         | 227 × 187 × 19  | 307 × 247 × 19  | 397 × 307 × 19  |
-| mount       | 90 × 90 × 85    | 90 × 90 × 85    | 90 × 90 × 85    |
+| Part  | 2.5 kg          | 5 kg            | 10 kg           |
+| ----- | --------------- | --------------- | --------------- |
+| body  | 220 × 180 × 183 | 300 × 240 × 213 | 390 × 300 × 238 |
+| cap   | 227 × 187 × 19  | 307 × 247 × 19  | 397 × 307 × 19  |
+| mount | 90 × 90 × 85    | 90 × 90 × 85    | 90 × 90 × 85    |
 
 Only the 2.5 kg body and cap fit, and the body is a multi-day print at that.
 The 5 kg and 10 kg presets are unbuildable on the printer they are meant to
@@ -157,7 +157,7 @@ nothing to keep pellets dry.
 
 ### The funnel wall is thinner than the `wall` parameter says
 
-`wall = 3` is applied as a *horizontal* offset: the inner funnel runs from
+`wall = 3` is applied as a _horizontal_ offset: the inner funnel runs from
 `throat - 2*wall` to `top_x - 2*wall` over the same Z span as the outer. On a
 sloped face the thickness measured perpendicular to the surface is
 `wall * sin(theta)`, so the funnel is nowhere near 3 mm:

@@ -75,42 +75,59 @@ function hopper_joint(
     channel_half = bayonet_channel_half_angle(interface_radius, pin_radius, allowance),
     angles = bayonet_keyed_pin_angles(pins, key_angle),
     max_bore = 2 * (interface_radius - allowance / 2 - pin_radius)
-  )
-  assert(
+  ) assert(
     shell_thickness < interface_radius,
-    str("hopper_joint: shell_thickness (", shell_thickness,
+    str(
+      "hopper_joint: shell_thickness (", shell_thickness,
       ") must be < interface_radius (", interface_radius,
-      ") or the half renders as a solid rod instead of a tube")
+      ") or the half renders as a solid rod instead of a tube"
+    )
   )
   assert(
     part_height - entry_depth > pin_radius + allowance / 2,
-    str("hopper_joint: the channel would break out of the bottom face. Needs ",
+    str(
+      "hopper_joint: the channel would break out of the bottom face. Needs ",
       "part_height - entry_depth (", part_height - entry_depth,
-      ") > pin_radius + allowance/2 (", pin_radius + allowance / 2, ")")
+      ") > pin_radius + allowance/2 (", pin_radius + allowance / 2, ")"
+    )
   )
   assert(
     bore_diameter <= max_bore,
-    str("hopper_joint: bore_diameter (", bore_diameter,
+    str(
+      "hopper_joint: bore_diameter (", bore_diameter,
       ") would cut into the pins. Maximum is ", max_bore, " at pin_radius ",
-      pin_radius)
+      pin_radius
+    )
   )
   assert(
     bayonet_pin_pattern_min_gap(angles) > sweep_angle + 3 * channel_half,
-    str("hopper_joint: adjacent channels would merge into a continuous slot, ",
+    str(
+      "hopper_joint: adjacent channels would merge into a continuous slot, ",
       "leaving no retention. Needs min gap (",
       bayonet_pin_pattern_min_gap(angles),
       ") > sweep_angle + 3 * channel half-angle (",
-      sweep_angle + 3 * channel_half, ")")
+      sweep_angle + 3 * channel_half, ")"
+    )
   )
   assert(
     bayonet_pin_pattern_margin(angles) > channel_half,
-    str("hopper_joint: the key is too shallow to block a wrong seating. Needs ",
+    str(
+      "hopper_joint: the key is too shallow to block a wrong seating. Needs ",
       "margin (", bayonet_pin_pattern_margin(angles),
-      ") > channel half-angle (", channel_half, ")")
+      ") > channel half-angle (", channel_half, ")"
+    )
   )
   [
-    interface_radius, shell_thickness, allowance, part_height, entry_depth,
-    pin_radius, sweep_angle, pins, key_angle, bore_diameter,
+    interface_radius,
+    shell_thickness,
+    allowance,
+    part_height,
+    entry_depth,
+    pin_radius,
+    sweep_angle,
+    pins,
+    key_angle,
+    bore_diameter,
   ];
 
 function joint_interface_radius(joint) = joint[_JOINT_INTERFACE_RADIUS]; //! Virtual radius the two shells straddle
@@ -141,8 +158,7 @@ function joint_socket_outer_d(joint) =
 // Largest pellet bore that does not cut into the pins.
 function joint_max_bore_diameter(joint) =
   2 * (
-    joint_interface_radius(joint) - joint_allowance(joint) / 2 -
-    joint_pin_radius(joint)
+    joint_interface_radius(joint) - joint_allowance(joint) / 2 - joint_pin_radius(joint)
   );
 
 module _bayonet_half(joint, which) {
@@ -195,7 +211,6 @@ module joint_neck_inverted(joint) {
   translate([0, 0, joint_neck_height(joint)]) rotate([180, 0, 0]) joint_neck(joint);
 }
 
-
 // Standalone preview: the neck at the origin, the socket beside it, at the size
 // the 50 mm pellet outlet demands. $fn is passed on the call, never assigned at
 // top level -- that would override the driver's choice for this file's modules.
@@ -204,14 +219,16 @@ module joint_neck_inverted(joint) {
 // the insertion one: turn it back by the sweep angle to fit it.
 _demo = hopper_joint();
 
-echo(str(
-  "joint: neck OD ", joint_neck_od(_demo),
-  ", socket bore ", joint_socket_inner_d(_demo),
-  ", socket OD ", joint_socket_outer_d(_demo),
-  ", pellet bore ", joint_bore_diameter(_demo),
-  " (max ", joint_max_bore_diameter(_demo), ")"
-));
+echo(
+  str(
+    "joint: neck OD ", joint_neck_od(_demo),
+    ", socket bore ", joint_socket_inner_d(_demo),
+    ", socket OD ", joint_socket_outer_d(_demo),
+    ", pellet bore ", joint_bore_diameter(_demo),
+    " (max ", joint_max_bore_diameter(_demo), ")"
+  )
+);
 
-joint_neck(_demo, $fn = $preview ? 64 : 160);
+joint_neck(_demo, $fn=$preview ? 64 : 160);
 translate([joint_socket_outer_d(_demo) + 10, 0, 0])
-  joint_socket(_demo, $fn = $preview ? 64 : 160);
+  joint_socket(_demo, $fn=$preview ? 64 : 160);
