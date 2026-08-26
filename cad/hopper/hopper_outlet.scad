@@ -20,28 +20,39 @@ use <hopper_joint.scad>
 // gentle overhang; the helical groove bridges over about one rib width.
 
 /**
- * Helical groove matching a hose's reinforcing rib, as a cut tool.
+ * The groove a hose's reinforcing rib winds into: the rib's own circular
+ * section swept along the helix it is wound on, as one polyhedron. A ROUND
+ * thread, so the crest between turns is blunt.
  *
- * Swept by twisting an offset circle up the extrusion — the rib pitch converts
- * straight to degrees of twist per mm. Handedness has to match the hose or it
- * simply will not screw in.
+ * NOT linear_extrude(twist=), which is what this was. At this radius and pitch
+ * that collapses the section: measured 292 mm3 against the 2557 mm3 of helical
+ * rod it should be, i.e. an 11% thread, which no hose would ever screw into.
+ * Hulling spheres along the path is also correct and CGAL never finishes it.
  *
- * Public because cad/coupons/hose_thread_coupon.scad tests THIS module rather
- * than a copy of it: a clearance settled on the coupon is a clearance the
- * outlet will print, with nothing in between to get wrong.
+ * Handedness has to match the hose or it simply will not start. Generated
+ * right-handed; mirroring reverses the helix.
  */
-module hose_thread(hose, depth, clearance = 0.4, segments_per_turn = 48) {
-  _turns = depth / hose_pitch(hose);
-  _sign = hose_handed(hose) == "right" ? -1 : 1;
+module hose_thread(hose, depth, clearance = 0.4, seg = 64, sec = 32) {
+  _r = hose_helix_radius(hose);
+  _rs = (hose_helix(hose) + clearance) / 2;
+  _lead = hose_pitch(hose);
+  _n = round(depth / _lead * seg);
 
-  linear_extrude(
-    height = depth,
-    twist = _sign * 360 * _turns,
-    slices = max(8, ceil(_turns * segments_per_turn)),
-    convexity = 10
-  )
-    translate([hose_helix_radius(hose), 0])
-      circle(d = hose_helix(hose) + clearance);
+  mirror([hose_handed(hose) == "right" ? 0 : 1, 0, 0])
+    polyhedron(
+      points = [
+        for (i = [0:_n]) let (a = 360 * i / seg, z = i / seg * _lead)
+          for (j = [0:sec - 1]) let (t = 360 * j / sec)
+            [(_r + _rs * cos(t)) * cos(a), (_r + _rs * cos(t)) * sin(a), z + _rs * sin(t)]
+      ],
+      faces = concat(
+        [[for (j = [sec - 1:-1:0]) j]],
+        [[for (j = [0:sec - 1]) _n * sec + j]],
+        [for (i = [0:_n - 1]) for (j = [0:sec - 1]) let (k = (j + 1) % sec)
+          [i * sec + j, i * sec + k, (i + 1) * sec + k, (i + 1) * sec + j]]
+      ),
+      convexity = 8
+    );
 }
 
 // Overlap used wherever two solids would otherwise meet on a coincident plane.
