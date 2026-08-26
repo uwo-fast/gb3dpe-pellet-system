@@ -112,9 +112,6 @@ module hopper_outlet(
     // Straight through the neck.
     translate([0, 0, _neck_z - 0.5])
       cylinder(h = joint_neck_height(joint) + 1, d = joint_bore_diameter(joint));
-
-    // Pocket the hub's retaining screw seats into.
-    translate([0, 0, _neck_z]) joint_retainer_pocket_inverted(joint);
   }
 }
 

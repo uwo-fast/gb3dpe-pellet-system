@@ -24,8 +24,8 @@
       -86.6824,
       0.0
     ],
-    "triangles": 13384,
-    "volume_mm3": 288088.281
+    "triangles": 13060,
+    "volume_mm3": 288110.852
   },
   "body@175x175": {
     "bbox_mm": [
@@ -38,8 +38,8 @@
       -86.6824,
       0.0
     ],
-    "triangles": 13480,
-    "volume_mm3": 288331.631
+    "triangles": 13156,
+    "volume_mm3": 288354.202
   },
   "body@202x202": {
     "bbox_mm": [
@@ -52,8 +52,8 @@
       -86.6824,
       0.0
     ],
-    "triangles": 13448,
-    "volume_mm3": 288499.563
+    "triangles": 13124,
+    "volume_mm3": 288522.134
   },
   "cap@150x150": {
     "bbox_mm": [
@@ -150,8 +150,8 @@
       -47.5,
       0.0
     ],
-    "triangles": 17156,
-    "volume_mm3": 62198.496
+    "triangles": 16252,
+    "volume_mm3": 62382.693
   },
   "outlet": {
     "bbox_mm": [
@@ -164,8 +164,8 @@
       -31.5551,
       0.0
     ],
-    "triangles": 23722,
-    "volume_mm3": 46639.026
+    "triangles": 23398,
+    "volume_mm3": 46661.597
   },
   "plate-mk3s": {
     "bbox_mm": [

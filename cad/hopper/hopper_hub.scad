@@ -91,19 +91,6 @@ module hopper_hub(
       translate([0, 0, _half]) joint_socket(joint);
     }
 
-    // Retaining screws, one per socket -- see joint_retainer_bore() for why
-    // the library's own detent does not count. The outlet's is the one that
-    // matters: the hose pulls on it.
-    //
-    // The lower one has to be driven long enough to break out through the
-    // SKIRT, not just the socket wall. An inverted socket puts its retainer
-    // band low — between the channel and the end face — which on this part is
-    // always inside the flare, so the default bore length would wall the screw
-    // in and the feature would quietly do nothing. It therefore exits on the
-    // cone: use a grub screw, or one whose head does not need to seat flat.
-    joint_retainer_bore_inverted(joint, length = skirt_diameter / 2 + 2);
-    translate([0, 0, _half]) joint_retainer_bore(joint);
-
     // Blind fixings up into the bottom face, for self-tapping screws or inserts.
     for (i = [0:bolts - 1])
       rotate([0, 0, i * 360 / bolts + bolt_angle])

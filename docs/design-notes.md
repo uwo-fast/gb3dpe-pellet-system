@@ -144,16 +144,27 @@ radius (0.25 mm³ of snap-past at 22.15, 1.05 mm³ at 29.15) because it is place
 by angle, so its arc length scales. Worth re-checking if the coupling grows
 again.
 
-**Anti-rotation is ours too.** The library has an undocumented detent whose size
-is welded to `allowance`, so at our 0.30 it is a 0.6 mm post — at or below one
-extrusion width. Treated as absent. In its place a self-tapping M4 runs radially
-through the socket wall into a 1.2 mm pocket in the neck, which is a positive
-lock rather than a friction one: the tip has to be driven out, not merely
-slipped. Placed at 140°, above the channel and 40° clear of the entry slots —
-which run from the channel *up through the top face* and are the easy thing to
-forget when picking an angle. Verified: the pilot passes clean through the
-socket wall, and the pocket leaves 1.8 mm of neck wall before the pellet bore.
-`hopper_joint()` asserts both the height and the angular clearance.
+**Anti-rotation is not a screw.** A radial self-tapping M4 into a pocket in the
+neck was tried and removed. Two sockets are not the same case, and treating them
+as a symmetric pair was the mistake: disengaging a bayonet means rotating back
+through `sweep_angle` and *then* travelling `entry_depth` axially, and gravity
+sits on opposite sides of that travel at each end. At the **upper** socket the
+body must be lifted 12 mm against its own loaded 4.24 kg, so rotation alone
+releases nothing and the screw guarded a failure gravity already prevents. At
+the **lower** socket the outlet simply drops out, and the hub is an open bore,
+so the hopper would drain through it.
+
+The lower screw was also unbuildable as drawn, and structurally so. The assert
+keeping the pilot clear of the channel puts `retainer_z` in (9.15, 16.30), which
+on the inverted socket is world z (1.70, 8.85) — entirely inside an 11.50 mm
+skirt flare. It could only ever exit on a 45° cone, where no head seats. Pulling
+the skirt in to 88 mm would clear it, at the cost of moving the hub fixings
+3.5 mm nearer the clearance hole.
+
+So the outlet's retention rests on the bayonet, and on the hose thread that
+screws into it. Whether that is enough is what `cad/coupons/hose_thread_coupon.scad`
+is for; until it is answered, strain-relieving the hose near the outlet is the
+cheap insurance, because it removes the torque instead of resisting it.
 
 ## The toolhead's own feed bore caps the system at ~4.6 mm
 

@@ -167,10 +167,6 @@ module hopper_body(
       translate([0, 0, _bin_z]) rounded_box(top_x, top_y, bin_height, funnel_radius);
     }
 
-    // Pocket the retaining screw seats into. Cut after the neck is unioned in,
-    // so it lands on the finished outside of the shell.
-    joint_retainer_pocket(joint);
-
     // Pellet path, matching the outer stations one wall in.
     translate([0, 0, -1]) cylinder(h = _neck_height + 2, d = _bore);
 

@@ -93,14 +93,6 @@ lock_pins = 4; // [2:1:7]
 // orientation. Zero leaves the bin free to seat crosswise on the roof.
 lock_key_angle = 15; // [0:1:40]
 
-// Retaining screw: a positive lock rather than a nicety, and the only thing
-// resisting a hose pull -- see hopper_joint.scad. Sized to self-tap M4 in PETG;
-// 0 omits it.
-lock_retainer_pilot = 3.4; // [0:0.1:6]
-// Clear of the entry slots and the socket gussets; hopper_joint asserts it.
-lock_retainer_angle = 140; // [0:5:355]
-lock_retainer_z = 13.5;
-
 // Pellet bore through the coupling. This is the hopper's outlet, so it is the
 // opening that has to clear design_particle_size; both are asserted below.
 lock_bore_diameter = 50;
@@ -276,9 +268,6 @@ _joint = hopper_joint(
   sweep_angle=lock_sweep_angle,
   pins=lock_pins,
   key_angle=lock_key_angle,
-  retainer_angle=lock_retainer_angle,
-  retainer_z=lock_retainer_z,
-  retainer_pilot=lock_retainer_pilot,
   bore_diameter=lock_bore_diameter
 );
 
