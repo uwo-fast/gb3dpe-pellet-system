@@ -58,8 +58,10 @@ module hose_thread(hose, depth, clearance = 0.4, seg = 64, sec = 32) {
 // Overlap used wherever two solids would otherwise meet on a coincident plane.
 _WELD = 0.5;
 
-function outlet_socket_od(hose, wall = 3, clearance = 0.4) =
-  hose_outside(hose) + clearance + 2 * wall;
+// Sized on the THREAD clearance, because the rib is the outermost thing the
+// socket has to swallow.
+function outlet_socket_od(hose, wall = 3, thread_clearance = 0.4) =
+  hose_outside(hose) + thread_clearance + 2 * wall;
 
 /**
  * Height of the converging section, so its wall sits at `angle` from
@@ -78,9 +80,13 @@ module hopper_outlet(
   cone_angle = 70,
   socket_depth = 24,
   wall = 3,
-  clearance = 0.4
+  // Two fits, not one. The tube slides in the bore; the rib winds into the
+  // groove. They are different fits on a moulded part nobody has measured a
+  // tolerance for, so they tune separately -- see cad/coupons/hose_thread_coupon.scad.
+  bore_clearance = 0.4,
+  thread_clearance = 0.4
 ) {
-  _socket_od = outlet_socket_od(hose, wall, clearance);
+  _socket_od = outlet_socket_od(hose, wall, thread_clearance);
   _cone_h = outlet_cone_height(joint, hose, cone_angle);
   _height = outlet_height(joint, hose, cone_angle, socket_depth);
   _neck_z = _height - joint_neck_height(joint);
@@ -117,8 +123,8 @@ module hopper_outlet(
 
     // Hose bore and its thread, opening downward at the bed face.
     translate([0, 0, -1])
-      cylinder(h = socket_depth + 1, d = hose_tube_od(hose) + clearance);
-    translate([0, 0, -0.5]) hose_thread(hose, socket_depth + 0.5, clearance);
+      cylinder(h = socket_depth + 1, d = hose_tube_od(hose) + bore_clearance);
+    translate([0, 0, -0.5]) hose_thread(hose, socket_depth + 0.5, thread_clearance);
 
     // The converging pellet path: hose bore up to the coupling's full bore.
     translate([0, 0, socket_depth])

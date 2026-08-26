@@ -154,9 +154,15 @@ hub_counterbore = 8;
 hose_type = 0; // [0:GB3D 1 m conveyor]
 
 // NOT CONFIRMED. The socket is threaded to match the hose's reinforcing rib, so
-// this has to match the real hose or it simply will not screw in. Flip it and
-// reprint the outlet -- it is a small part.
+// this has to match the real hose or it simply will not screw in. Settle it on
+// `just hose-coupon` rather than by reprinting outlets.
 hose_handedness = "right"; // [right,left]
+
+// Two fits on the hose, and neither is calculable: it is a moulded part with no
+// published tolerance, so both come from printing a coupon and trying it. The
+// tube slides in the bore; the rib winds into the thread groove.
+hose_bore_clearance = 0.4; // [0:0.05:1.2]
+hose_thread_clearance = 0.4; // [0:0.05:1.2]
 
 // The outlet is where the path converges from the coupling's bore down to the
 // hose, so it is held to the same wall angle as the funnel.
@@ -467,7 +473,9 @@ module _outlet() {
     hose=_hose,
     cone_angle=outlet_cone_angle,
     socket_depth=outlet_socket_depth,
-    wall=outlet_wall
+    wall=outlet_wall,
+    bore_clearance=hose_bore_clearance,
+    thread_clearance=hose_thread_clearance
   );
 }
 
