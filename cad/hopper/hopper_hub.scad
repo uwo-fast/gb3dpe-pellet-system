@@ -113,7 +113,7 @@ module hopper_hub(
     for (i = [0:bolts - 1])
       rotate([0, 0, i * 360 / bolts + bolt_angle]) {
         translate([_bolt_r, 0, -1]) cylinder(h=_skirt_h + 2, d=bolt_diameter);
-        translate([_bolt_r, 0, _seat_z]) cylinder(h=_skirt_h + 2, d=counterbore);
+        translate([_bolt_r, 0, _seat_z]) cylinder(h=_half * 2 + 2, d=counterbore);
       }
   }
 }
