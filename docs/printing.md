@@ -107,8 +107,8 @@ the alignment, so the tape is not being asked to hold anything in place.
    through the drilled panel. Panel hole is **Ø65**.
 3. Twist the **outlet** up into the hub's lower socket.
 4. Screw the **hose** into the outlet — it threads, the reinforcing rib is the
-   thread. Handedness and clearance are both unconfirmed: settle them on
-   `just hose-coupon` before printing an outlet, not by reprinting the outlet.
+   thread. Right-handed, 0.2 mm clearance, both settled on a coupon. Settle any
+   different hose the same way, on `just hose-coupon`, not by reprinting outlets.
 5. Bolt the two **body segments** together, dowels first.
 6. Turn the body back by the sweep angle, drop it into the hub, and turn it
    forward to seat.

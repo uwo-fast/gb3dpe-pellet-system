@@ -195,12 +195,14 @@ coupon-stand:
     echo "{{build}}/flow-coupon-stand.stl"
 
 # Export a hose-thread test coupon at one clearance.
-hose-coupon clearance="0.4" handed="right":
+hose-coupon clearance="0.2" handed="right":
     #!/usr/bin/env bash
     # Print socket-mouth-down, as modelled. Screw the real hose in: it should
     # start by hand, wind the full depth without forcing, and hold when you hang
     # the coupon off the hose and twist it. Keep the tightest that manages all
-    # three, then put it in hopper_outlet's clearance.
+    # three, then put it in hose_bore_clearance / hose_thread_clearance.
+    # The defaults here are what the GB3D hose settled on; a different hose
+    # starts this over.
     set -euo pipefail
     mkdir -p {{build}}
     out={{build}}/hose-coupon-{{clearance}}-{{handed}}.stl

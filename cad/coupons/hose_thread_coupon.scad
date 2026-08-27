@@ -5,19 +5,19 @@
 
 /* [Hose] */
 
-// Measured: 21 mm over the tube, with a ROUND rib wound around it -- a
-// semicircular section 3.5 mm across, at 7.6 mm pitch. The rib's centreline
-// rides on the tube's surface, so only its radius stands proud: 24.5 mm overall
+// Measured: 21.5 mm over the tube, with a ROUND rib wound around it -- a
+// semicircular section 3.5 mm across, at 8.5 mm pitch. The rib's centreline
+// rides on the tube's surface, so only its radius stands proud: 25 mm overall
 // across the ribs. Round thread, so the crest between turns is blunt.
-tube_od = 21;
+tube_od = 21.5;
 rib = 3.5;
-pitch = 7.6;
+pitch = 8.5;
 // Unconfirmed. Print one of each; whichever starts is the answer.
 handed = "right"; // [right,left]
 
 /* [Coupon] */
 
-clearance = 0.4; // [0:0.05:1.2]
+clearance = 0.2; // [0:0.05:1.2]
 turns = 3; // [2:0.5:6]
 wall = 3;
 

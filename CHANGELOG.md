@@ -78,8 +78,16 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   bore with a scratch in it and no hose would ever have wound into it. It is now
   the rib's section swept along its own helix as one polyhedron.
 - The conveyor hose's rib was recorded as 4 mm at 8 mm pitch. Measured, it is a
-  semicircular 3.5 mm section at 7.6 mm pitch. The rib is the thread, so a wrong
-  pitch means the hose does not start at all.
+  semicircular 3.5 mm section, and a printed coupon then settled the rest: a
+  21.5 mm tube at 8.5 mm pitch, right-handed, 0.2 mm clearance on both the bore
+  and the groove. The rib is the thread, so a wrong pitch means the hose does
+  not start at all.
+- The outlet's thread swept from 0.5 mm below the socket mouth. A swept
+  polyhedron begins on a flat cap, and that cap landed inside the part, leaving
+  solid material across 57 degrees of the entry — measured as a third less
+  groove open at the mouth face than the coupon has. It now sweeps a full lead
+  past the socket at both ends, which is what the coupon had been doing all
+  along and the reason the coupon threaded when the outlet would not have.
 
 ### Removed
 

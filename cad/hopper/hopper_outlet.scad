@@ -31,17 +31,24 @@ use <hopper_joint.scad>
  *
  * Handedness has to match the hose or it simply will not start. Generated
  * right-handed; mirroring reverses the helix.
+ *
+ * `depth` is the socket it has to thread, measured from the mouth at z = 0. The
+ * sweep runs a full lead beyond that at BOTH ends, because it begins and ends on
+ * a flat cap and a cap that lands inside the part leaves solid material where
+ * the groove should be. Half a lead of margin is not enough: at 8.5 mm pitch a
+ * cap 0.5 mm below the mouth blocks 57 degrees of the entry -- the rib meets a
+ * wall instead of a groove, which is a hose that will not start.
  */
-module hose_thread(hose, depth, clearance = 0.4, seg = 64, sec = 32) {
+module hose_thread(hose, depth, clearance = 0.2, seg = 64, sec = 32) {
   _r = hose_helix_radius(hose);
   _rs = (hose_helix(hose) + clearance) / 2;
   _lead = hose_pitch(hose);
-  _n = round(depth / _lead * seg);
+  _n = round((depth + 2 * _lead) / _lead * seg);
 
   mirror([hose_handed(hose) == "right" ? 0 : 1, 0, 0])
     polyhedron(
       points=[
-        for (i = [0:_n]) let (a = 360 * i / seg, z = i / seg * _lead) for (j = [0:sec - 1]) let (t = 360 * j / sec) [(_r + _rs * cos(t)) * cos(a), (_r + _rs * cos(t)) * sin(a), z + _rs * sin(t)],
+        for (i = [0:_n]) let (a = 360 * i / seg, z = i / seg * _lead - _lead) for (j = [0:sec - 1]) let (t = 360 * j / sec) [(_r + _rs * cos(t)) * cos(a), (_r + _rs * cos(t)) * sin(a), z + _rs * sin(t)],
       ],
       faces=concat(
         [[for (j = [sec - 1:-1:0]) j]],
@@ -59,7 +66,7 @@ _WELD = 0.5;
 
 // Sized on the THREAD clearance, because the rib is the outermost thing the
 // socket has to swallow.
-function outlet_socket_od(hose, wall = 3, thread_clearance = 0.4) =
+function outlet_socket_od(hose, wall = 3, thread_clearance = 0.2) =
   hose_outside(hose) + thread_clearance + 2 * wall;
 
 /**
@@ -82,8 +89,8 @@ module hopper_outlet(
   // Two fits, not one. The tube slides in the bore; the rib winds into the
   // groove. They are different fits on a moulded part nobody has measured a
   // tolerance for, so they tune separately -- see cad/coupons/hose_thread_coupon.scad.
-  bore_clearance = 0.4,
-  thread_clearance = 0.4
+  bore_clearance = 0.2,
+  thread_clearance = 0.2
 ) {
   _socket_od = outlet_socket_od(hose, wall, thread_clearance);
   _cone_h = outlet_cone_height(joint, hose, cone_angle);
@@ -127,7 +134,7 @@ module hopper_outlet(
     // Hose bore and its thread, opening downward at the bed face.
     translate([0, 0, -1])
       cylinder(h=socket_depth + 1, d=hose_tube_od(hose) + bore_clearance);
-    translate([0, 0, -0.5]) hose_thread(hose, socket_depth + 0.5, thread_clearance);
+    hose_thread(hose, socket_depth, thread_clearance);
 
     // The converging pellet path: hose bore up to the coupling's full bore.
     translate([0, 0, socket_depth])

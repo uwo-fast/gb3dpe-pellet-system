@@ -136,15 +136,16 @@ function feedstock(index) =
 //
 // Note how the rib sits: its centreline lies ON the tube's outside surface, so
 // only its RADIUS protrudes. Overall diameter is therefore tube_od + helix,
-// not tube_od + 2 * helix -- 21 + 4 = 25, which is what a caliper reads across
-// the ribs.
+// not tube_od + 2 * helix -- 21.5 + 3.5 = 25, which is what a caliper reads
+// across the ribs.
 
 // Supplied with the GreenBoy3D kit. Measured on the bench, not published:
-// 20 mm bore, 21 mm over the tube wall, and a semicircular rib of 3.5 mm
-// diameter wound at 7.6 mm pitch, giving 24.5 mm overall. Right-handed is still
-// unconfirmed -- print one coupon of each from
-// cad/coupons/hose_thread_coupon.scad to settle it.
-HOSE_GB3D = ["GB3D 1 m conveyor", 20, 21, 3.5, 7.6, "right"];
+// 20 mm bore, 21.5 mm over the tube wall, and a semicircular rib of 3.5 mm
+// diameter wound at 8.5 mm pitch, giving 25 mm overall. Right-handed, and the
+// tube and pitch figures are the corrected ones -- all three settled on a
+// coupon that screws in, not off a first caliper reading. See
+// cad/coupons/hose_thread_coupon.scad.
+HOSE_GB3D = ["GB3D 1 m conveyor", 20, 21.5, 3.5, 8.5, "right"];
 
 hose_registry = [HOSE_GB3D];
 
