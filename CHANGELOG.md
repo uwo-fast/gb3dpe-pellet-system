@@ -72,6 +72,12 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- The assembly preview drew the whole body in one colour. Each segment is built
+  as the entire body clipped to its own slab, so every segment's tree still
+  carries a full-height funnel that the clip removes; preview resolves CSG by
+  depth peeling, and a hollow lofted body inside an intersection is deeper than
+  the default single layer, so the upper segment's discarded funnel drew over
+  the lower one. Exported meshes were never affected.
 - The hose thread was cutting 11% of its groove. `linear_extrude(twist=)`
   collapses the swept section at this radius and pitch -- 292 mm3 against the
   2557 mm3 of helical rod it should be -- so the outlet's socket was a smooth

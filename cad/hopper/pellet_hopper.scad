@@ -448,8 +448,16 @@ module _body(which = undef) {
 }
 
 // Every segment, each already at its true height and its own colour.
+//
+// render() rather than a bare loop, because a segment is built as the WHOLE
+// body clipped to its own slab -- so every segment's tree still contains a
+// full-height funnel that the clip is supposed to remove. Preview resolves CSG
+// by depth peeling, and a hollow lofted body inside an intersection is deeper
+// than the default single layer, so without this the upper segment's discarded
+// funnel draws straight over the lower segment and the whole body comes out one
+// colour. Exported meshes were always correct; this is display only.
 module _body_all() {
-  for (i = [0:segments - 1]) color(colour_body_segment(i)) _body(which=i);
+  for (i = [0:segments - 1]) color(colour_body_segment(i)) render(convexity=10) _body(which=i);
 }
 
 module _hub() {
