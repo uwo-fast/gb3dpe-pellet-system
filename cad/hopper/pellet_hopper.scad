@@ -143,6 +143,21 @@ frame_grip_depth = 30;
 frame_jaw = 7;
 frame_fillet = 4;
 
+// How far the outlet's mouth clears the frame's TOP EDGE. The mount stands off
+// the frame by whatever that takes -- it is not set here, it is solved for.
+//
+// The outlet hangs below the plate and beside the frame, in the column the
+// gantry rises through, so at full Z the toolhead reached it. Holding the
+// outlet above the top bar settles it without measuring anything on the
+// machine: nothing that travels can go above that bar. It also makes the
+// saddle the lowest thing on the mount, which it has to be anyway -- its jaws
+// reach down the bar to grip it.
+//
+// This is the only handle. The lift itself follows from the outlet's height,
+// which follows from the hose, so a different hose re-solves it rather than
+// leaving a hardcoded riser quietly wrong.
+frame_outlet_clearance = 3;
+
 // The MK3S plate sizes ITSELF from the offset, the saddle and the hub skirt, so
 // this margin is the only handle on how big it comes out. There is deliberately
 // no separate plate width or saddle length to set inconsistently with them.
@@ -360,6 +375,15 @@ _body_height = lock_height + neck_transition_height + _funnel_height + _bin_heig
 _hub_height = hub_height(_joint);
 _body_base = lock_height;
 _outlet_h = outlet_height(_joint, _hose, outlet_cone_angle, outlet_socket_depth);
+// Riser solved from the outlet, not chosen. The outlet's mouth is at
+// lock_height - _outlet_h below the plate's TOP face, the frame's top edge is
+// plate_thickness + saddle_roof below it, so holding the first `clearance`
+// above the second fixes the roof. Only the mk3s plate has a frame to clear;
+// the others keep the plain roof they had.
+_frame_saddle_roof =
+  plate_variant == "mk3s" ? mk3s_saddle_roof(_outlet_h, lock_height, plate_thickness, frame_outlet_clearance)
+  : 6;
+
 _cap_outer = [
   _top_x + 2 * cap_clearance + 2 * cap_wall,
   _top_y + 2 * cap_clearance + 2 * cap_wall,
@@ -399,9 +423,17 @@ _plate_actual =
 _part_x = max([_cap_outer[0], _plate_actual[0], hub_skirt_diameter, _top_x, _flange_x]);
 _part_y = max([_cap_outer[1], _plate_actual[1], hub_skirt_diameter, _top_y, _flange_y]);
 // The largest PART, not the largest assembly: a segment, not the whole body.
+// The mk3s plate is not a flat sheet: the saddle hangs off its underside and
+// prints standing on it, so the part is the plate PLUS the saddle. Reporting
+// plate_thickness alone understated it by the whole saddle, and the riser is
+// the term that grows.
+_plate_actual_h =
+  plate_variant == "mk3s" ? plate_thickness + frame_grip_depth + _frame_saddle_roof
+  : plate_thickness;
+
 _part_z = max(
   max(segments > 1 ? segment_height : _body_height, _outlet_h),
-  max(_hub_height, plate_thickness)
+  max(_hub_height, _plate_actual_h)
 );
 _fits = _part_x <= build_volume[0] && _part_y <= build_volume[1] && _part_z <= build_volume[2];
 
@@ -435,6 +467,20 @@ echo(
     _fits ? " -- fits" : " -- DOES NOT FIT"
   )
 );
+
+// The number to check the machine against: everything below the plate hangs
+// into the space the gantry rises through at max Z.
+if (plate_variant == "mk3s")
+  echo(
+    str(
+      "mk3s mount: saddle roof ", _frame_saddle_roof,
+      " puts the outlet mouth ",
+      _frame_saddle_roof + plate_thickness + lock_height - _outlet_h,
+      " mm above the frame's top edge; saddle jaws reach ", frame_grip_depth,
+      " mm below it, so the saddle is the lowest thing on the mount. Plate is ",
+      _plate_actual_h, " mm tall printed."
+    )
+  );
 
 assert(
   !require_printable || _fits,
@@ -518,7 +564,7 @@ module _plate() {
       bolt_circle=hub_bolt_circle, bolts=hub_bolts, bolt_diameter=plate_bolt_diameter,
       frame_thickness=frame_thickness, frame_clearance=frame_clearance,
       offset=frame_offset, grip_depth=frame_grip_depth, jaw=frame_jaw,
-      fillet=frame_fillet
+      fillet=frame_fillet, saddle_roof=_frame_saddle_roof
     );
   }
   else if (plate_variant == "panel")

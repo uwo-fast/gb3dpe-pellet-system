@@ -17,10 +17,15 @@ conveyor = hose(0);
 plate_thickness = 6;
 frame_thickness = 6.3;
 frame_offset = 47;
-saddle_roof = 6;
 
 // Datum is the plate's top face, matching the driver.
 outlet_drop = joint_neck_height(joint) - outlet_height(joint, conveyor, 70, 24);
+
+// Solved rather than chosen, exactly as the driver does it: the saddle stands
+// the mount off the frame by whatever puts the outlet's mouth this far above
+// the top bar, which is the highest anything that travels can reach.
+outlet_clearance = 3;
+saddle_roof = -outlet_drop - plate_thickness + outlet_clearance;
 
 echo(
   str(
@@ -30,11 +35,20 @@ echo(
   )
 );
 
+echo(
+  str(
+    "saddle roof ", saddle_roof, " puts the outlet mouth ",
+    saddle_roof + plate_thickness + outlet_drop,
+    " mm above the frame's top edge"
+  )
+);
+
 color(colour_plate())
   translate([0, 0, -plate_thickness])
     hopper_plate_mk3s(
       joint=joint, thickness=plate_thickness,
-      frame_thickness=frame_thickness, offset=frame_offset
+      frame_thickness=frame_thickness, offset=frame_offset,
+      saddle_roof=saddle_roof
     );
 
 color(colour_hub()) hopper_hub(joint);

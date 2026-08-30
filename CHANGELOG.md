@@ -77,6 +77,16 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- The MK3S mount hung the outlet into the gantry's path, so the toolhead met it
+  at full Z. The saddle's roof now doubles as a riser and is solved, not chosen:
+  it stands the mount off the frame by whatever puts the outlet's mouth clear of
+  the top bar, which is the highest anything that travels can reach. That works
+  out to a 62.2 mm roof and a 98 mm tall plate, and it re-solves itself for a
+  different hose rather than holding a hardcoded number.
+- The build-fit report measured the MK3S plate as a flat 6 mm sheet, ignoring
+  the saddle hanging off its underside -- a part `docs/printing.md` had listed
+  at 42 mm all along. Harmless until the riser above made the saddle the term
+  that grows, at which point a tall mount would have sailed past the check.
 - `just render` never wrote the upper body segment. It emitted one STL per part
   at the driver's default segment, so the only body file it produced was the
   lower one -- under a name that read like the whole body -- while

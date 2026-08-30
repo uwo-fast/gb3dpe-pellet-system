@@ -5,6 +5,8 @@
 
 use <hopper_hub.scad>
 use <hopper_joint.scad>
+use <hopper_outlet.scad>
+use <hopper_specs.scad>
 use <hopper_util.scad>
 
 // One part in three versions, not three parts: every variant is the universal
@@ -142,6 +144,24 @@ function mk3s_min_offset(
     mk3s_outlet_offset(joint, frame_thickness),
     mk3s_saddle_offset(joint, frame_thickness, frame_clearance, jaw, fillet)
   );
+
+/**
+ * The saddle roof that holds the outlet's mouth `clearance` above the frame's
+ * TOP EDGE, which is the height the whole mount then stands off the frame.
+ *
+ * The outlet hangs below the plate and beside the frame, in the column the
+ * gantry rises through, so at full Z the toolhead reaches it. Clearing the top
+ * bar settles that without measuring the machine: nothing that travels can go
+ * above that bar. It also leaves the saddle's own jaws the lowest thing on the
+ * mount, which they have to be to grip the bar at all.
+ *
+ * Takes the outlet's height as a number rather than reaching for the outlet
+ * itself, because the plate does not care what hangs below it, only how far --
+ * which is also what lets a different hose re-solve this instead of leaving a
+ * hardcoded riser quietly wrong.
+ */
+function mk3s_saddle_roof(outlet_height, neck_height, thickness = 6, clearance = 3) =
+  outlet_height - neck_height - thickness + clearance;
 
 // One brace: a wedge running inboard from the saddle, full height where it
 // meets it and tapering to nothing. Built as a hull between a tall thin slab
@@ -443,4 +463,15 @@ module hopper_plate_panel(
 // than an inline $fn, so both render at a matched resolution. The universal and
 // panel variants are rendered through the driver by `just check`.
 preview_facets = $preview ? 48 : 96;
-hopper_plate_mk3s(joint=hopper_joint(), $fn=preview_facets);
+_preview_joint = hopper_joint();
+hopper_plate_mk3s(
+  joint=_preview_joint,
+  // Solved exactly as the driver solves it, or this preview would show a
+  // flat-roofed mount the driver never builds -- which is the drift drift.py
+  // exists to catch.
+  saddle_roof=mk3s_saddle_roof(
+    outlet_height(_preview_joint, hose(0), 70, 24),
+    joint_neck_height(_preview_joint)
+  ),
+  $fn=preview_facets
+);

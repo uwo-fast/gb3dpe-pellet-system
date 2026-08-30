@@ -151,6 +151,17 @@ The saddle's roof carries the vertical load, sitting on the frame's top edge, so
 the clamp screws only resist sliding and tipping rather than holding the weight
 in friction.
 
+**That roof is also a riser, and its height is solved rather than chosen.** The
+outlet hangs below the plate and beside the frame — in the column the gantry
+rises through — so at full Z the toolhead reached it. The mount therefore stands
+off the frame by whatever puts the outlet's mouth clear of the **top bar**,
+which needs nothing measured on the machine: nothing that travels can go above
+that bar. At the shipping outlet that solves to a 62.2 mm roof and a 98 mm tall
+plate, leaving the saddle's jaws the only thing reaching down the bar, which
+they must do anyway to grip it. The clearance above the bar is the only handle;
+the lift follows from the outlet's height, so a different hose re-solves it
+instead of leaving a hardcoded riser quietly wrong.
+
 **Stiffness sizes this part, not strength.** A bare flat plate is well inside
 yield but deflects half a millimetre at the hub, and with 450 mm of hopper above
 that, half a millimetre becomes nearly five at the top — on a machine that

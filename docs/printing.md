@@ -42,10 +42,10 @@ why the wall angle is the assumption most worth testing.
 | body segment 1 | 1   | 202 × 202 × 205 | ~0.66 kg | as modelled                |
 | cap            | 1   | 209 × 209 × 19  | ~0.22 kg | **flip** — top face down   |
 | hub            | 1   | 95 × 95 × 36    | ~0.08 kg | as modelled                |
-| plate (MK3S)   | 1   | 130 × 130 × 42  | ~0.16 kg | **flip** — plate face down |
+| plate (MK3S)   | 1   | 135 × 135 × 98  | ~0.32 kg | **flip** — plate face down |
 | outlet         | 1   | 59 × 61 × 83    | ~0.06 kg | as modelled                |
 
-About 1.5 kg of PETG all told. Segment 1 at 202 × 202 leaves 4 mm either side
+About 1.7 kg of PETG all told. Segment 1 at 202 × 202 leaves 4 mm either side
 on an MK3S bed, and the cap at 209 leaves half a millimetre — check first layer
 placement rather than trusting it.
 
@@ -60,7 +60,9 @@ Measured, not guessed: downward-facing flat area above the bed, per part.
   would be one enormous unsupported span.
 - **The MK3S plate** has 10 229 mm², mostly the plate underside outside the
   saddle's footprint. Flipped, the plate is on the bed and the saddle legs point
-  up with the slot opening upward.
+  up with the slot opening upward. It is the tallest thing in the list at 98 mm,
+  because the saddle also stands the mount off the frame — see
+  [`interfaces.md`](interfaces.md).
 - **Segment 1 has none at all**, and the hub 67 mm². Both print as modelled.
 - **The outlet** has about 1 000 mm², a narrow annulus where the cone meets the
   neck. Small enough to bridge; watch it on the first one.
