@@ -32,12 +32,12 @@ def cases():
     proving one thing -- and at these facet counts that is most of the runtime.
     """
     for size, label in SIZES.items():
-        for part in ("body", "cap"):
+        for part in ("body0", "cap"):
             yield f"{part}@{label}", SCAD, [f'render_part="{part}"', f"hopper_size={size}"]
 
     # The upper segment. A cut that lands badly shows up only on the segment it
-    # lands on, and segment 0 is what every other body case renders.
-    yield "body-seg1", SCAD, ['render_part="body"', "hopper_size=2", "segment=1"]
+    # lands on, and body0 is what every other body case renders.
+    yield "body1@202x202", SCAD, ['render_part="body1"', "hopper_size=2"]
 
     for part in ("hub", "outlet"):
         yield part, SCAD, [f'render_part="{part}"']

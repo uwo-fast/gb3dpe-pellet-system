@@ -24,7 +24,27 @@ use <hopper_plate.scad>
 /* [Render] */
 
 // Which part to emit. "assembly" shows it built; "all" lays the parts out flat.
-render_part = "assembly"; // [body,cap,hub,plate,outlet,assembly,all]
+//
+// The body is printed in segments that bolt together, and each is a separate
+// print, so each is its own entry rather than one "body" plus an index to say
+// which. body0 is the bottom -- bayonet neck, transition, and as much of the
+// funnel as the cut leaves it; the entry above carries the rest of the funnel
+// and then the bin.
+//
+// EVERY body segment the model can build is listed, not just the ones the
+// current `segments` makes. A Customizer annotation is literal display text
+// parsed before evaluation -- it cannot be computed, and it does not validate
+// either, so a shorter list would not prevent anything, it would only hide
+// parts and force a source edit to reach them. Listing all four keeps every
+// reachable configuration selectable from the panel with no code edit, which
+// is the whole point of the panel. Picking one the current `segments` does not
+// build says so, and says which knob to move.
+//
+// The cut does NOT land on the funnel/bin boundary. It falls where the height
+// divides, which at the shipping config is two thirds of the way up the cone --
+// so body0 is not "the funnel" and body1 is not "the bin". Splitting on that
+// boundary instead would make body0 308 mm tall, which no printer here takes.
+render_part = "assembly"; // [body0,body1,body2,body3,cap,hub,plate,outlet,assembly,all]
 
 /* [Hopper Size] */
 
@@ -183,10 +203,10 @@ cap_top_thickness = 3;
 
 // The body is taller than the printer, so it is cut into segments that bolt
 // together. Bin height is whatever is left over once the funnel has taken its
-// share, so this is what actually sets capacity.
+// share, so this is what actually sets capacity. The ceiling here is what
+// _MAX_SEGMENTS and the render_part list are sized on; raising one means
+// raising all three.
 segments = 2; // [1:1:4]
-// Which one to emit. "assembly" and "all" show every segment regardless.
-segment = 0; // [0:1:3]
 // Usable Z per segment, a little under the build envelope.
 segment_height = 205;
 
@@ -425,7 +445,21 @@ assert(
   )
 );
 
-module _body(which = undef) {
+// Most segments the model will build, matching the range on `segments` below.
+// The dropdown annotation up top has to spell the same four out literally.
+_MAX_SEGMENTS = 4;
+
+// Body entries, index-matched: body0 is segment 0. One per segment the model
+// CAN build, so the list matches the dropdown; whether a given one exists at
+// the current `segments` is the assert's business, not this list's.
+_BODY_PARTS = [for (i = [0:_MAX_SEGMENTS - 1]) str("body", i)];
+
+// -1 when render_part is not a body entry at all.
+_body_index =
+  let (hits = [for (i = [0:len(_BODY_PARTS) - 1]) if (_BODY_PARTS[i] == render_part) i])
+  len(hits) > 0 ? hits[0] : -1;
+
+module _body(which) {
   hopper_body(
     joint=_joint,
     top_x=_top_x,
@@ -438,7 +472,7 @@ module _body(which = undef) {
     funnel_radius=funnel_radius,
     neck_transition_height=neck_transition_height,
     segments=segments,
-    segment=is_undef(which) ? segment : which,
+    segment=which,
     flange_width=flange_width,
     flange_thickness=flange_thickness,
     flange_inset=flange_inset,
@@ -457,7 +491,7 @@ module _body(which = undef) {
 // funnel draws straight over the lower segment and the whole body comes out one
 // colour. Exported meshes were always correct; this is display only.
 module _body_all() {
-  for (i = [0:segments - 1]) color(colour_body_segment(i)) render(convexity=10) _body(which=i);
+  for (i = [0:segments - 1]) color(colour_body_segment(i)) render(convexity=10) _body(i);
 }
 
 module _hub() {
@@ -528,8 +562,17 @@ module _cap() {
 
 // Single parts carry the same colour they have in the assembly, so a part
 // rendered on its own is still recognisable as the one you were looking at.
-if (render_part == "body") {
-  color(colour_body_segment(segment)) _body();
+if (_body_index >= 0) {
+  assert(
+    _body_index < segments,
+    str(
+      "pellet_hopper: ", render_part, " needs segments >= ", _body_index + 1,
+      ", and segments is ", segments,
+      ". Raise `segments` in the Segments group to reach it, or pick body0..body",
+      segments - 1, "."
+    )
+  );
+  color(colour_body_segment(_body_index)) _body(_body_index);
 } else if (render_part == "cap") {
   color(colour_cap(segments)) _cap();
 } else if (render_part == "hub") {

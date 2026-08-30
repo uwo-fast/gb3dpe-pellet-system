@@ -15,11 +15,16 @@ build  := "build"
 # Capacity preset index:label — must match _footprints in cad/hopper/pellet_hopper.scad
 sizes := "0:150x150 1:175x175 2:202x202"
 
+# The body prints as segments that bolt together, and each is its own
+# render_part entry — so they need no special handling here, only listing. Must
+# match `segments` in cad/hopper/pellet_hopper.scad.
+body_parts := "body0 body1"
+
 # Only the body and the cap change with the footprint preset. The hub, plate and
 # outlet come out identical at all three, so the gate renders them once —
 # sweeping them spent three renders proving one thing, and the driver's
 # size-dependent asserts run on every render whichever part is asked for.
-sized_parts := "body cap"
+sized_parts := body_parts + " cap"
 fixed_parts := "hub plate outlet"
 parts := sized_parts + " " + fixed_parts
 plate_variants := "mk3s universal panel"
@@ -87,13 +92,6 @@ check:
     done
     for p in {{fixed_parts}}; do
       run solid "$p" "any size" {{hopper}} "render_part=\"$p\"" "render_facets={{check_facets}}"
-    done
-
-    # Every segment of the body at the default size: a cut that lands badly only
-    # shows up on the segment it lands on.
-    for g in 0 1; do
-      run solid "seg$g" default {{hopper}} 'render_part="body"' "segment=$g" \
-        "render_facets={{check_facets}}"
     done
 
     # Every plate variant. The driver's own defaults reach one of the three, so

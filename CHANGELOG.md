@@ -22,6 +22,11 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Body segments are their own `render_part` entries -- `body0`, `body1` and so
+  on -- rather than one `body` plus a separate `segment` index to say which. A
+  segment is a separate print, so it is a separate part; asking for one the
+  current `segments` count does not have now names itself. `just render` and the
+  geometry baseline needed no special handling for the body once it was ordinary.
 - Each part now lives in its own file and takes explicit named parameters.
   `pellet_hopper.scad` is a driver that defines no geometry, and every other
   file under `cad/hopper/` renders standalone.
@@ -72,6 +77,10 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `just render` never wrote the upper body segment. It emitted one STL per part
+  at the driver's default segment, so the only body file it produced was the
+  lower one -- under a name that read like the whole body -- while
+  `docs/printing.md` listed two prints. Both now come out, named for the part.
 - The assembly preview drew the whole body in one colour. Each segment is built
   as the entire body clipped to its own slab, so every segment's tree still
   carries a full-height funnel that the clip removes; preview resolves CSG by
