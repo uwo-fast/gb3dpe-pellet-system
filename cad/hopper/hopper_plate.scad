@@ -242,7 +242,20 @@ module hopper_plate_mk3s(
   // Placed outboard of the clearance hole, where there is plate to attach to.
   braces_per_side = 2,
   brace_thickness = 4,
-  // Omit to run the braces from the saddle to under the hopper's axis.
+  // Omit to solve both from the mount they are bracing.
+  //
+  // The reach runs a brace under the whole HUB FOOTPRINT rather than stopping
+  // at its axis. The hub loads the plate all the way out to its skirt, and the
+  // bolts furthest from the saddle sit at the end of the longest lever, so
+  // stopping at the axis braced the half that needed it least.
+  //
+  // The height stops at the frame's TOP EDGE and no lower. Tying it to the
+  // saddle's full height made sense while the saddle was short; once the roof
+  // became a riser that turned each brace into a near-vertical fin hanging
+  // 30 mm below the bar -- a second thing in the column the gantry rises
+  // through, which is the collision the riser exists to avoid. The saddle's
+  // jaws are the only part that may reach below the bar, because gripping it
+  // is their job.
   brace_reach = undef,
   brace_height = undef,
   clamp_screws = 4,
@@ -262,8 +275,8 @@ module hopper_plate_mk3s(
   // ends a stress concentration, lets the mount tilt on the bar, and leaves the
   // outer braces standing on nothing.
   _saddle_len = _size[1];
-  _reach = is_undef(brace_reach) ? offset - _saddle_w / 2 : brace_reach;
-  _brace_h = is_undef(brace_height) ? _saddle_h : brace_height;
+  _reach = is_undef(brace_reach) ? offset + skirt_diameter / 2 - _saddle_w / 2 : brace_reach;
+  _brace_h = is_undef(brace_height) ? saddle_roof : brace_height;
   _screw_span = is_undef(clamp_screw_spacing) ? _saddle_len - 4 * jaw : clamp_screw_spacing;
   _brace_inner = hub_plate_hole(joint) / 2 + brace_thickness / 2 + 2;
   _brace_outer = _size[1] / 2 - corner_radius - brace_thickness / 2;

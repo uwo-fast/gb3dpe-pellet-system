@@ -83,6 +83,13 @@ and [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   the top bar, which is the highest anything that travels can reach. That works
   out to a 62.2 mm roof and a 98 mm tall plate, and it re-solves itself for a
   different hose rather than holding a hardcoded number.
+- The MK3S plate's braces grew downward with the riser instead of outward,
+  turning a 44 degree wedge into a 68 degree fin: their height was tied to the
+  saddle's, their reach was not. That left 6.49 cm3 of brace hanging 30 mm below
+  the frame's top bar and inboard of it -- a second thing in the gantry's column,
+  which is what the riser exists to keep clear. Height now follows the riser and
+  stops at the bar; reach now spans the whole hub footprint instead of ending at
+  its axis, where the bolts furthest from the saddle had no brace under them.
 - The build-fit report measured the MK3S plate as a flat 6 mm sheet, ignoring
   the saddle hanging off its underside -- a part `docs/printing.md` had listed
   at 42 mm all along. Harmless until the riser above made the saddle the term

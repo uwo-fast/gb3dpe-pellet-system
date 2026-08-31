@@ -162,6 +162,15 @@ they must do anyway to grip it. The clearance above the bar is the only handle;
 the lift follows from the outlet's height, so a different hose re-solves it
 instead of leaving a hardcoded riser quietly wrong.
 
+The braces follow the riser rather than the saddle. They stop at the frame's
+top edge, so the saddle's jaws stay the only part reaching below the bar, and
+they run inboard far enough to sit under the **whole hub footprint** rather than
+stopping at its axis — the bolts furthest from the saddle are on the longest
+lever, so ending at the axis braced the half needing it least. Tying their
+height to the saddle instead was fine while the saddle was short; once its roof
+became a riser it made each brace a near-vertical fin hanging 30 mm below the
+bar, which is the collision the riser exists to avoid.
+
 **Stiffness sizes this part, not strength.** A bare flat plate is well inside
 yield but deflects half a millimetre at the hub, and with 450 mm of hopper above
 that, half a millimetre becomes nearly five at the top — on a machine that
