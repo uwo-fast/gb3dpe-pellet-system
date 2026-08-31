@@ -460,7 +460,7 @@ module hopper_plate_panel(
 
     for (x = [-panel_bolt_spacing[0] / 2, panel_bolt_spacing[0] / 2])
       for (y = [-panel_bolt_spacing[1] / 2, panel_bolt_spacing[1] / 2]) {
-        translate([x, y, -thickness - 1])
+        translate([x, y,  - 1])
           cylinder(h=thickness + 2, d=panel_bolt_diameter);
         // Counterbored from ABOVE so heads sit flush with the plate's top
         // face. rounded_box sits on z = 0 and extends upward, so the top face
