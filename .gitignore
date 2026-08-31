@@ -41,5 +41,7 @@ Thumbs.db
 # Logs
 *.log
 
-# Build output
-build/
+# Miscellaneous
+working/
+*.tmp
+*.temp
